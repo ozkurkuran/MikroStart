@@ -20,8 +20,8 @@ export function SampleIdCard() {
   }
 
   return (
-    <article class="widget widget--amber workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
-      <div class="widget__heading"><span class="widget__eyebrow">SAMPLE · LOCAL</span></div>
+    <article class="widget workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
+      <div class="widget__heading"><span class="widget__eyebrow">Etiketleme · Akış</span></div>
       <header><h2 id={`${id}-title`}>Numune kimliği</h2><p>Okunabilir ve çakışmaya dayanıklı deney kimlikleri.</p></header>
       <label>Proje veya cihaz öneki<input value={prefix} maxlength={30} onInput={(event) => setPrefix(event.currentTarget.value)} /></label>
       <button type="button" onClick={createSample}>Numune kimliği üret</button>

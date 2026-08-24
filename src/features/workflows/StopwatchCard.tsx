@@ -9,8 +9,8 @@ export function StopwatchCard() {
   const elapsed = stopwatchElapsedMs(state.stopwatch, nowMs);
 
   return (
-    <article class="widget widget--violet workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
-      <div class="widget__heading"><span class="widget__eyebrow">STOPWATCH · LOCAL</span></div>
+    <article class="widget workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
+      <div class="widget__heading"><span class="widget__eyebrow">Zamanlayıcı · Akış</span></div>
       <header><h2 id={`${id}-title`}>Kronometre</h2><p>Tur ve toplam süreleri cihazda tutar.</p></header>
       <output class="workflows-panel__stopwatch" aria-live="off">{formatStopwatchTime(elapsed)}</output>
       <div class="workflows-panel__stopwatch-actions">

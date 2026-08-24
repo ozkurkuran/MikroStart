@@ -130,9 +130,9 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
   }
 
   return (
-    <article class="widget widget--violet language-tools" aria-labelledby="language-tools-title">
+    <article class="widget language-tools" aria-labelledby="language-tools-title">
       <div class="widget__heading">
-        <span class="widget__eyebrow">LANGUAGE · LOCAL FIRST</span>
+        <span class="widget__eyebrow">Dil aracı · Yerel</span>
         <span class={`language-tools__status language-tools__status--${availability}`}>
           {AVAILABILITY[availability]}
         </span>

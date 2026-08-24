@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   DEFAULT_PREFERENCES,
   loadPreferences,
+  savePreferences,
   type UserPreferences,
 } from "../platform/preferences";
 import { BraggCalculator } from "../features/calculators/bragg-spacing";
@@ -39,7 +40,15 @@ import {
 import { FeedPanel } from "./FeedPanel";
 import { ModuleManager } from "./ModuleManager";
 import { ModuleSlot } from "./ModuleSlot";
+import {
+  MODULE_CATALOG,
+  MODULE_CATEGORIES,
+  matchesModuleQuery,
+  moduleEyebrow,
+  type ModuleCategory,
+} from "./moduleCatalog";
 import { NotebookPanel } from "./NotebookPanel";
+import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
 
 export type Surface = "newtab" | "dashboard" | "sidepanel";
 
@@ -86,6 +95,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   const [layout, setLayout] = useState(DEFAULT_DASHBOARD_LAYOUT);
   const [manageModules, setManageModules] = useState(false);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<CategoryFilter>("all");
   const [aiSources, setAiSources] = useState<AiResearchSource[]>([]);
   const [selectedFeedItems, setSelectedFeedItems] = useState<NormalizedFeedItem[]>([]);
 
@@ -103,6 +114,12 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   function updateLayout(next: DashboardLayout) {
     setLayout(next);
     void saveDashboardLayout(next);
+  }
+
+  function setCompactCards(compactCards: boolean) {
+    const next = { ...preferences, compactCards };
+    setPreferences(next);
+    void savePreferences(next);
   }
 
   function selectAiSources(items: NormalizedFeedItem[]) {
@@ -176,38 +193,38 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
     switch (id) {
       case "bragg-spacing":
         return (
-          <article class="widget widget--cyan widget--calculator">
+          <article class="widget widget--calculator">
             <div class="widget__heading">
-              <span class="widget__eyebrow">CALCULATE · DETERMINISTIC</span>
+              <span class="widget__eyebrow">{moduleEyebrow("bragg-spacing")}</span>
             </div>
             <BraggCalculator />
           </article>
         );
       case "scherrer-size":
         return (
-          <article class="widget widget--cyan lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">XRD · CALCULATE</span></div>
+          <article class="widget lab-pack">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("scherrer-size")}</span></div>
             <ScherrerCalculator />
           </article>
         );
       case "sheet-resistance":
         return (
-          <article class="widget widget--cyan lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">ELECTRICAL · CALCULATE</span></div>
+          <article class="widget lab-pack">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("sheet-resistance")}</span></div>
             <SheetResistanceCalculator />
           </article>
         );
       case "hall-measurement":
         return (
-          <article class="widget widget--cyan lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">TRANSPORT · CALCULATE</span></div>
+          <article class="widget lab-pack">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("hall-measurement")}</span></div>
             <HallCalculator />
           </article>
         );
       case "vacuum-kinetics":
         return (
-          <article class="widget widget--cyan lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">VACUUM · CALCULATE</span></div>
+          <article class="widget lab-pack">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("vacuum-kinetics")}</span></div>
             <VacuumCalculator />
           </article>
         );
@@ -229,8 +246,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         return <TurengDictionaryCard />;
       case "codata-constants":
         return (
-          <article class="widget widget--amber widget--embedded">
-            <div class="widget__heading"><span class="widget__eyebrow">CONSTANTS · OFFLINE</span></div>
+          <article class="widget widget--embedded">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("codata-constants")}</span></div>
             <ReferenceLibrary
               kinds={CONSTANT_KINDS}
               title="CODATA sabitleri"
@@ -242,8 +259,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         );
       case "periodic-table":
         return (
-          <article class="widget widget--amber widget--embedded">
-            <div class="widget__heading"><span class="widget__eyebrow">ELEMENTS · OFFLINE</span></div>
+          <article class="widget widget--embedded">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("periodic-table")}</span></div>
             <ReferenceLibrary
               kinds={ELEMENT_KINDS}
               title="Periyodik tablo"
@@ -255,8 +272,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         );
       case "component-series":
         return (
-          <article class="widget widget--amber widget--embedded">
-            <div class="widget__heading"><span class="widget__eyebrow">COMPONENTS · OFFLINE</span></div>
+          <article class="widget widget--embedded">
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("component-series")}</span></div>
             <ReferenceLibrary
               kinds={SERIES_KINDS}
               title="Standart bileşen serileri"
@@ -290,6 +307,37 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
     [now, preferences.locale],
   );
 
+  /** Modules the user has kept on the board, in their chosen order. */
+  const enabledIds = useMemo(
+    () => layout.order.filter((id) => !layout.hidden.includes(id)),
+    [layout],
+  );
+
+  /** Search narrows the board; the category chips then narrow it further. */
+  const searchMatchedIds = useMemo(
+    () => enabledIds.filter((id) => matchesModuleQuery(MODULE_CATALOG[id], query)),
+    [enabledIds, query],
+  );
+
+  const visibleIds = useMemo(
+    () =>
+      category === "all"
+        ? searchMatchedIds
+        : searchMatchedIds.filter((id) => MODULE_CATALOG[id].category === category),
+    [searchMatchedIds, category],
+  );
+
+  /** Chip counts reflect the search, so a chip never promises an empty board. */
+  const categoryCounts = useMemo(() => {
+    const counts = Object.fromEntries(
+      MODULE_CATEGORIES.map((id) => [id, 0]),
+    ) as Record<ModuleCategory, number>;
+    for (const id of searchMatchedIds) counts[MODULE_CATALOG[id].category] += 1;
+    return counts;
+  }, [searchMatchedIds]);
+
+  const isFiltered = query.trim().length > 0 || category !== "all";
+
   return (
     <main class={`workbench workbench--${surface}${preferences.compactCards ? " workbench--compact" : ""}`}>
       <header class="topbar">
@@ -302,10 +350,10 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         </a>
         <div class="topbar__center">
           <span class="status-dot" aria-hidden="true" />
-          Local workspace
+          Yerel çalışma alanı
         </div>
-        <nav class="topbar__actions" aria-label="Workspace actions">
-          <a class="button button--quiet" href="/pages/options.html">Settings</a>
+        <nav class="topbar__actions" aria-label="Çalışma alanı işlemleri">
+          <a class="button button--quiet" href="/pages/options.html">Ayarlar</a>
           <time dateTime={now.toISOString()}>{formatClock(now, preferences.locale)}</time>
         </nav>
       </header>
@@ -314,17 +362,60 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         <div>
           <p class="overline">{dateLabel}</p>
           <h1>Araştırma çalışma alanı</h1>
+          <p class="workspace-intro__lede">
+            Hesaplama, literatür, referans ve akış modülleriniz tek panoda. Tüm veriler
+            bu cihazda kalır.
+          </p>
         </div>
-        <button class="button button--primary" type="button" onClick={() => setManageModules(true)}>
-          Manage modules
-        </button>
       </section>
 
+      <WorkbenchToolbar
+        query={query}
+        onQueryChange={setQuery}
+        category={category}
+        onCategoryChange={setCategory}
+        counts={categoryCounts}
+        totalCount={enabledIds.length}
+        shownCount={visibleIds.length}
+        compact={preferences.compactCards}
+        onCompactChange={setCompactCards}
+        onManage={() => setManageModules(true)}
+      />
+
       <WorkflowProvider storage={window.localStorage}>
-        <section class="module-grid" aria-label="Research modules">
-          {layout.order
-            .filter((id) => !layout.hidden.includes(id))
-            .map((id) => <ModuleSlot id={id} key={id}>{moduleContent(id)}</ModuleSlot>)}
+        <section class="module-grid" aria-label="Araştırma modülleri">
+          {visibleIds.map((id) => (
+            <ModuleSlot id={id} key={id}>
+              {moduleContent(id)}
+            </ModuleSlot>
+          ))}
+
+          {visibleIds.length === 0 && (
+            <div class="board-empty">
+              <h2>{isFiltered ? "Eşleşen modül yok" : "Pano boş"}</h2>
+              <p>
+                {isFiltered
+                  ? "Aramanızı değiştirin veya başka bir kategori seçin."
+                  : "Tüm modüller gizlenmiş. Modülleri yönet ile yeniden açabilirsiniz."}
+              </p>
+              {isFiltered ? (
+                <button
+                  class="button"
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    setCategory("all");
+                  }}
+                >
+                  Filtreleri temizle
+                </button>
+              ) : (
+                <button class="button" type="button" onClick={() => setManageModules(true)}>
+                  Modülleri yönet
+                </button>
+              )}
+            </div>
+          )}
         </section>
       </WorkflowProvider>
 
@@ -338,7 +429,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
       <footer class="privacy-strip">
         <span class="status-dot" aria-hidden="true" />
-        No BenchTab account · No telemetry · External sources require your permission
+        Hesap yok · Telemetri yok · Dış kaynaklar için izniniz gerekir
       </footer>
     </main>
   );

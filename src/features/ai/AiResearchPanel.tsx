@@ -219,9 +219,9 @@ export function AiResearchPanel({
   }
 
   return (
-    <article class="widget widget--violet ai-research-panel" aria-labelledby="ai-panel-title">
+    <article class="widget ai-research-panel" aria-labelledby="ai-panel-title">
       <div class="widget__heading">
-        <span class="widget__eyebrow">AI · ON-DEVICE</span>
+        <span class="widget__eyebrow">Analiz · Cihaz içi</span>
         <span class="module-count">{selectedSources.length} selected</span>
       </div>
       <h2 id="ai-panel-title">Research assistant</h2>

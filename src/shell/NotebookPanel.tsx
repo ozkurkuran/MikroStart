@@ -132,9 +132,9 @@ export function NotebookPanel() {
   }
 
   return (
-    <article class="widget widget--violet notebook-panel">
+    <article class="widget notebook-panel">
       <div class="widget__heading">
-        <span class="widget__eyebrow">RECORD · LOCAL-ONLY</span>
+        <span class="widget__eyebrow">Defter · Yalnızca yerel</span>
         <span class="notebook-heading-actions">
           <button class="text-button" type="button" onClick={startNewNote}>New</button>
           <label class="text-button import-label">

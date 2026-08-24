@@ -1,0 +1,237 @@
+/*
+ * BenchTab design tokens.
+ *
+ * Direction: "precision instrument" — a laboratory panel crossed with technical
+ * editorial. Numerics are monospaced and tabular, headings are serif, chrome is
+ * a disciplined sans. Colour is semantic: every module family owns an accent so
+ * a dense board stays scannable.
+ *
+ * Fonts are system stacks only. The extension privacy baseline forbids remote
+ * assets, so no webfont may be linked or bundled from a network origin.
+ */
+
+:root {
+  /* ---- Typeface stacks ------------------------------------------------- */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono",
+    "Roboto Mono", Consolas, "Liberation Mono", monospace;
+
+  /* ---- Type scale ------------------------------------------------------
+   * Floor is 10.5px for eyebrows only; body copy never drops below 12.5px.
+   * The previous 8-9px labels were below comfortable reading size.
+   */
+  --text-eyebrow: 0.656rem;  /* 10.5px */
+  --text-2xs: 0.719rem;      /* 11.5px */
+  --text-xs: 0.781rem;       /* 12.5px */
+  --text-sm: 0.844rem;       /* 13.5px */
+  --text-base: 0.906rem;     /* 14.5px */
+  --text-md: 1rem;           /* 16px   */
+  --text-lg: 1.125rem;       /* 18px   */
+  --text-xl: 1.375rem;       /* 22px   */
+  --text-display: clamp(1.5rem, 1.1rem + 1.4vw, 2rem);
+  --text-display-lg: clamp(2rem, 1.4rem + 2.4vw, 2.875rem);
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.62;
+
+  --tracking-eyebrow: 0.13em;
+  --tracking-wide: 0.05em;
+  --tracking-tight: -0.015em;
+  --tracking-display: -0.028em;
+
+  /* ---- Spacing scale (4px base) ---------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4  */
+  --space-2: 0.375rem;  /* 6  */
+  --space-3: 0.5rem;    /* 8  */
+  --space-4: 0.75rem;   /* 12 */
+  --space-5: 1rem;      /* 16 */
+  --space-6: 1.25rem;   /* 20 */
+  --space-7: 1.5rem;    /* 24 */
+  --space-8: 2rem;      /* 32 */
+  --space-9: 2.5rem;    /* 40 */
+  --space-10: 3.5rem;   /* 56 */
+
+  /* ---- Radius ----------------------------------------------------------- */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1.125rem;
+  --radius-pill: 999px;
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --duration-instant: 90ms;
+  --duration-fast: 140ms;
+  --duration-normal: 220ms;
+  --duration-slow: 340ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --grid-gap: 0.625rem;    /* keep in sync with GRID_GAP_PX in ModuleSlot.tsx */
+  --grid-row: 0.375rem;    /* keep in sync with GRID_ROW_PX in ModuleSlot.tsx */
+  --widget-max-block: 22.5rem;
+  --shell-inline-pad: clamp(0.875rem, 2vw, 2rem);
+}
+
+/* =======================================================================
+ * Dark theme — the default surface for a workbench that sits behind a
+ * new tab. Backgrounds step darker as they recede, not lighter.
+ * ======================================================================= */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #060f11;
+  --surface-sunken: #050c0e;
+  --surface: #0b1517;
+  --surface-raised: #101d20;
+  --surface-overlay: #142226;
+
+  --line-subtle: #16262a;
+  --line: #203237;
+  --line-strong: #334c52;
+
+  --text: #dce6e9;
+  --text-secondary: #a7b8bc;
+  --text-muted: #7d9297;
+  --text-faint: #5d7176;
+
+  /* Module family accents */
+  --accent-measure: #63dbc6;
+  --accent-literature: #a98fff;
+  --accent-reference: #f2bc63;
+  --accent-workflow: #7ed37c;
+  --accent-record: #ff92ab;
+
+  --danger: #ff8f85;
+  --danger-text: #ffb3ac;
+  --warning: #f2bc63;
+  --success: #7ed37c;
+
+  --on-accent: #04100f;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-md: 0 4px 14px -4px rgb(0 0 0 / 55%);
+  --shadow-lg: 0 20px 56px -16px rgb(0 0 0 / 70%);
+  --scrim: rgb(2 8 9 / 62%);
+}
+
+/* =======================================================================
+ * Light theme — a paper-lab reading surface. Warm-neutral rather than
+ * pure white so long sessions stay comfortable.
+ * ======================================================================= */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #eaefec;
+  --surface-sunken: #f1f5f2;
+  --surface: #fbfcfb;
+  --surface-raised: #ffffff;
+  --surface-overlay: #ffffff;
+
+  --line-subtle: #e0e7e3;
+  --line: #cfdad5;
+  --line-strong: #9aada8;
+
+  --text: #101d1e;
+  --text-secondary: #3c4f51;
+  --text-muted: #5d7073;
+  --text-faint: #7b8d90;
+
+  --accent-measure: #04756a;
+  --accent-literature: #5b3fc4;
+  --accent-reference: #8a5100;
+  --accent-workflow: #24702c;
+  --accent-record: #ab2c4c;
+
+  --danger: #a3251f;
+  --danger-text: #8f1f19;
+  --warning: #8a5100;
+  --success: #24702c;
+
+  --on-accent: #ffffff;
+
+  --shadow-sm: 0 1px 2px rgb(16 29 30 / 8%);
+  --shadow-md: 0 4px 14px -4px rgb(16 29 30 / 14%);
+  --shadow-lg: 0 20px 56px -16px rgb(16 29 30 / 24%);
+  --scrim: rgb(16 29 30 / 32%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --bg: #eaefec;
+    --surface-sunken: #f1f5f2;
+    --surface: #fbfcfb;
+    --surface-raised: #ffffff;
+    --surface-overlay: #ffffff;
+
+    --line-subtle: #e0e7e3;
+    --line: #cfdad5;
+    --line-strong: #9aada8;
+
+    --text: #101d1e;
+    --text-secondary: #3c4f51;
+    --text-muted: #5d7073;
+    --text-faint: #7b8d90;
+
+    --accent-measure: #04756a;
+    --accent-literature: #5b3fc4;
+    --accent-reference: #8a5100;
+    --accent-workflow: #24702c;
+    --accent-record: #ab2c4c;
+
+    --danger: #a3251f;
+    --danger-text: #8f1f19;
+    --warning: #8a5100;
+    --success: #24702c;
+
+    --on-accent: #ffffff;
+
+    --shadow-sm: 0 1px 2px rgb(16 29 30 / 8%);
+    --shadow-md: 0 4px 14px -4px rgb(16 29 30 / 14%);
+    --shadow-lg: 0 20px 56px -16px rgb(16 29 30 / 24%);
+    --scrim: rgb(16 29 30 / 32%);
+  }
+}
+
+/* =======================================================================
+ * Compatibility aliases.
+ *
+ * Feature stylesheets were written against three overlapping naming schemes
+ * (--muted / --color-muted / --color-text-muted, --line / --border /
+ * --color-border, ...). Mapping them onto the scale above keeps every
+ * existing rule working and removes the visual drift between cards.
+ * ======================================================================= */
+:root {
+  --accent: var(--accent-measure);
+
+  --cyan: var(--accent-measure);
+  --violet: var(--accent-literature);
+  --amber: var(--accent-reference);
+
+  --muted: var(--text-muted);
+  --border: var(--line);
+  --surface-strong: var(--surface-sunken);
+
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-muted: var(--text-muted);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-control: var(--surface-sunken);
+  --color-border: var(--line);
+  --color-border-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-focus: var(--accent-measure);
+  --color-danger: var(--danger);
+  --color-warning-text: var(--warning);
+}

@@ -64,9 +64,9 @@ export function CountdownCard() {
   }
 
   return (
-    <article class="widget widget--cyan workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
+    <article class="widget workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
       <div class="widget__heading">
-        <span class="widget__eyebrow">TIMER · LOCAL</span>
+        <span class="widget__eyebrow">Zamanlayıcı · Akış</span>
         <span class="module-count">{state.countdowns.length}</span>
       </div>
       <header><h2 id={`${id}-title`}>Geri sayım</h2><p>Birden fazla laboratuvar sürecini aynı anda izleyin.</p></header>

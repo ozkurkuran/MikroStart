@@ -1,0 +1,578 @@
+/* Workbench shell: top bar, workspace header, module command bar, the module
+ * grid, and the card ("widget") system every feature panel renders into. */
+
+.workbench {
+  min-height: 100vh;
+  padding: 0 var(--shell-inline-pad) var(--space-8);
+}
+
+/* ---- Top bar ------------------------------------------------------------ */
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  height: 3rem;
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: fit-content;
+  padding: var(--space-1);
+  margin-left: calc(var(--space-1) * -1);
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.brand:hover {
+  background: var(--surface);
+}
+
+.brand__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--on-accent);
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--accent-measure) 88%, white),
+    var(--accent-measure));
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 35%, transparent),
+    var(--shadow-sm);
+}
+
+.brand strong,
+.brand small {
+  display: block;
+  line-height: var(--leading-tight);
+}
+
+.brand strong {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.brand small {
+  margin-top: 2px;
+  color: var(--text-faint);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.topbar__center {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 18%, transparent);
+}
+
+.topbar__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.topbar time {
+  min-width: 3rem;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ---- Workspace header --------------------------------------------------- */
+.workspace-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-5);
+  padding: var(--space-6) 0 var(--space-5);
+}
+
+.workspace-intro .overline {
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
+}
+
+.workspace-intro h1,
+.settings-card h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+}
+
+.workspace-intro__lede {
+  max-width: 46ch;
+  margin: var(--space-3) 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-relaxed);
+}
+
+/* ---- Module command bar -------------------------------------------------
+ * Seventeen cards is more than anyone scans by eye. The bar sticks to the top
+ * of the scroll so filtering stays reachable from anywhere on the board.
+ */
+.workbench-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) 0;
+  border-block: 1px solid var(--line-subtle);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+.workbench-toolbar__search {
+  position: relative;
+  flex: 0 1 15rem;
+  min-width: 9rem;
+}
+
+.workbench-toolbar__search input {
+  padding-left: var(--space-8);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+
+.workbench-toolbar__search::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  inset-block-start: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  translate: 0 -50%;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+.workbench-toolbar__search::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 1.72rem;
+  inset-block-start: 58%;
+  width: 0.32rem;
+  height: 1.5px;
+  rotate: 45deg;
+  background: var(--text-faint);
+  pointer-events: none;
+}
+
+.workbench-toolbar__clear {
+  position: absolute;
+  inset-inline-end: var(--space-2);
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text-muted);
+  background: var(--line-subtle);
+  font-size: var(--text-eyebrow);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.workbench-toolbar__clear:hover {
+  color: var(--text);
+  background: var(--line);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 1.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  background: transparent;
+  font-size: var(--text-eyebrow);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.filter-chip:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.filter-chip[aria-pressed="true"] {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--chip-accent, var(--accent)) 55%, transparent);
+  background: color-mix(in srgb, var(--chip-accent, var(--accent)) 14%, transparent);
+}
+
+.filter-chip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--chip-accent, var(--text-faint));
+}
+
+.filter-chip__count {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-chip[aria-pressed="true"] .filter-chip__count {
+  color: var(--text-secondary);
+}
+
+.workbench-toolbar__spacer {
+  flex: 1 1 auto;
+}
+
+.workbench-toolbar__meta {
+  color: var(--text-faint);
+  font-size: var(--text-eyebrow);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Segmented density control */
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+
+.segmented button {
+  min-height: 1.5rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  background: transparent;
+  font-size: var(--text-eyebrow);
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.segmented button[aria-pressed="true"] {
+  color: var(--text);
+  background: var(--surface-overlay);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- Module grid -------------------------------------------------------- */
+.module-grid {
+  display: grid;
+  grid-auto-flow: row dense;
+  grid-auto-rows: var(--grid-row);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--grid-gap);
+}
+
+.module-slot {
+  grid-column: span 3;
+  grid-row-end: span var(--module-row-span, 14);
+  align-self: start;
+  min-width: 0;
+}
+
+/* ---- Card --------------------------------------------------------------
+ * The corner bracket is painted as a background image rather than a pseudo
+ * element so it stays pinned to the card frame while the body scrolls.
+ */
+.widget {
+  position: relative;
+  max-height: var(--widget-max-block);
+  min-height: 0;
+  padding: var(--space-4);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background-image:
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(180deg, var(--surface-raised), var(--surface) 60%);
+  background-size: 1.25rem 2px, 2px 1.25rem, auto;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat;
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-normal) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-standard),
+    background-size var(--duration-normal) var(--ease-out);
+}
+
+.module-slot > .widget {
+  height: auto;
+}
+
+.widget:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+  box-shadow: var(--shadow-md);
+  background-size: 2.25rem 2px, 2px 2.25rem, auto;
+}
+
+.widget:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--line));
+  box-shadow: var(--shadow-md);
+}
+
+/* The heading stays put while a long card body scrolls under it. */
+.widget__heading {
+  position: sticky;
+  top: calc(var(--space-4) * -1);
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin: calc(var(--space-4) * -1) calc(var(--space-4) * -1) 0;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  background: linear-gradient(180deg,
+    var(--surface-raised) 65%,
+    color-mix(in srgb, var(--surface-raised) 0%, transparent));
+}
+
+.widget__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--accent);
+  font-size: var(--text-eyebrow);
+  font-weight: 750;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.widget__eyebrow::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  rotate: 45deg;
+  background: currentColor;
+}
+
+.widget h2 {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.widget__description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-snug);
+}
+
+.widget--embedded > .widget__heading {
+  margin-bottom: var(--space-2);
+}
+
+/* Calculator cards embed a standalone panel that carries its own frame. */
+.widget--calculator .bragg-calculator {
+  max-inline-size: none;
+  margin-top: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.widget--calculator .bragg-calculator__header h2 {
+  font-size: var(--text-md);
+}
+
+.widget--calculator .bragg-calculator__header p {
+  margin-top: var(--space-1);
+  font-size: var(--text-2xs);
+}
+
+.widget--calculator .bragg-calculator__grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ---- Density ------------------------------------------------------------ */
+.workbench--compact {
+  --widget-max-block: 18rem;
+  --grid-gap: 0.5rem;
+}
+
+.workbench--compact .widget {
+  padding: var(--space-3);
+}
+
+.workbench--compact .widget__heading {
+  margin: calc(var(--space-3) * -1) calc(var(--space-3) * -1) 0;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  top: calc(var(--space-3) * -1);
+}
+
+/* ---- Empty filter result ------------------------------------------------ */
+.board-empty {
+  grid-column: 1 / -1;
+  grid-row-end: span 20;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-9) var(--space-5);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.board-empty h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 400;
+}
+
+.board-empty p {
+  max-width: 38ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-relaxed);
+}
+
+/* ---- Privacy strip ------------------------------------------------------ */
+.privacy-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-subtle);
+  color: var(--text-faint);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.02em;
+}
+
+/* ---- Responsive --------------------------------------------------------- */
+@media (min-width: 1800px) {
+  .module-slot { grid-column: span 2; }
+}
+
+@media (max-width: 1300px) {
+  .module-slot { grid-column: span 4; }
+}
+
+@media (max-width: 900px) {
+  .module-slot { grid-column: span 6; }
+}
+
+@media (max-width: 620px) {
+  .topbar { grid-template-columns: 1fr auto; }
+  .topbar__center { display: none; }
+
+  .workspace-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5) 0 var(--space-4);
+  }
+
+  .workbench-toolbar__search { flex: 1 1 100%; }
+  .workbench-toolbar__meta { display: none; }
+
+  .module-grid { display: block; }
+  .module-slot { margin-bottom: var(--grid-gap); }
+  .widget { max-height: none; }
+  .widget__heading { position: static; }
+}
+
+/* ---- Side panel ---------------------------------------------------------
+ * A narrow rail: single column, no filter chips, no clock.
+ */
+.workbench--sidepanel {
+  --shell-inline-pad: var(--space-4);
+}
+
+.workbench--sidepanel .topbar { grid-template-columns: 1fr auto; }
+.workbench--sidepanel .topbar__center,
+.workbench--sidepanel .button--quiet { display: none; }
+
+.workbench--sidepanel .workspace-intro {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) 0 var(--space-3);
+}
+
+.workbench--sidepanel .workspace-intro h1 { font-size: var(--text-xl); }
+.workbench--sidepanel .workspace-intro__lede { display: none; }
+.workbench--sidepanel .filter-chips,
+.workbench--sidepanel .segmented,
+.workbench--sidepanel .workbench-toolbar__meta { display: none; }
+.workbench--sidepanel .workbench-toolbar__search { flex: 1 1 100%; }
+
+.workbench--sidepanel .module-grid { display: block; }
+.workbench--sidepanel .module-slot { margin-bottom: var(--grid-gap); }
+.workbench--sidepanel .widget { max-height: none; }
+.workbench--sidepanel .widget__heading { position: static; }
+.workbench--sidepanel .widget--calculator .bragg-calculator__grid {
+  grid-template-columns: 1fr;
+}

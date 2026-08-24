@@ -21,8 +21,8 @@ export function QuickNoteCard() {
   }
 
   return (
-    <article class="widget widget--cyan workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
-      <div class="widget__heading"><span class="widget__eyebrow">OBSERVE · UTC</span></div>
+    <article class="widget workflows-panel workflows-card" aria-labelledby={`${id}-title`}>
+      <div class="widget__heading"><span class="widget__eyebrow">Yakalama · UTC</span></div>
       <header><h2 id={`${id}-title`}>Hızlı not</h2><p>Deney anını UTC zaman damgasıyla yakalayın.</p></header>
       <label>Gözlem<textarea value={note} maxlength={2_000} rows={3} onInput={(event) => setNote(event.currentTarget.value)} /></label>
       <button type="button" onClick={addNote}>Zaman damgası ekle</button>

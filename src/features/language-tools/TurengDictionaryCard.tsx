@@ -11,8 +11,8 @@ export function TurengDictionaryCard() {
   );
 
   return (
-    <article class="widget widget--amber language-tools" aria-labelledby={`${id}-title`}>
-      <div class="widget__heading"><span class="widget__eyebrow">DICTIONARY · EXTERNAL</span></div>
+    <article class="widget language-tools" aria-labelledby={`${id}-title`}>
+      <div class="widget__heading"><span class="widget__eyebrow">Dil aracı · Dış bağlantı</span></div>
       <h2 id={`${id}-title`}>Tureng sözlük</h2>
       <p class="widget__description">Teknik bir Türkçe veya İngilizce terimi Tureng’de arayın.</p>
       <label class="language-tools__input">

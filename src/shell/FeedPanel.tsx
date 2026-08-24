@@ -204,9 +204,9 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
   }
 
   return (
-    <article class="widget widget--amber feed-panel">
+    <article class="widget feed-panel">
       <div class="widget__heading">
-        <span class="widget__eyebrow">FOLLOW · SOURCE-BACKED</span>
+        <span class="widget__eyebrow">Yayın akışı · Kaynaklı</span>
         <span class="module-count">{subscriptions.length} source</span>
       </div>
       <h2>Research feed</h2>
