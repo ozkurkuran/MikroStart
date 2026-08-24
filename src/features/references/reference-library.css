@@ -1,0 +1,97 @@
+.reference-library {
+  color: var(--color-text, #14213d);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.reference-library > header h2,
+.reference-library > header p,
+.reference-library__result p {
+  margin: 0;
+}
+
+.reference-library > header p {
+  color: var(--color-muted, #556078);
+  margin-top: 0.25rem;
+  font-size: 0.68rem;
+}
+
+.reference-library__search {
+  display: grid;
+  font-size: 0.68rem;
+  font-weight: 650;
+  gap: 0.2rem;
+}
+
+.reference-library__search input {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #cdd5df);
+  border-radius: 0.65rem;
+  color: inherit;
+  font: inherit;
+  min-height: 1.9rem;
+  padding: 0.35rem 0.45rem;
+  width: 100%;
+}
+
+.reference-library__search input:focus-visible,
+.reference-library a:focus-visible {
+  outline: 3px solid var(--color-focus, #4f46e5);
+  outline-offset: 2px;
+}
+
+.reference-library__status,
+.reference-library__empty {
+  color: var(--color-muted, #556078);
+  font-size: 0.68rem;
+}
+
+.reference-library__results {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  max-height: 150px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.reference-library__result {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #dbe2ea);
+  border-radius: 0.75rem;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.45rem;
+}
+
+.reference-library__result header {
+  align-items: baseline;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.reference-library__result header span {
+  color: var(--color-accent, #4338ca);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.reference-library__value,
+.reference-library__series {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.reference-library__result small,
+.reference-library__provenance {
+  color: var(--color-muted, #556078);
+  line-height: 1.45;
+  font-size: 0.65rem;
+}
+
+.reference-library__provenance ul {
+  display: grid;
+  gap: 0.65rem;
+  padding-inline-start: 1.25rem;
+}

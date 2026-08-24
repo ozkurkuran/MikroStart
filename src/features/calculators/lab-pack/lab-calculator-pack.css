@@ -1,0 +1,194 @@
+.lab-pack {
+  color: var(--text, #e8edf3);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lab-pack__header {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: space-between;
+}
+
+.lab-pack h2,
+.lab-pack h3,
+.lab-pack p {
+  margin-block: 0;
+}
+
+.lab-pack h3 {
+  margin-block-end: 0.25rem;
+}
+
+.lab-pack > section > h3 {
+  margin-block-start: 0.55rem;
+}
+
+.lab-pack__intro {
+  color: var(--muted, #a9b4c0);
+  font-size: 0.7rem;
+  margin-block-end: 0.5rem !important;
+}
+
+.lab-pack label,
+.lab-pack__measurement {
+  display: grid;
+  font-size: 0.7rem;
+  font-weight: 650;
+  gap: 0.2rem;
+}
+
+.lab-pack input,
+.lab-pack select {
+  background: var(--surface-strong, #111923);
+  border: 1px solid var(--border, #364151);
+  border-radius: 0.5rem;
+  color: inherit;
+  font: inherit;
+  min-height: 1.85rem;
+  padding: 0.28rem 0.4rem;
+}
+
+.lab-pack input:focus-visible,
+.lab-pack select:focus-visible,
+.lab-pack summary:focus-visible {
+  outline: 2px solid var(--accent, #6ad2ba);
+  outline-offset: 2px;
+}
+
+.lab-pack__grid {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+}
+
+.lab-pack__measurement > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.lab-pack__measurement input {
+  border-end-end-radius: 0;
+  border-start-end-radius: 0;
+  min-width: 0;
+}
+
+.lab-pack__measurement select {
+  border-inline-start: 0;
+  border-end-start-radius: 0;
+  border-start-start-radius: 0;
+}
+
+.lab-pack__toggle {
+  align-items: center;
+  display: flex !important;
+  font-weight: 500 !important;
+  gap: 0.5rem !important;
+  margin-block: 0.42rem;
+}
+
+.lab-pack__toggle input {
+  min-height: auto;
+}
+
+.lab-pack__output {
+  background: color-mix(in srgb, var(--accent, #6ad2ba) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ad2ba) 35%, transparent);
+  border-radius: 0.65rem;
+  margin-block-start: 0.45rem;
+  padding: 0.45rem;
+}
+
+.lab-pack output {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.lab-pack output span {
+  color: var(--muted, #a9b4c0);
+  font-size: 0.65rem;
+}
+
+.lab-pack output strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-pack__result-grid {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+}
+
+.lab-pack__errors {
+  color: var(--danger, #ff9b9b);
+}
+
+.lab-pack__errors p + p {
+  margin-block-start: 0.35rem;
+}
+
+.lab-pack__warnings {
+  color: var(--warning, #e4c675);
+  font-size: 0.66rem;
+  margin-block: 0.35rem 0;
+  padding-inline-start: 1.2rem;
+}
+
+.lab-pack__warnings li + li {
+  margin-block-start: 0.25rem;
+}
+
+.lab-pack__method {
+  border-block-start: 1px solid var(--border, #364151);
+  font-size: 0.66rem;
+  margin-block-start: 0.4rem;
+  padding-block-start: 0.35rem;
+}
+
+.lab-pack__method summary {
+  cursor: pointer;
+}
+
+.lab-pack__method dl {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lab-pack__method dl > div {
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: 5rem minmax(0, 1fr);
+}
+
+.lab-pack__method dt {
+  color: var(--muted, #a9b4c0);
+}
+
+.lab-pack__method dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.lab-pack__method a {
+  color: var(--accent, #6ad2ba);
+}
+
+.lab-pack__sr-only {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 34rem) {
+  .lab-pack__header {
+    align-items: stretch;
+    display: grid;
+  }
+}

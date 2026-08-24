@@ -1,0 +1,31 @@
+{
+  "name": "benchtab",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "description": "A local-first Chrome research workbench for following, calculating, and recording experiments.",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "npm run build:newtab",
+    "build:newtab": "vite build && node scripts/generate-manifest.mjs newtab",
+    "build:dashboard": "vite build && node scripts/generate-manifest.mjs dashboard"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.11.0",
+    "preact": "10.29.8"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "2.10.6",
+    "@types/chrome": "0.2.7",
+    "fake-indexeddb": "^6.2.5",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
