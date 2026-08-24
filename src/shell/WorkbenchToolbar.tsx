@@ -7,8 +7,10 @@ interface WorkbenchToolbarProps {
   onQueryChange: (value: string) => void;
   category: CategoryFilter;
   onCategoryChange: (value: CategoryFilter) => void;
-  /** Visible-module count per category, before the category filter is applied. */
+  /** Search-matched module count per category, before the category filter. */
   counts: Readonly<Record<ModuleCategory, number>>;
+  /** Search-matched total, shown on the "all" chip so every count agrees. */
+  matchedCount: number;
   totalCount: number;
   shownCount: number;
   compact: boolean;
@@ -22,6 +24,7 @@ export function WorkbenchToolbar({
   category,
   onCategoryChange,
   counts,
+  matchedCount,
   totalCount,
   shownCount,
   compact,
@@ -62,7 +65,7 @@ export function WorkbenchToolbar({
           onClick={() => onCategoryChange("all")}
         >
           Tümü
-          <span class="filter-chip__count">{totalCount}</span>
+          <span class="filter-chip__count">{matchedCount}</span>
         </button>
         {MODULE_CATEGORIES.map((id) => {
           const meta = CATEGORY_META[id];

@@ -169,33 +169,16 @@
 .workbench-toolbar__search input {
   padding-left: var(--space-8);
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  background-color: var(--surface);
+  /* Inline SVG keeps the glyph crisp at every zoom and needs no extra markup. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23808080' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='M10.4 10.4 14 14'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left var(--space-4) center;
+  background-size: 0.85rem;
 }
 
-.workbench-toolbar__search::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: var(--space-4);
-  inset-block-start: 50%;
-  width: 0.7rem;
-  height: 0.7rem;
-  translate: 0 -50%;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  color: var(--text-faint);
-  pointer-events: none;
-}
-
-.workbench-toolbar__search::after {
-  content: "";
-  position: absolute;
-  inset-inline-start: 1.72rem;
-  inset-block-start: 58%;
-  width: 0.32rem;
-  height: 1.5px;
-  rotate: 45deg;
-  background: var(--text-faint);
-  pointer-events: none;
+.workbench-toolbar__search input::-webkit-search-cancel-button {
+  appearance: none;
 }
 
 .workbench-toolbar__clear {
@@ -350,8 +333,10 @@
   background-image:
     linear-gradient(var(--accent), var(--accent)),
     linear-gradient(var(--accent), var(--accent)),
-    linear-gradient(180deg, var(--surface-raised), var(--surface) 60%);
-  background-size: 1.25rem 2px, 2px 1.25rem, auto;
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 7%, var(--surface-raised)),
+      var(--surface) 55%);
+  background-size: 2.5rem 2.5px, 2.5px 2.5rem, auto;
   background-position: 0 0, 0 0, 0 0;
   background-repeat: no-repeat, no-repeat, repeat;
   box-shadow: var(--shadow-sm);
@@ -368,7 +353,7 @@
 .widget:hover {
   border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
   box-shadow: var(--shadow-md);
-  background-size: 2.25rem 2px, 2px 2.25rem, auto;
+  background-size: 4.5rem 2.5px, 2.5px 4.5rem, auto;
 }
 
 .widget:focus-within {
@@ -387,9 +372,10 @@
   gap: var(--space-3);
   margin: calc(var(--space-4) * -1) calc(var(--space-4) * -1) 0;
   padding: var(--space-4) var(--space-4) var(--space-2);
+  /* Matches the card's tinted top so the sticky header blends while scrolling. */
   background: linear-gradient(180deg,
-    var(--surface-raised) 65%,
-    color-mix(in srgb, var(--surface-raised) 0%, transparent));
+    color-mix(in srgb, var(--accent) 7%, var(--surface-raised)) 62%,
+    transparent);
 }
 
 .widget__eyebrow {
@@ -535,7 +521,7 @@
     padding: var(--space-5) 0 var(--space-4);
   }
 
-  .workbench-toolbar__search { flex: 1 1 100%; }
+  .workbench-toolbar__search { flex: 1 1 8rem; }
   .workbench-toolbar__meta { display: none; }
 
   .module-grid { display: block; }
@@ -567,7 +553,7 @@
 .workbench--sidepanel .filter-chips,
 .workbench--sidepanel .segmented,
 .workbench--sidepanel .workbench-toolbar__meta { display: none; }
-.workbench--sidepanel .workbench-toolbar__search { flex: 1 1 100%; }
+.workbench--sidepanel .workbench-toolbar__search { flex: 1 1 8rem; }
 
 .workbench--sidepanel .module-grid { display: block; }
 .workbench--sidepanel .module-slot { margin-bottom: var(--grid-gap); }

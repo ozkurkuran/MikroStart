@@ -439,11 +439,18 @@
   text-transform: uppercase;
 }
 
+/* Rule fills the gap between the family name and its show/hide action. */
 .module-manager__group-label::after {
   content: "";
   flex: 1;
   height: 1px;
+  margin-left: var(--space-1);
   background: var(--line-subtle);
+}
+
+/* Pushed past the rule so the line separates the family name from its action. */
+.module-manager__group-label .text-button {
+  order: 1;
 }
 
 .module-manager ol {

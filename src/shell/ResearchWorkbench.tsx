@@ -375,6 +375,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         category={category}
         onCategoryChange={setCategory}
         counts={categoryCounts}
+        matchedCount={searchMatchedIds.length}
         totalCount={enabledIds.length}
         shownCount={visibleIds.length}
         compact={preferences.compactCards}

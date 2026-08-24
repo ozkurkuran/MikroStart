@@ -1,13 +1,16 @@
+/* Countdown, stopwatch, sample-ID, and quick-note cards. */
+
 .workflows-panel {
-  color: var(--color-text, #14213d);
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-3);
+  color: var(--text);
 }
 
-.workflows-panel__standalone-grid {
+.workflows-panel__standalone-grid,
+.workflows-panel__tools {
   display: grid;
-  gap: 0.85rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
 }
 
 .workflows-panel > header h2,
@@ -20,86 +23,89 @@
 
 .workflows-panel > header p,
 .workflows-panel__message {
-  color: var(--color-muted, #556078);
-  margin-top: 0.25rem;
-  font-size: 0.68rem;
-}
-
-.workflows-panel__tools {
-  display: grid;
-  gap: 0.85rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
 }
 
 .workflows-panel__tools > section {
   align-content: start;
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #dbe2ea);
-  border-radius: 0.75rem;
   display: grid;
-  gap: 0.75rem;
-  padding: 0.9rem;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
 }
 
 .workflows-panel label {
   display: grid;
-  font-size: 0.68rem;
+  min-width: 0;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
   font-weight: 650;
-  gap: 0.2rem;
-}
-
-.workflows-panel input,
-.workflows-panel textarea {
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #cdd5df);
-  border-radius: 0.5rem;
-  color: inherit;
-  font: inherit;
-  min-height: 1.85rem;
-  padding: 0.3rem 0.42rem;
-  width: 100%;
+  letter-spacing: var(--tracking-wide);
 }
 
 .workflows-panel textarea {
-  min-height: 3.5rem;
+  min-height: 3.75rem;
   resize: vertical;
 }
 
+/* Only the card's primary verb carries the accent fill. Everything else stays
+ * an outline, so a board of timers does not read as a wall of buttons. */
 .workflows-panel button {
-  background: var(--color-accent, #4338ca);
-  border: 0;
-  border-radius: 0.5rem;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
   min-height: 1.85rem;
-  padding: 0.3rem 0.5rem;
-  font-size: 0.7rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--on-accent);
+  background: var(--accent);
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.workflows-panel button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 86%, var(--text));
 }
 
 .workflows-panel button:disabled {
   cursor: not-allowed;
-  opacity: 0.48;
+  opacity: 0.45;
 }
 
-.workflows-panel button.workflows-panel__secondary {
+.workflows-panel button.workflows-panel__secondary,
+.workflows-panel__actions button,
+.workflows-panel__presets button {
+  border-color: var(--line);
+  color: var(--text-muted);
   background: transparent;
-  border: 1px solid var(--color-border, #cdd5df);
-  color: inherit;
+  font-weight: 650;
 }
 
-.workflows-panel input:focus-visible,
-.workflows-panel textarea:focus-visible,
-.workflows-panel button:focus-visible {
-  outline: 3px solid var(--color-focus, #4f46e5);
-  outline-offset: 2px;
+.workflows-panel button.workflows-panel__secondary:hover:not(:disabled),
+.workflows-panel__actions button:hover:not(:disabled),
+.workflows-panel__presets button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .workflows-panel__form-grid {
   display: grid;
-  gap: 0.3rem;
-  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .workflows-panel__form-grid label:first-child {
@@ -110,108 +116,95 @@
 .workflows-panel__history,
 .workflows-panel__laps {
   display: grid;
-  gap: 0.3rem;
+  gap: var(--space-2);
 }
 
-.workflows-panel__countdowns { max-height: 150px; overflow: auto; scrollbar-width: thin; }
-.workflows-panel__history { max-height: 100px; overflow: auto; scrollbar-width: thin; }
+.workflows-panel__countdowns {
+  max-height: 10rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.workflows-panel__history {
+  max-height: 7rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
 
 .workflows-panel__sound-row,
 .workflows-panel__stopwatch-actions {
-  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  align-items: center;
   justify-content: space-between;
+  gap: var(--space-2);
 }
 
 .workflows-panel label.workflows-panel__switch {
-  align-items: center;
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-secondary);
+  text-transform: none;
 }
 
 .workflows-panel__switch input {
-  min-height: auto;
   width: auto;
+  min-height: auto;
 }
 
 .workflows-panel__presets {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--space-1);
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .workflows-panel__presets button {
-  font-size: 0.64rem;
   min-height: 1.65rem;
-  padding: 0.2rem 0.3rem;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
 }
 
 .workflows-panel__countdowns article {
-  border-top: 1px solid var(--color-border, #dbe2ea);
   display: grid;
-  gap: 0.25rem;
-  padding-top: 0.35rem;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line-subtle);
 }
 
 .workflows-panel__countdowns article > div:first-child {
   display: flex;
-  gap: 0.75rem;
   justify-content: space-between;
+  gap: var(--space-4);
 }
 
 .workflows-panel__countdowns time,
 .workflows-panel code {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
 .workflows-panel__progress-row {
-  align-items: center;
   display: grid;
-  gap: 0.55rem;
+  align-items: center;
+  gap: var(--space-3);
   grid-template-columns: minmax(0, 1fr) 2.6rem;
 }
 
 .workflows-panel__progress-row span {
-  color: var(--color-muted, #556078);
-  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-.workflows-panel progress {
-  accent-color: var(--color-accent, #4338ca);
-  appearance: none;
-  background: color-mix(in srgb, var(--color-border, #dbe2ea) 70%, transparent);
-  border: 0;
-  border-radius: 999px;
-  height: 0.65rem;
-  overflow: hidden;
-  width: 100%;
-}
-
-.workflows-panel progress::-webkit-progress-bar {
-  background: color-mix(in srgb, var(--color-border, #dbe2ea) 70%, transparent);
-  border-radius: 999px;
-}
-
-.workflows-panel progress::-webkit-progress-value {
-  background: linear-gradient(90deg, var(--color-accent, #4338ca), var(--color-focus, #4f46e5));
-  border-radius: 999px;
-  transition: width 240ms linear;
-}
-
 .workflows-panel__actions {
   display: flex;
-  gap: 0.4rem;
+  gap: var(--space-1);
 }
 
 .workflows-panel__actions button {
-  background: transparent;
-  border: 1px solid var(--color-border, #cdd5df);
-  color: inherit;
-  font-size: 0.65rem;
   min-height: 1.6rem;
 }
 
@@ -222,23 +215,25 @@
 }
 
 .workflows-panel__history li {
-  color: var(--color-muted, #556078);
-  font-size: 0.65rem;
-  line-height: 1.35;
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
 }
 
 .workflows-panel__empty {
-  color: var(--color-muted, #556078);
-  font-size: 0.78rem;
-  line-height: 1.45;
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-relaxed);
 }
 
+/* The stopwatch readout is the one place a card earns a display-scale numeral. */
 .workflows-panel__stopwatch {
   display: block;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
   font-variant-numeric: tabular-nums;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: -0.05em;
   text-align: center;
 }
@@ -251,21 +246,24 @@
   list-style: none;
   max-height: 6rem;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0;
 }
 
 .workflows-panel__laps li {
-  align-items: baseline;
-  border-top: 1px solid var(--color-border, #dbe2ea);
   display: grid;
-  font-size: 0.76rem;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: var(--space-3);
   grid-template-columns: 1fr auto auto;
-  padding-top: 0.45rem;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .workflows-panel__laps small {
-  color: var(--color-muted, #556078);
+  color: var(--text-faint);
 }
 
 @media (max-width: 520px) {

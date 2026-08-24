@@ -7,10 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Visual and UX overhaul of the workbench. The design direction is
+"precision instrument" — a laboratory panel crossed with technical editorial —
+replacing the flat, uniform card wall.
+
 ### Added
 
 - Changelog started at `v0.5.0`.
 - Git history initialised. Tag `v0.5.0-baseline` marks the pre-redesign snapshot.
+- **Design token layer** (`src/shell/tokens.css`): type scale, 4 px spacing scale,
+  radius, elevation, and motion tokens, plus fully specified dark and light
+  palettes. Fonts stay system-only — the privacy baseline forbids remote assets.
+- **Module catalog** (`src/shell/moduleCatalog.ts`): every module now declares a
+  family, a kind, and search keywords in one place.
+- **Module command bar**: live search over module names and keywords
+  (diacritic- and case-insensitive, Turkish-aware), category filter chips with
+  live counts, a card-density toggle, and the visible-module count.
+- **Empty states** for an empty board and for a filter that matches nothing.
+- Sticky card headings, so the module you are reading stays labelled while its
+  body scrolls.
+- Hover, focus-within, and active states across every control; a global focus
+  ring; an `.sr-only` utility; and a `prefers-reduced-motion` guard.
+
+### Changed
+
+- `styles.css` split into `tokens` / `base` / `workbench` / `panels` layers.
+- The three overlapping token vocabularies (`--muted` / `--color-muted` /
+  `--color-text-muted`, `--line` / `--border` / `--color-border`, …) collapse
+  onto one scale through compatibility aliases, removing the drift between cards.
+- Type floor raised: card eyebrows go from 8–9 px to 10.5 px and body copy sits
+  at 12.5 px or above. Headings are serif; readouts are monospace and tabular.
+- Card accents are now semantic. Each module family — measure, literature,
+  reference, workflow, record — owns a colour, replacing per-card accent classes
+  that had been assigned arbitrarily.
+- Cards carry a corner-bracket marker painted as a background, so it stays
+  pinned to the frame while the body scrolls.
+- Module manager is a real dialog: backdrop, Escape to close, grouped by family
+  with per-group show/hide.
+- The density preference is now reachable from the board, not just Options, and
+  persists.
+- Module grid widens to six columns above 1800 px.
+- Interface language set to Turkish on the shell chrome (top bar, workspace
+  header, toolbar, module manager, card eyebrows, footer); `lang` on the pages
+  corrected from `en` to `tr`.
+
+### Fixed
+
+- White-on-accent button text in the workflow cards failed contrast once accents
+  became semantic; card buttons now use a theme-aware `--on-accent` and only the
+  primary verb carries an accent fill.
+- Light theme was previously a partial override, and feature stylesheets carried
+  hardcoded dark fallbacks that leaked into it. Both palettes are now complete.
+- `<select>` elements could not shrink inside `1fr` grid tracks, so unit
+  dropdowns pushed narrow layouts wide. Tracks use `minmax(0, 1fr)` and unit
+  selects are width-capped.
+- `ModuleSlot` reads its grid row and gap from computed styles instead of
+  duplicating the values as TypeScript constants that could drift from the CSS.
 
 ## [0.5.0] - 2026-08-25
 

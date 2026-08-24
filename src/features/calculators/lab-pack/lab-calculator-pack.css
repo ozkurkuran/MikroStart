@@ -1,15 +1,17 @@
+/* Scherrer, sheet-resistance, Hall, and vacuum calculator cards. */
+
 .lab-pack {
-  color: var(--text, #e8edf3);
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-3);
+  color: var(--text);
 }
 
 .lab-pack__header {
-  align-items: end;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
+  align-items: end;
   justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .lab-pack h2,
@@ -19,176 +21,198 @@
 }
 
 .lab-pack h3 {
-  margin-block-end: 0.25rem;
+  margin-block-end: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 650;
 }
 
 .lab-pack > section > h3 {
-  margin-block-start: 0.55rem;
+  margin-block-start: var(--space-3);
 }
 
 .lab-pack__intro {
-  color: var(--muted, #a9b4c0);
-  font-size: 0.7rem;
-  margin-block-end: 0.5rem !important;
+  margin-block-end: var(--space-3) !important;
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
 }
 
 .lab-pack label,
 .lab-pack__measurement {
   display: grid;
-  font-size: 0.7rem;
+  min-width: 0;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
   font-weight: 650;
-  gap: 0.2rem;
+  letter-spacing: var(--tracking-wide);
 }
 
 .lab-pack input,
 .lab-pack select {
-  background: var(--surface-strong, #111923);
-  border: 1px solid var(--border, #364151);
-  border-radius: 0.5rem;
-  color: inherit;
-  font: inherit;
-  min-height: 1.85rem;
-  padding: 0.28rem 0.4rem;
-}
-
-.lab-pack input:focus-visible,
-.lab-pack select:focus-visible,
-.lab-pack summary:focus-visible {
-  outline: 2px solid var(--accent, #6ad2ba);
-  outline-offset: 2px;
+  min-height: 1.9rem;
+  letter-spacing: normal;
 }
 
 .lab-pack__grid {
   display: grid;
-  gap: 0.4rem;
+  gap: var(--space-2);
   grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
 }
 
+/* Value and unit read as one control. */
 .lab-pack__measurement > div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .lab-pack__measurement input {
+  min-width: 0;
   border-end-end-radius: 0;
   border-start-end-radius: 0;
-  min-width: 0;
 }
 
 .lab-pack__measurement select {
+  width: auto;
+  max-inline-size: 6.5rem;
   border-inline-start: 0;
   border-end-start-radius: 0;
   border-start-start-radius: 0;
+  background-color: var(--surface-raised);
 }
 
 .lab-pack__toggle {
-  align-items: center;
   display: flex !important;
+  align-items: center;
+  gap: var(--space-3) !important;
+  margin-block: var(--space-2);
+  color: var(--text-secondary);
   font-weight: 500 !important;
-  gap: 0.5rem !important;
-  margin-block: 0.42rem;
+  letter-spacing: normal;
 }
 
 .lab-pack__toggle input {
   min-height: auto;
 }
 
+/* The result panel is the card's focal point: accent tint, mono numerals. */
 .lab-pack__output {
-  background: color-mix(in srgb, var(--accent, #6ad2ba) 9%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ad2ba) 35%, transparent);
-  border-radius: 0.65rem;
-  margin-block-start: 0.45rem;
-  padding: 0.45rem;
+  margin-block-start: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .lab-pack output {
   display: grid;
-  gap: 0.1rem;
+  gap: var(--space-1);
 }
 
 .lab-pack output span {
-  color: var(--muted, #a9b4c0);
-  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--tracking-wide);
 }
 
 .lab-pack output strong {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
+  font-weight: 650;
 }
 
 .lab-pack__result-grid {
   display: grid;
-  gap: 0.4rem;
+  gap: var(--space-2);
   grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
 }
 
 .lab-pack__errors {
-  color: var(--danger, #ff9b9b);
+  color: var(--danger-text);
+  font-size: var(--text-eyebrow);
 }
 
 .lab-pack__errors p + p {
-  margin-block-start: 0.35rem;
+  margin-block-start: var(--space-2);
 }
 
 .lab-pack__warnings {
-  color: var(--warning, #e4c675);
-  font-size: 0.66rem;
-  margin-block: 0.35rem 0;
-  padding-inline-start: 1.2rem;
+  margin-block: var(--space-2) 0;
+  padding-inline-start: var(--space-6);
+  color: var(--warning);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
 }
 
 .lab-pack__warnings li + li {
-  margin-block-start: 0.25rem;
+  margin-block-start: var(--space-1);
 }
 
 .lab-pack__method {
-  border-block-start: 1px solid var(--border, #364151);
-  font-size: 0.66rem;
-  margin-block-start: 0.4rem;
-  padding-block-start: 0.35rem;
+  margin-block-start: var(--space-2);
+  padding-block-start: var(--space-2);
+  border-block-start: 1px solid var(--line-subtle);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
 }
 
 .lab-pack__method summary {
   cursor: pointer;
+  color: var(--text-secondary);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.lab-pack__method summary:hover {
+  color: var(--text);
 }
 
 .lab-pack__method dl {
   display: grid;
-  gap: 0.45rem;
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
 }
 
 .lab-pack__method dl > div {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--space-1);
   grid-template-columns: 5rem minmax(0, 1fr);
 }
 
 .lab-pack__method dt {
-  color: var(--muted, #a9b4c0);
+  color: var(--text-faint);
 }
 
 .lab-pack__method dd {
   margin: 0;
+  color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
 
 .lab-pack__method a {
-  color: var(--accent, #6ad2ba);
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.lab-pack__method a:hover {
+  text-decoration: underline;
 }
 
 .lab-pack__sr-only {
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
   position: absolute;
   width: 1px;
-  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
   white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 @media (max-width: 34rem) {
   .lab-pack__header {
-    align-items: stretch;
     display: grid;
+    align-items: stretch;
   }
 }

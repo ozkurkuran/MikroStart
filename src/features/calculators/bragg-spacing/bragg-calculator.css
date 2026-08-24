@@ -1,14 +1,19 @@
+/* Bragg / d-spacing calculator. Ships its own frame so it can also render
+ * standalone; the widget shell strips that frame when embedded in a card. */
+
 .bragg-calculator {
   container-type: inline-size;
   display: grid;
-  gap: 0.48rem;
+  gap: var(--space-3);
   max-inline-size: 42rem;
-  padding: 1rem;
-  color: var(--color-text, #172126);
-  background: var(--color-surface, #fff);
-  border: 1px solid var(--color-border, #ccd5da);
-  border-radius: 0.75rem;
-  font: 400 0.76rem/1.35 system-ui, sans-serif;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  background: var(--surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-snug);
 }
 
 .bragg-calculator h2,
@@ -16,53 +21,78 @@
   margin: 0;
 }
 
+.bragg-calculator h2 {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+
 .bragg-calculator__header {
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: 0.55rem;
+  gap: var(--space-3);
 }
 
 .bragg-calculator__header p,
 .bragg-calculator__help {
-  color: var(--color-text-muted, #52646d);
-}
-
-.bragg-calculator__preset,
-.bragg-calculator input,
-.bragg-calculator select {
-  min-block-size: 1.9rem;
-  border: 1px solid var(--color-border-strong, #84949c);
-  border-radius: 0.4rem;
-  background: var(--color-control, #fff);
-  color: inherit;
-  font: inherit;
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
 }
 
 .bragg-calculator__preset {
-  padding-inline: 0.5rem;
+  min-block-size: 1.9rem;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  font: inherit;
+  font-weight: 650;
   white-space: nowrap;
   cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.bragg-calculator__preset:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-raised));
+}
+
+.bragg-calculator input,
+.bragg-calculator select {
+  min-block-size: 1.9rem;
 }
 
 .bragg-calculator__mode {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem 0.6rem;
+  gap: var(--space-2) var(--space-4);
   padding: 0;
   border: 0;
 }
 
 .bragg-calculator__mode legend {
   float: inline-start;
-  margin-inline-end: 0.6rem;
-  font-weight: 650;
+  margin-inline-end: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .bragg-calculator__mode label {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
 .bragg-calculator__mode input {
@@ -72,80 +102,106 @@
 .bragg-calculator__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .bragg-calculator__grid label {
   display: grid;
-  gap: 0.25rem;
-  font-weight: 600;
+  min-width: 0;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  font-weight: 650;
+  letter-spacing: var(--tracking-wide);
 }
 
 .bragg-calculator__grid input,
 .bragg-calculator__grid select {
   inline-size: 100%;
-  box-sizing: border-box;
-  padding-inline: 0.4rem;
+  letter-spacing: normal;
 }
 
-.bragg-calculator :is(button, input, select, summary, a):focus-visible {
-  outline: 3px solid var(--color-focus, #1769aa);
-  outline-offset: 2px;
-}
-
+/* Result panel: accent-tinted, mono numerals, the card's focal point. */
 .bragg-calculator__output {
   min-block-size: 2.5rem;
-  padding: 0.45rem 0.55rem;
-  background: var(--color-surface-raised, #eef5f7);
-  border-radius: 0.5rem;
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .bragg-calculator__output output {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-5);
 }
 
 .bragg-calculator__output strong {
-  font-size: 1rem;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
+  font-weight: 650;
 }
 
 .bragg-calculator__output [role="alert"] {
-  color: var(--color-danger, #9a271f);
+  color: var(--danger-text);
 }
 
 .bragg-calculator__warnings {
   margin: 0;
-  padding-inline-start: 1.25rem;
-  color: var(--color-warning-text, #754f00);
+  padding-inline-start: var(--space-6);
+  color: var(--warning);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
+}
+
+.bragg-calculator__details {
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
 }
 
 .bragg-calculator__details summary {
+  color: var(--text-secondary);
+  font-weight: 650;
   cursor: pointer;
-  font-weight: 600;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.bragg-calculator__details summary:hover {
+  color: var(--text);
 }
 
 .bragg-calculator__details dl {
   display: grid;
-  gap: 0.35rem;
-  margin-block-end: 0;
+  gap: var(--space-2);
+  margin-block: var(--space-2) 0;
   overflow-wrap: anywhere;
 }
 
 .bragg-calculator__details dl div {
   display: grid;
   grid-template-columns: 6rem minmax(0, 1fr);
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .bragg-calculator__details dt {
-  color: var(--color-text-muted, #52646d);
+  color: var(--text-faint);
 }
 
 .bragg-calculator__details dd {
   margin: 0;
+  color: var(--text-secondary);
+}
+
+.bragg-calculator__details a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.bragg-calculator__details a:hover {
+  text-decoration: underline;
 }
 
 @container (max-width: 32rem) {
@@ -159,13 +215,5 @@
 
   .bragg-calculator__grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bragg-calculator *,
-  .bragg-calculator *::before,
-  .bragg-calculator *::after {
-    scroll-behavior: auto !important;
   }
 }
