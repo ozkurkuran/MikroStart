@@ -6,25 +6,12 @@ import {
   type AiAvailability,
   type AiDownloadProgress,
 } from "../ai";
+import { useTranslate, type Translate } from "../../platform/i18n";
 import "./language-tools.css";
 
-const LANGUAGES = [
-  { code: "tr", label: "Türkçe" },
-  { code: "en", label: "İngilizce" },
-  { code: "de", label: "Almanca" },
-  { code: "fr", label: "Fransızca" },
-  { code: "es", label: "İspanyolca" },
-  { code: "it", label: "İtalyanca" },
-] as const;
+const LANGUAGE_CODES = ["tr", "en", "de", "fr", "es", "it"] as const;
 
-const AVAILABILITY: Record<AiAvailability | "checking", string> = {
-  checking: "Kontrol ediliyor",
-  unsupported: "Bu Chrome sürümünde yok",
-  unavailable: "Bu dil çifti kullanılamıyor",
-  downloadable: "Dil modeli indirilebilir",
-  downloading: "Dil modeli indiriliyor",
-  available: "Cihazda hazır",
-};
+
 
 function externalUrl(
   service: "google" | "tureng",
@@ -44,8 +31,8 @@ function externalUrl(
   return url.href;
 }
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "Çeviri tamamlanamadı.";
+function errorMessage(error: unknown, t: Translate): string {
+  return error instanceof Error ? error.message : t("lang.msg.failed");
 }
 
 export interface LanguageToolsPanelProps {
@@ -53,6 +40,7 @@ export interface LanguageToolsPanelProps {
 }
 
 export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProps) {
+  const t = useTranslate();
   const provider = useMemo(() => createDefaultAiProvider(), []);
   const [sourceLanguage, setSourceLanguage] = useState("en");
   const [targetLanguage, setTargetLanguage] = useState("tr");
@@ -74,7 +62,7 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
       .catch((error: unknown) => {
         if (active) {
           setAvailability("unavailable");
-          setMessage(errorMessage(error));
+          setMessage(errorMessage(error, t));
         }
       });
     return () => {
@@ -105,9 +93,9 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
         onProgress: setProgress,
       });
       setResult(translated.text);
-      setMessage("Çeviri cihazdaki Chrome modeliyle tamamlandı.");
+      setMessage(t("lang.msg.done"));
     } catch (error) {
-      setMessage(errorMessage(error));
+      setMessage(errorMessage(error, t));
     } finally {
       setBusy(false);
     }
@@ -123,50 +111,48 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
   async function copyResult() {
     try {
       await navigator.clipboard.writeText(result);
-      setMessage("Çeviri panoya kopyalandı.");
+      setMessage(t("lang.msg.copied"));
     } catch {
-      setMessage("Panoya kopyalama izni verilmedi.");
+      setMessage(t("lang.msg.copyDenied"));
     }
   }
 
   return (
     <article class="widget language-tools" aria-labelledby="language-tools-title">
       <div class="widget__heading">
-        <span class="widget__eyebrow">Dil aracı · Yerel</span>
+        <span class="widget__eyebrow">{t("lang.eyebrow")}</span>
         <span class={`language-tools__status language-tools__status--${availability}`}>
-          {AVAILABILITY[availability]}
+          {t(`lang.availability.${availability}`)}
         </span>
       </div>
-      <h2 id="language-tools-title">Çeviri ve sözlük</h2>
-      <p class="widget__description">
-        Önce cihazdaki Chrome modelini kullanın; dış servisler yalnızca siz bağlantıya bastığınızda açılır.
-      </p>
+      <h2 id="language-tools-title">{t("lang.title")}</h2>
+      <p class="widget__description">{t("lang.description")}</p>
 
       <div class="language-tools__languages">
         <label>
-          Kaynak
+          {t("lang.source")}
           <select value={sourceLanguage} onChange={(event) => setSourceLanguage(event.currentTarget.value)}>
-            {LANGUAGES.map((language) => <option value={language.code}>{language.label}</option>)}
+            {LANGUAGE_CODES.map((code) => <option key={code} value={code}>{t(`lang.name.${code}`)}</option>)}
           </select>
         </label>
-        <button type="button" class="language-tools__swap" onClick={swapLanguages} aria-label="Dilleri değiştir">
+        <button type="button" class="language-tools__swap" onClick={swapLanguages} aria-label={t("lang.swap")}>
           ⇄
         </button>
         <label>
-          Hedef
+          {t("lang.target")}
           <select value={targetLanguage} onChange={(event) => setTargetLanguage(event.currentTarget.value)}>
-            {LANGUAGES.map((language) => <option value={language.code}>{language.label}</option>)}
+            {LANGUAGE_CODES.map((code) => <option key={code} value={code}>{t(`lang.name.${code}`)}</option>)}
           </select>
         </label>
       </div>
 
       <label class="language-tools__input">
-        Çevrilecek metin
+        {t("lang.inputLabel")}
         <textarea
           rows={5}
           maxlength={5_000}
           value={input}
-          placeholder="Makale özeti, teknik ifade veya tek bir terim…"
+          placeholder={t("lang.inputPlaceholder")}
           onInput={(event) => setInput(event.currentTarget.value)}
         />
       </label>
@@ -178,7 +164,7 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
           disabled={busy || !canTranslateLocally}
           onClick={() => void translateLocally()}
         >
-          {busy ? "Çevriliyor…" : "Cihazda çevir"}
+          {t(busy ? "lang.translating" : "lang.translateLocally")}
         </button>
         <a
           class={`button button--quiet${googleUrl === "#" ? " is-disabled" : ""}`}
@@ -188,7 +174,7 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
           aria-disabled={googleUrl === "#"}
           onClick={(event) => googleUrl === "#" && event.preventDefault()}
         >
-          Google Translate’te aç ↗
+          {t("lang.openGoogle")}
         </a>
         {showTureng && (
           <a
@@ -199,7 +185,7 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
             aria-disabled={turengUrl === "#"}
             onClick={(event) => turengUrl === "#" && event.preventDefault()}
           >
-            Tureng’de ara ↗
+            {t("lang.openTureng")}
           </a>
         )}
       </div>
@@ -213,13 +199,13 @@ export function LanguageToolsPanel({ showTureng = true }: LanguageToolsPanelProp
 
       {result && (
         <section class="language-tools__result" aria-live="polite">
-          <div><strong>Çeviri</strong><button type="button" class="text-button" onClick={() => void copyResult()}>Kopyala</button></div>
+          <div><strong>{t("lang.resultTitle")}</strong><button type="button" class="text-button" onClick={() => void copyResult()}>{t("lang.copy")}</button></div>
           <p>{result}</p>
         </section>
       )}
       {message && <p class="inline-status" role="status">{message}</p>}
       <small class="language-tools__privacy">
-        Google Translate{showTureng ? " ve Tureng" : ""} harici bir servistir; bağlantıya bastığınızda yazdığınız metin ilgili servise gider.
+        {t(showTureng ? "lang.privacyBoth" : "lang.privacyGoogle")}
       </small>
     </article>
   );

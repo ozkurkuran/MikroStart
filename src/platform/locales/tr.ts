@@ -1,0 +1,487 @@
+import type { Messages } from "../i18n";
+
+/**
+ * Turkish message catalog. Typed as `Messages`, so a key missing here is a
+ * build error rather than an English string leaking into the interface.
+ *
+ * Proper nouns (Bragg, Scherrer, Hall, CODATA, FWHM, arXiv, DOI, RSS) and unit
+ * symbols stay as they are — translating them would make the tool harder to
+ * use, not easier.
+ */
+export const tr: Messages = {
+  // ---- Shell chrome ------------------------------------------------------
+  "app.name": "BenchTab",
+  "app.tagline": "araştırma tezgâhı",
+  "app.settingsTagline": "ayarlar ve gizlilik",
+  "app.dashboardAria": "BenchTab panosu",
+
+  "topbar.localWorkspace": "Yerel çalışma alanı",
+  "topbar.settings": "Ayarlar",
+  "topbar.actionsAria": "Çalışma alanı işlemleri",
+
+  "workspace.title": "Araştırma çalışma alanı",
+  "workspace.lede":
+    "Hesaplama, literatür, referans ve akış modülleriniz tek panoda. Tüm veriler bu cihazda kalır.",
+
+  "toolbar.searchLabel": "Modül ara",
+  "toolbar.searchPlaceholder": "Modül ara…",
+  "toolbar.clearSearch": "Aramayı temizle",
+  "toolbar.categoriesAria": "Modül kategorileri",
+  "toolbar.all": "Tümü",
+  "toolbar.count": "{count} modül",
+  "toolbar.countFiltered": "{shown} / {total} modül",
+  "toolbar.densityAria": "Kart yoğunluğu",
+  "toolbar.comfortable": "Rahat",
+  "toolbar.compact": "Sık",
+  "toolbar.manage": "Modülleri yönet",
+
+  "board.aria": "Araştırma modülleri",
+  "board.noMatchTitle": "Eşleşen modül yok",
+  "board.noMatchBody": "Aramanızı değiştirin veya başka bir kategori seçin.",
+  "board.clearFilters": "Filtreleri temizle",
+  "board.emptyTitle": "Pano boş",
+  "board.emptyBody":
+    "Tüm modüller gizlenmiş. Modülleri yönet ile yeniden açabilirsiniz.",
+
+  "privacy.strip":
+    "Hesap yok · Telemetri yok · Dış kaynaklar için izniniz gerekir",
+
+  // ---- Module families ---------------------------------------------------
+  "category.measure": "Hesaplama",
+  "category.literature": "Literatür",
+  "category.reference": "Referans",
+  "category.workflow": "Akış",
+  "category.record": "Kayıt",
+
+  // ---- Modules -----------------------------------------------------------
+  "module.bragg-spacing.title": "Bragg / d-aralığı",
+  "module.bragg-spacing.kind": "Kırınım",
+  "module.scherrer-size.title": "Scherrer kristalit boyutu",
+  "module.scherrer-size.kind": "Kırınım",
+  "module.sheet-resistance.title": "Yüzey direnci",
+  "module.sheet-resistance.kind": "Elektriksel",
+  "module.hall-measurement.title": "Hall ölçümü",
+  "module.hall-measurement.kind": "Taşınım",
+  "module.vacuum-kinetics.title": "Vakum kinetiği",
+  "module.vacuum-kinetics.kind": "Vakum",
+  "module.research-feed.title": "Araştırma akışı",
+  "module.research-feed.kind": "Yayın akışı",
+  "module.on-device-ai.title": "Cihaz içi yapay zekâ",
+  "module.on-device-ai.kind": "Analiz",
+  "module.translation-tools.title": "Çeviri",
+  "module.translation-tools.kind": "Dil aracı",
+  "module.tureng-dictionary.title": "Tureng sözlük",
+  "module.tureng-dictionary.kind": "Dil aracı",
+  "module.codata-constants.title": "CODATA sabitleri",
+  "module.codata-constants.kind": "Çevrimdışı veri",
+  "module.periodic-table.title": "Periyodik tablo",
+  "module.periodic-table.kind": "Çevrimdışı veri",
+  "module.component-series.title": "Bileşen serileri",
+  "module.component-series.kind": "Çevrimdışı veri",
+  "module.countdown-timers.title": "Geri sayım",
+  "module.countdown-timers.kind": "Zamanlayıcı",
+  "module.stopwatch.title": "Kronometre",
+  "module.stopwatch.kind": "Zamanlayıcı",
+  "module.sample-id.title": "Numune kimliği",
+  "module.sample-id.kind": "Etiketleme",
+  "module.quick-note.title": "Hızlı not",
+  "module.quick-note.kind": "Yakalama",
+  "module.lab-notebook.title": "Laboratuvar defteri",
+  "module.lab-notebook.kind": "Defter",
+
+  // ---- Module manager ----------------------------------------------------
+  "manager.overline": "Pano yapılandırması",
+  "manager.title": "Modüller",
+  "manager.close": "Modül yöneticisini kapat",
+  "manager.help":
+    "Sırayı sürükleyerek ya da ok düğmeleriyle değiştirin. Gizlenen modüller yerel verilerini korur. Şu anda {shown} / {total} modül görünür.",
+  "manager.hideAll": "Tümünü gizle",
+  "manager.showAll": "Tümünü göster",
+  "manager.shown": "Görünür",
+  "manager.hidden": "Gizli",
+  "manager.moveUp": "{name} modülünü yukarı taşı",
+  "manager.moveDown": "{name} modülünü aşağı taşı",
+  "manager.reset": "Düzeni sıfırla",
+  "manager.done": "Bitti",
+
+  // ---- Research feed -----------------------------------------------------
+  "feed.eyebrow": "Yayın akışı · Kaynaklı",
+  "feed.title": "Araştırma akışı",
+  "feed.sourceCount": "{count} kaynak",
+  "feed.presetsAria": "Seçilmiş kaynak önerileri",
+  "feed.urlLabel": "RSS veya Atom adresi",
+  "feed.add": "Ekle",
+  "feed.permissionHelp":
+    "Chrome yalnızca bu kaynağın kökeni için erişim ister.",
+  "feed.sourcesAria": "Etkin yayın kaynakları",
+  "feed.cachedLocally": "Yerel önbellekte",
+  "feed.waitingFirstRefresh": "İlk yenileme bekleniyor",
+  "feed.refresh": "Kaynağı yenile",
+  "feed.remove": "Kaynağı kaldır",
+  "feed.searchLabel": "Yerel önbellekte ara",
+  "feed.searchPlaceholder": "Başlık, yazar, DOI, arXiv…",
+  "feed.empty": "Henüz önbelleğe alınmış yayın yok. Bir kaynak ekleyerek başlayın.",
+  "feed.openSource": "Kaynak ↗",
+  "feed.saveToNotebook": "Deftere kaydet",
+  "feed.aiContext": "AI bağlamı",
+  "feed.dateUnavailable": "Tarih yok",
+  "feed.openSourceMarkdown": "Kaynağı aç",
+  "feed.msg.permissionDenied":
+    "Kaynak izni verilmedi; diğer modüller çalışmaya devam eder.",
+  "feed.msg.added": "Kaynak eklendi ve yerel önbellek güncellendi.",
+  "feed.msg.addFailed": "Kaynak eklenemedi.",
+  "feed.msg.refreshFailed": "Kaynak yenilenemedi.",
+  "feed.msg.removeFailed": "Kaynak kaldırılamadı.",
+  "feed.msg.saved": "Kaynak ve referansı deftere kaydedildi.",
+  "feed.msg.saveFailed": "Deftere kaydedilemedi.",
+  "feed.msg.cacheFailed": "Yerel yayın önbelleği açılamadı.",
+
+  // ---- Lab notebook ------------------------------------------------------
+  "notebook.eyebrow": "Defter · Yalnızca yerel",
+  "notebook.title": "Laboratuvar defteri",
+  "notebook.new": "Yeni",
+  "notebook.import": "İçe aktar",
+  "notebook.exportAria": "Defteri dışa aktar",
+  "notebook.exportPlaceholder": "Dışa aktar…",
+  "notebook.exportJson": "JSON yedeği",
+  "notebook.noteTitle": "Not başlığı",
+  "notebook.noteTitlePlaceholder": "Numune, deney, gözlem…",
+  "notebook.markdown": "Markdown",
+  "notebook.bodyPlaceholder": "Neyin neden değiştiğini yazın.",
+  "notebook.saveChanges": "Değişiklikleri kaydet",
+  "notebook.saveLocally": "Yerel olarak kaydet",
+  "notebook.delete": "Sil",
+  "notebook.empty":
+    "Kayıtlı not yok. Akıştaki bir kaynağı referansıyla birlikte kaydedebilirsiniz.",
+  "notebook.linkedReferences": "{count} bağlı referans",
+  "notebook.msg.updated": "Değişiklikler yerel olarak kaydedildi.",
+  "notebook.msg.created": "Not yerel olarak kaydedildi.",
+  "notebook.msg.saveFailed": "Not kaydedilemedi.",
+  "notebook.msg.deleted": "Not ve kaynak bağlantıları silindi.",
+  "notebook.msg.exported": "{format} dışa aktarıldı.",
+  "notebook.msg.imported": "{notes} not ve {references} referans içe aktarıldı.",
+  "notebook.msg.importFailed": "Yedek içe aktarılamadı.",
+
+  // ---- On-device AI ------------------------------------------------------
+  "ai.eyebrow": "Analiz · Cihaz içi",
+  "ai.title": "Araştırma asistanı",
+  "ai.description":
+    "Chrome’un cihaz içi modelleri; bulut aktarımı veya otomatik geri dönüş yok.",
+  "ai.selectedCount": "{count} seçili",
+  "ai.taskLegend": "AI görevi",
+  "ai.mode.summarize": "Özet",
+  "ai.mode.translate": "Çeviri",
+  "ai.mode.digest": "Derleme",
+  "ai.mode.rerank": "Sırala",
+  "ai.sourceLanguage": "Kaynak dili",
+  "ai.targetLanguage": "Hedef dili",
+  "ai.researchQuestion": "Araştırma sorusu",
+  "ai.optionalFocus": "İsteğe bağlı odak",
+  "ai.rerankPlaceholder": "Örn. Hangi çalışma ince film büyütmeyle ilgili?",
+  "ai.focusPlaceholder": "Örn. yöntem ve sonuçlar",
+  "ai.pickSources": "Akıştan yayın seç",
+  "ai.selectedSourcesAria": "AI için seçilmiş yerel kaynaklar",
+  "ai.running": "Çalışıyor…",
+  "ai.run": "Yerel AI ile çalıştır",
+  "ai.downloadProgressAria": "Model indirme ilerlemesi",
+  "ai.resultAria": "AI sonucu",
+  "ai.resultTitle": "Yerel AI sonucu",
+  "ai.resultNote":
+    "Kaynak kimlikleri yalnızca seçilmiş yerel kayıtlardan eklendi.",
+  "ai.saving": "Kaydediliyor…",
+  "ai.saveResult": "Etiketli sonucu deftere kaydet",
+  "ai.msg.saved":
+    "AI sonucu, açık etiketi ve kaynak bağlantılarıyla deftere kaydedildi.",
+  "ai.msg.failed": "Yerel AI görevi tamamlanamadı.",
+  "ai.availability.checking": "Kontrol ediliyor",
+  "ai.availability.unsupported": "Desteklenmiyor",
+  "ai.availability.unavailable": "Kullanılamıyor",
+  "ai.availability.downloadable": "İndirilmeye hazır",
+  "ai.availability.downloading": "İndiriliyor",
+  "ai.availability.available": "Hazır",
+  "ai.disclaimer":
+    "Bu içerik cihazda yapay zekâ ile üretildi. Her iddiayı bağlı kaynaklardan doğrulayın.",
+  "ai.sourcesHeading": "Kaynaklar",
+  "ai.noteTitle": "Cihaz içi AI {mode} · {date}",
+  "ai.citedSource": "[seçilmiş kaynak]",
+
+  // ---- Language tools ----------------------------------------------------
+  "lang.eyebrow": "Dil aracı · Yerel",
+  "lang.eyebrowExternal": "Dil aracı · Dış bağlantı",
+  "lang.title": "Çeviri ve sözlük",
+  "lang.description":
+    "Önce cihazdaki Chrome modelini kullanın; dış servisler yalnızca siz bağlantıya bastığınızda açılır.",
+  "lang.source": "Kaynak",
+  "lang.target": "Hedef",
+  "lang.swap": "Dilleri değiştir",
+  "lang.inputLabel": "Çevrilecek metin",
+  "lang.inputPlaceholder": "Makale özeti, teknik ifade veya tek bir terim…",
+  "lang.translating": "Çevriliyor…",
+  "lang.translateLocally": "Cihazda çevir",
+  "lang.openGoogle": "Google Translate’te aç ↗",
+  "lang.openTureng": "Tureng’de ara ↗",
+  "lang.resultTitle": "Çeviri",
+  "lang.copy": "Kopyala",
+  "lang.privacyBoth":
+    "Google Translate ve Tureng harici servislerdir; bağlantıya bastığınızda yazdığınız metin ilgili servise gider.",
+  "lang.privacyGoogle":
+    "Google Translate harici bir servistir; bağlantıya bastığınızda yazdığınız metin bu servise gider.",
+  "lang.msg.done": "Çeviri cihazdaki Chrome modeliyle tamamlandı.",
+  "lang.msg.copied": "Çeviri panoya kopyalandı.",
+  "lang.msg.copyDenied": "Panoya kopyalama izni verilmedi.",
+  "lang.msg.failed": "Çeviri tamamlanamadı.",
+  "lang.availability.checking": "Kontrol ediliyor",
+  "lang.availability.unsupported": "Bu Chrome sürümünde yok",
+  "lang.availability.unavailable": "Bu dil çifti kullanılamıyor",
+  "lang.availability.downloadable": "Dil modeli indirilebilir",
+  "lang.availability.downloading": "Dil modeli indiriliyor",
+  "lang.availability.available": "Cihazda hazır",
+  "lang.name.tr": "Türkçe",
+  "lang.name.en": "İngilizce",
+  "lang.name.de": "Almanca",
+  "lang.name.fr": "Fransızca",
+  "lang.name.es": "İspanyolca",
+  "lang.name.it": "İtalyanca",
+
+  "tureng.title": "Tureng sözlük",
+  "tureng.description":
+    "Teknik bir Türkçe veya İngilizce terimi Tureng’de arayın.",
+  "tureng.termLabel": "Terim",
+  "tureng.termPlaceholder": "Örn. sheet resistance",
+  "tureng.privacy":
+    "Sorgu yalnızca bu bağlantıya bastığınızda Tureng’e gönderilir.",
+
+  // ---- Workflow: countdown ----------------------------------------------
+  "countdown.eyebrow": "Zamanlayıcı · Akış",
+  "countdown.title": "Geri sayım",
+  "countdown.description": "Birden fazla laboratuvar sürecini aynı anda izleyin.",
+  "countdown.soundLabel": "Alarm sesi",
+  "countdown.testSound": "Sesi test et",
+  "countdown.labelField": "Etiket",
+  "countdown.hours": "Saat",
+  "countdown.minutes": "Dakika",
+  "countdown.seconds": "Saniye",
+  "countdown.presetsAria": "Hızlı süreler",
+  "countdown.start": "Geri sayımı başlat",
+  "countdown.empty": "Henüz çalışan geri sayım yok.",
+  "countdown.done": "Tamamlandı",
+  "countdown.progressAria": "{name} ilerlemesi",
+  "countdown.restart": "Yeniden başlat",
+  "countdown.remove": "Kaldır",
+  "countdown.defaultLabel": "Tavlama",
+  "countdown.preset.30s": "30 sn",
+  "countdown.preset.1m": "1 dk",
+  "countdown.preset.5m": "5 dk",
+  "countdown.preset.15m": "15 dk",
+  "countdown.preset.30m": "30 dk",
+  "countdown.preset.1h": "1 saat",
+  "countdown.msg.started": "“{name}” başlatıldı.",
+  "countdown.msg.createFailed": "Geri sayım oluşturulamadı.",
+  "countdown.msg.alarmFailed": "Alarm ayarlanamadı.",
+  "countdown.msg.soundOn": "Alarm sesi etkinleştirildi.",
+  "countdown.msg.soundOff": "Alarm sesi kapatıldı.",
+  "countdown.msg.soundFailed": "Alarm ayarı değiştirilemedi.",
+
+  // ---- Workflow: stopwatch ----------------------------------------------
+  "stopwatch.title": "Kronometre",
+  "stopwatch.description": "Tur ve toplam süreleri cihazda tutar.",
+  "stopwatch.pause": "Duraklat",
+  "stopwatch.start": "Başlat",
+  "stopwatch.lap": "Tur",
+  "stopwatch.reset": "Sıfırla",
+  "stopwatch.lapsAria": "Kronometre turları",
+  "stopwatch.lapNumber": "Tur {number}",
+  "stopwatch.total": "toplam",
+
+  // ---- Workflow: sample ID ----------------------------------------------
+  "sample.eyebrow": "Etiketleme · Akış",
+  "sample.title": "Numune kimliği",
+  "sample.description": "Okunabilir ve çakışmaya dayanıklı deney kimlikleri.",
+  "sample.prefixLabel": "Proje veya cihaz öneki",
+  "sample.generate": "Numune kimliği üret",
+  "sample.historyAria": "Son numune kimlikleri",
+  "sample.msg.created": "{id} üretildi.",
+  "sample.msg.failed": "Numune kimliği üretilemedi.",
+
+  // ---- Workflow: quick note ---------------------------------------------
+  "note.eyebrow": "Yakalama · UTC",
+  "note.title": "Hızlı not",
+  "note.description": "Deney anını UTC zaman damgasıyla yakalayın.",
+  "note.observationLabel": "Gözlem",
+  "note.add": "Zaman damgası ekle",
+  "note.historyAria": "Son zaman damgalı notlar",
+  "note.msg.added": "Zaman damgalı not eklendi.",
+  "note.msg.failed": "Not eklenemedi.",
+
+  // ---- Reference library -------------------------------------------------
+  "ref.defaultTitle": "Çevrimdışı referans kitaplığı",
+  "ref.defaultDescription":
+    "CODATA sabitleri, 118 elementin tamamı ve IEC E-serisi değerleri.",
+  "ref.defaultPlaceholder": "Boltzmann, Fe, 79 veya E12 deneyin",
+  "ref.searchLabel": "Ad, sembol, atom numarası veya seri ile arayın",
+  "ref.bundled":
+    "Kitaplık uygulamayla birlikte gelir ve ağ bağlantısı olmadan çalışır.",
+  "ref.resultCount": "{count} sonuç",
+  "ref.noMatch": "Bu aramayla eşleşen bir referans bulunamadı.",
+  "ref.symbolAria": "{symbol} sembolü",
+  "ref.uncertainty": "Bağıl standart belirsizlik: {value}.",
+  "ref.noAtomicWeight": "Standart atom ağırlığı yok",
+  "ref.preferredValues": "{name} tercih edilen değerleri",
+  "ref.normalized": "Tek bir dekata normalize edilmiştir.",
+  "ref.provenance": "Veri kümesi sürümleri ve kullanım notları",
+  "ref.constants.title": "CODATA sabitleri",
+  "ref.constants.description": "Temel fizik sabitlerini cihazda arayın.",
+  "ref.constants.placeholder": "Boltzmann, Planck veya c",
+  "ref.elements.title": "Periyodik tablo",
+  "ref.elements.description":
+    "118 elementi ad, sembol veya atom numarasıyla arayın.",
+  "ref.elements.placeholder": "Fe, gold veya 79",
+  "ref.series.title": "Standart bileşen serileri",
+  "ref.series.description": "IEC E6, E12 ve E24 tercih edilen değerleri.",
+  "ref.series.placeholder": "E6, E12 veya E24",
+
+  // ---- Bragg calculator --------------------------------------------------
+  "bragg.title": "Bragg / d-aralığı",
+  "bragg.description": "Birinci mertebe Bragg yasası, λ = 2d sin(θ).",
+  "bragg.preset": "Cu Kα ön ayarı",
+  "bragg.solveFor": "Hesaplanacak",
+  "bragg.dSpacing": "d-aralığı",
+  "bragg.twoTheta": "2θ",
+  "bragg.wavelength": "Dalga boyu",
+  "bragg.lengthUnit": "Uzunluk birimi",
+  "bragg.angstrom": "Å (angstrom)",
+  "bragg.twoThetaDegrees": "2θ (derece)",
+  "bragg.dSpacingUnit": "d-aralığı ({unit})",
+  "bragg.help":
+    "Cu Kα varsayılanı: 1,5406 Å. Model kırınım mertebesini n = 1 kabul eder.",
+
+  // ---- Lab calculator pack -----------------------------------------------
+  "lab.unitLabel": "{name} birimi",
+  "lab.warningsAria": "Hesaplama uyarıları",
+  "lab.method": "Yöntem ve kaynak",
+  "lab.algorithm": "Algoritma",
+  "lab.formula": "Formül",
+  "lab.reference": "Kaynak",
+
+  "lab.scherrer.title": "Scherrer kristalit boyutu",
+  "lab.scherrer.intro": "D = Kλ / (β cos θ); β, 2θ pik genişliğidir.",
+  "lab.scherrer.wavelength": "Dalga boyu",
+  "lab.scherrer.fwhm": "Ölçülen FWHM",
+  "lab.scherrer.twoTheta": "2θ (derece)",
+  "lab.scherrer.shapeFactor": "Şekil faktörü K",
+  "lab.scherrer.correct": "Cihaz genişlemesini karesel olarak düzelt",
+  "lab.scherrer.instrumentFwhm": "Cihaz FWHM",
+  "lab.scherrer.result": "Kristalit boyutu",
+
+  "lab.sheet.title": "Dört nokta problu yüzey direnci",
+  "lab.sheet.intro":
+    "Eşit aralıklı sonsuz tabaka yaklaşımı, Rs = (π/ln 2)|V/I|.",
+  "lab.sheet.voltage": "Prob gerilimi",
+  "lab.sheet.current": "Kaynak akımı",
+  "lab.sheet.useThickness": "Film kalınlığından hacim özdirencini hesapla",
+  "lab.sheet.thickness": "Film kalınlığı",
+  "lab.sheet.result": "Yüzey direnci",
+  "lab.sheet.resistivity": "Hacim özdirenci",
+
+  "lab.hall.title": "Tek taşıyıcılı Hall ölçümü",
+  "lab.hall.intro": "İşaretli RH, hacim taşıyıcı yoğunluğu ve Hall mobilitesi.",
+  "lab.hall.current": "Kaynak akımı",
+  "lab.hall.field": "Manyetik alan",
+  "lab.hall.thickness": "İletken kalınlık",
+  "lab.hall.voltage": "Hall gerilimi",
+  "lab.hall.sheetResistance": "Yüzey direnci (Ω/□)",
+  "lab.hall.coefficient": "Hall katsayısı",
+  "lab.hall.density": "Taşıyıcı yoğunluğu",
+  "lab.hall.mobility": "Hall mobilitesi",
+  "lab.hall.polarity": "Geleneksel polarite",
+
+  "lab.vacuum.title": "Vakum gaz kinetiği",
+  "lab.vacuum.intro":
+    "Katı küre ortalama serbest yol ve tek tabaka oluşum tahmini.",
+  "lab.vacuum.pressure": "Basınç",
+  "lab.vacuum.temperature": "Gaz sıcaklığı",
+  "lab.vacuum.diameter": "Molekül çapı",
+  "lab.vacuum.mass": "Molekül kütlesi",
+  "lab.vacuum.sticking": "Yapışma katsayısı (0–1)",
+  "lab.vacuum.meanFreePath": "Ortalama serbest yol",
+  "lab.vacuum.impingement": "Çarpma hızı",
+  "lab.vacuum.monolayer": "Tek tabaka süresi",
+
+  // ---- Engine diagnostics (looked up by code) ---------------------------
+  "diag.NOT_FINITE": "{field} sonlu bir sayı olmalıdır.",
+  "diag.MUST_BE_POSITIVE": "{field} sıfırdan büyük olmalıdır.",
+  "diag.MUST_BE_NON_NEGATIVE": "{field} sıfır veya daha büyük olmalıdır.",
+  "diag.MUST_BE_NON_ZERO": "{field} sıfırdan farklı olmalıdır.",
+  "diag.OUT_OF_RANGE": "{field} izin verilen aralığın dışında.",
+  "diag.ANGLE_OUT_OF_RANGE": "2θ, 0°’den büyük ve en fazla 180° olmalıdır.",
+  "diag.NO_PHYSICAL_SOLUTION":
+    "dalga boyu / (2d) değeri 1’den büyük olduğu için birinci mertebe yansıma yoktur.",
+  "diag.LOW_ANGLE_SENSITIVITY":
+    "2θ değeri 1°’nin altında; küçük açı hataları d-aralığında büyük belirsizlik yaratabilir.",
+  "diag.BACKSCATTER_LIMIT":
+    "2θ, 180° geri saçılma sınırına yakın; cihaz geometrisini ve hassasiyetini doğrulayın.",
+  "diag.UNUSUAL_XRAY_WAVELENGTH":
+    "Dalga boyu tipik 0,1–10 Å X-ışını aralığının dışında; değerini ve birimini doğrulayın.",
+  "diag.INSTRUMENT_BROADENING_TOO_LARGE":
+    "Cihaz FWHM değeri, ölçülen FWHM değerinden küçük olmalıdır.",
+  "diag.UNUSUAL_SHAPE_FACTOR":
+    "Şekil faktörü yaygın 0,8–1,1 aralığının dışında; kullandığınız morfoloji modelini belgeleyin.",
+  "diag.VERY_BROAD_PEAK":
+    "Ölçülen FWHM 10°’yi aşıyor; yalıtılmış pik Scherrer yaklaşımı güvenilir olmayabilir.",
+  "diag.NO_INSTRUMENT_CORRECTION":
+    "Cihaz genişlemesi sıfır kabul edildi; bu nedenle bildirilen boyut olduğundan küçük çıkabilir.",
+  "diag.INFINITE_SHEET_APPROXIMATION":
+    "π/ln(2), eşit aralıklı doğrusal bir probu yanal olarak sonsuz ve düzgün ince bir tabaka üzerinde varsayar; sonlu numuneler veya yakın kenarlar için geometri düzeltmesi uygulayın.",
+  "diag.POLARITY_IGNORED":
+    "Yüzey direnci |V/I| kullanır; ofsetleri bastırmak için ters polariteli ölçümlerin ortalaması alınmalıdır.",
+  "diag.LOW_VOLTAGE_SIGNAL":
+    "Gerilim 1 µV’un altında; cihazın gürültü tabanını doğrulayın.",
+  "diag.SINGLE_CARRIER_MODEL":
+    "Taşıyıcı yoğunluğu ve mobilite, düzgün bir iletken katmanda tek baskın taşıyıcı türü varsayar.",
+  "diag.REVERSAL_AVERAGING_RECOMMENDED":
+    "Kontak ve termoelektrik ofsetleri gidermek için akım ve manyetik alan yönü çevrilerek ölçüm yapın.",
+  "diag.LOW_HALL_SIGNAL":
+    "Hall gerilimi 1 µV’un altında; ofseti ve gürültü bastırmayı kontrol edin.",
+  "diag.LOW_MAGNETIC_FIELD":
+    "Manyetik alan 1 mT’nin altında; Hall sinyali zayıf olabilir.",
+  "diag.ASSUMED_MONOLAYER_DENSITY":
+    "Tek tabaka süresi m² başına 10¹⁹ tutunma bölgesi varsayar; gerçek yüzeyler ve adsorbatlar önemli ölçüde farklı olabilir.",
+  "diag.OUTSIDE_TYPICAL_VACUUM_RANGE":
+    "Basınç 1 mbar’ı aşıyor; seyreltik ideal gaz vakum modelinin uygun olduğunu doğrulayın.",
+  "diag.UNUSUAL_GAS_TEMPERATURE":
+    "Sıcaklık 50–2000 K aralığının dışında; gaz durumunu ve katı küre parametrelerini doğrulayın.",
+  "diag.LOW_STICKING_COEFFICIENT":
+    "Yapışma katsayısı 0,01’in altında; bu nedenle tek tabaka süresi yüzey koşullarına çok bağlıdır.",
+
+  // ---- Options page ------------------------------------------------------
+  "options.workspace": "Çalışma alanı",
+  "options.preferences": "Tercihler",
+  "options.language": "Dil",
+  "options.appearance": "Görünüm",
+  "options.themeSystem": "Sistem ayarını kullan",
+  "options.themeDark": "Koyu",
+  "options.themeLight": "Açık",
+  "options.compactCards": "Sık modül kartlarını kullan",
+  "options.save": "Yerel olarak kaydet",
+  "options.saved": "Bu cihaza kaydedildi.",
+  "options.privacyCenter": "Gizlilik merkezi",
+  "options.dataBoundaries": "Veri sınırları",
+  "options.notebook": "Defter",
+  "options.notebookValue": "Yerel IndexedDB",
+  "options.telemetry": "Telemetri",
+  "options.none": "Yok",
+  "options.sourceAccess": "Kaynak erişimi",
+  "options.sourceAccessValue": "İsteğe bağlı, köken başına",
+  "options.cloudAi": "Bulut AI yedeği",
+  "options.disabled": "Devre dışı",
+  "options.grantedOrigins": "İzin verilen kaynak kökenleri",
+  "options.deleteTitle": "Tüm BenchTab verilerini sil",
+  "options.deleteBody":
+    "Bu işlem geri alınamaz. JSON dışa aktarımı defter modülünden yapılabilir.",
+  "options.deleteButton": "Yerel verileri sil",
+  "options.deleteConfirm":
+    "Bu Chrome profilindeki tüm BenchTab notları, referansları, yayın önbelleği, abonelikleri, ayarları ve sıradaki işleri silinecek. Gerekiyorsa önce bir yedek dışa aktarın.",
+  "options.deleteDone":
+    "Tüm BenchTab verileri ve isteğe bağlı kaynak izinleri kaldırıldı.",
+  "options.deleteFailed": "Yerel veriler silinemedi.",
+};

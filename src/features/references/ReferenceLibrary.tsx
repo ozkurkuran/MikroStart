@@ -3,6 +3,7 @@ import { useId, useMemo, useState } from "preact/hooks";
 import { REFERENCE_SOURCES } from "./sources";
 import { searchReferences } from "./search";
 import type { DatasetSource, ReferenceSearchResult } from "./types";
+import { useTranslate, type Translate } from "../../platform/i18n";
 import "./reference-library.css";
 
 const sourcesById = new Map<string, DatasetSource>(
@@ -19,19 +20,19 @@ function ResultSource({ sourceId }: { sourceId: string }) {
   );
 }
 
-function SearchResult({ result }: { result: ReferenceSearchResult }) {
+function SearchResult({ result, t }: { result: ReferenceSearchResult; t: Translate }) {
   if (result.kind === "constant") {
     return (
       <article class="reference-library__result">
         <header>
           <strong>{result.item.name}</strong>
-          <span aria-label={`Symbol ${result.item.symbol}`}>{result.item.symbol}</span>
+          <span aria-label={t("ref.symbolAria", { symbol: result.item.symbol })}>{result.item.symbol}</span>
         </header>
         <p class="reference-library__value">
           {result.item.displayValue} {result.item.unit}
         </p>
         <small>
-          Relative standard uncertainty: {result.item.relativeStandardUncertainty}.{" "}
+          {t("ref.uncertainty", { value: result.item.relativeStandardUncertainty })}{" "}
           <ResultSource sourceId={result.item.sourceId} />
         </small>
       </article>
@@ -45,10 +46,10 @@ function SearchResult({ result }: { result: ReferenceSearchResult }) {
           <strong>
             {result.item.atomicNumber}. {result.item.name}
           </strong>
-          <span aria-label={`Symbol ${result.item.symbol}`}>{result.item.symbol}</span>
+          <span aria-label={t("ref.symbolAria", { symbol: result.item.symbol })}>{result.item.symbol}</span>
         </header>
         <p class="reference-library__value">
-          {result.item.standardAtomicWeight ?? "No standard atomic weight"}
+          {result.item.standardAtomicWeight ?? t("ref.noAtomicWeight")}
         </p>
         <small>
           {result.item.category.replaceAll("-", " ")}.{" "}
@@ -61,12 +62,12 @@ function SearchResult({ result }: { result: ReferenceSearchResult }) {
   return (
     <article class="reference-library__result">
       <header>
-        <strong>{result.item.name} preferred values</strong>
+        <strong>{t("ref.preferredValues", { name: result.item.name })}</strong>
         <span>±{result.item.nominalTolerancePercent}%</span>
       </header>
       <p class="reference-library__series">{result.item.values.join(" · ")}</p>
       <small>
-        Normalized to one decade. <ResultSource sourceId={result.item.sourceId} />
+        {t("ref.normalized")} <ResultSource sourceId={result.item.sourceId} />
       </small>
     </article>
   );
@@ -83,15 +84,19 @@ export interface ReferenceLibraryProps {
 
 export function ReferenceLibrary({
   kinds,
-  title = "Offline reference library",
-  description = "CODATA constants, all 118 elements, and IEC E-series values.",
-  placeholder = "Try Boltzmann, Fe, 79, or E12",
+  title,
+  description,
+  placeholder,
   initialQuery = "",
   sourceIds,
 }: ReferenceLibraryProps = {}) {
+  const t = useTranslate();
   const inputId = useId();
   const [query, setQuery] = useState(initialQuery);
   const results = useMemo(() => searchReferences(query, { limit: 24, kinds }), [query, kinds]);
+  const heading = title ?? t("ref.defaultTitle");
+  const intro = description ?? t("ref.defaultDescription");
+  const hint = placeholder ?? t("ref.defaultPlaceholder");
   const visibleSources = sourceIds
     ? Object.values(REFERENCE_SOURCES).filter((source) => sourceIds.includes(source.id))
     : Object.values(REFERENCE_SOURCES);
@@ -99,17 +104,17 @@ export function ReferenceLibrary({
   return (
     <section class="reference-library" aria-labelledby={`${inputId}-title`}>
       <header>
-        <h2 id={`${inputId}-title`}>{title}</h2>
-        <p>{description}</p>
+        <h2 id={`${inputId}-title`}>{heading}</h2>
+        <p>{intro}</p>
       </header>
 
       <label class="reference-library__search" for={inputId}>
-        <span>Search name, symbol, atomic number, or series</span>
+        <span>{t("ref.searchLabel")}</span>
         <input
           id={inputId}
           type="search"
           value={query}
-          placeholder={placeholder}
+          placeholder={hint}
           autocomplete="off"
           onInput={(event) => setQuery(event.currentTarget.value)}
         />
@@ -117,12 +122,12 @@ export function ReferenceLibrary({
 
       <div class="reference-library__status" role="status" aria-live="polite">
         {query.trim() === ""
-          ? "The library is bundled and works without a network connection."
-          : `${results.length} result${results.length === 1 ? "" : "s"}`}
+          ? t("ref.bundled")
+          : t("ref.resultCount", { count: results.length })}
       </div>
 
       {query.trim() !== "" && results.length === 0 ? (
-        <p class="reference-library__empty">No bundled reference matched this search.</p>
+        <p class="reference-library__empty">{t("ref.noMatch")}</p>
       ) : (
         <div class="reference-library__results">
           {results.map((result) => (
@@ -135,13 +140,14 @@ export function ReferenceLibrary({
                     : result.item.name
               }`}
               result={result}
+              t={t}
             />
           ))}
         </div>
       )}
 
       <details class="reference-library__provenance">
-        <summary>Dataset versions and reuse notes</summary>
+        <summary>{t("ref.provenance")}</summary>
         <ul>
           {visibleSources.map((source) => (
             <li key={source.id}>

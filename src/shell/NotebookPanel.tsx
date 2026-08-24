@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 
+import { localeTag, useI18n } from "../platform/i18n";
 import {
   IndexedDbNotebookRepository,
   notebookToMarkdown,
@@ -21,6 +22,7 @@ function downloadText(filename: string, content: string, type: string): void {
 }
 
 export function NotebookPanel() {
+  const { locale, t } = useI18n();
   const [notes, setNotes] = useState<NoteRecord[]>([]);
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
@@ -73,10 +75,10 @@ export function NotebookPanel() {
             markdown,
           });
       setSelectedNote(saved);
-      setStatus(selectedNote ? "Değişiklikler yerel olarak kaydedildi." : "Not yerel olarak kaydedildi.");
+      setStatus(t(selectedNote ? "notebook.msg.updated" : "notebook.msg.created"));
       await reload();
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Not kaydedilemedi.");
+      setStatus(error instanceof Error ? error.message : t("notebook.msg.saveFailed"));
     } finally {
       repository.close();
     }
@@ -88,7 +90,7 @@ export function NotebookPanel() {
     try {
       await repository.deleteNote(selectedNote.id);
       startNewNote();
-      setStatus("Not ve kaynak bağlantıları silindi.");
+      setStatus(t("notebook.msg.deleted"));
       await reload();
     } finally {
       repository.close();
@@ -109,7 +111,7 @@ export function NotebookPanel() {
       } else {
         downloadText(`${base}.ris`, referencesToRis(data.data.references), "application/x-research-info-systems");
       }
-      setStatus(`${kind.toUpperCase()} dışa aktarıldı.`);
+      setStatus(t("notebook.msg.exported", { format: kind.toUpperCase() }));
     } finally {
       repository.close();
     }
@@ -121,11 +123,11 @@ export function NotebookPanel() {
       const result = await repository.importData(await file.text());
       startNewNote();
       setStatus(
-        `${result.notes} not ve ${result.references} referans içe aktarıldı.`,
+        t("notebook.msg.imported", { notes: result.notes, references: result.references }),
       );
       await reload();
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Backup içe aktarılamadı.");
+      setStatus(error instanceof Error ? error.message : t("notebook.msg.importFailed"));
     } finally {
       repository.close();
     }
@@ -134,11 +136,11 @@ export function NotebookPanel() {
   return (
     <article class="widget notebook-panel">
       <div class="widget__heading">
-        <span class="widget__eyebrow">Defter · Yalnızca yerel</span>
+        <span class="widget__eyebrow">{t("notebook.eyebrow")}</span>
         <span class="notebook-heading-actions">
-          <button class="text-button" type="button" onClick={startNewNote}>New</button>
+          <button class="text-button" type="button" onClick={startNewNote}>{t("notebook.new")}</button>
           <label class="text-button import-label">
-            Import
+            {t("notebook.import")}
             <input
               type="file"
               accept="application/json,.json"
@@ -152,22 +154,22 @@ export function NotebookPanel() {
           <select
             class="export-select"
             value=""
-            aria-label="Export notebook"
+            aria-label={t("notebook.exportAria")}
             onChange={(event) => {
               const kind = event.currentTarget.value as NotebookExportKind;
               if (kind) void exportNotebook(kind);
               event.currentTarget.value = "";
             }}
           >
-            <option value="" disabled>Export…</option>
-            <option value="json">JSON backup</option>
+            <option value="" disabled>{t("notebook.exportPlaceholder")}</option>
+            <option value="json">{t("notebook.exportJson")}</option>
             <option value="markdown">Markdown</option>
             <option value="bibtex">BibTeX</option>
             <option value="ris">RIS</option>
           </select>
         </span>
       </div>
-      <h2>Lab notebook</h2>
+      <h2>{t("notebook.title")}</h2>
 
       <form
         class="note-form"
@@ -176,30 +178,30 @@ export function NotebookPanel() {
           void saveNote();
         }}
       >
-        <label for="note-title">Note title</label>
+        <label for="note-title">{t("notebook.noteTitle")}</label>
         <input
           id="note-title"
           value={title}
           onInput={(event) => setTitle(event.currentTarget.value)}
-          placeholder="Sample, run, observation…"
+          placeholder={t("notebook.noteTitlePlaceholder")}
           required
           maxlength={180}
         />
-        <label for="note-body">Markdown</label>
+        <label for="note-body">{t("notebook.markdown")}</label>
         <textarea
           id="note-body"
           value={markdown}
           onInput={(event) => setMarkdown(event.currentTarget.value)}
-          placeholder="Record what changed and why."
+          placeholder={t("notebook.bodyPlaceholder")}
           rows={4}
         />
         <div class="note-form__actions">
           <button class="button button--small" type="submit">
-            {selectedNote ? "Save changes" : "Save locally"}
+            {t(selectedNote ? "notebook.saveChanges" : "notebook.saveLocally")}
           </button>
           {selectedNote && (
             <button class="text-button text-button--danger" type="button" onClick={() => void deleteSelectedNote()}>
-              Delete
+              {t("notebook.delete")}
             </button>
           )}
         </div>
@@ -209,7 +211,7 @@ export function NotebookPanel() {
 
       <div class="note-list">
         {notes.length === 0 ? (
-          <p class="empty-state">Kayıtlı not yok. Feed’deki bir kaynağı referansıyla kaydedebilirsiniz.</p>
+          <p class="empty-state">{t("notebook.empty")}</p>
         ) : (
           notes.map((note) => (
             <button
@@ -218,9 +220,9 @@ export function NotebookPanel() {
               type="button"
               onClick={() => editNote(note)}
             >
-              <p>{note.type} · {new Date(note.updatedAt).toLocaleDateString("tr-TR")}</p>
+              <p>{note.type} · {new Date(note.updatedAt).toLocaleDateString(localeTag(locale))}</p>
               <h3>{note.title}</h3>
-              {note.referenceIds.length > 0 && <small>{note.referenceIds.length} linked reference</small>}
+              {note.referenceIds.length > 0 && <small>{t("notebook.linkedReferences", { count: note.referenceIds.length })}</small>}
             </button>
           ))
         )}

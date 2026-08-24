@@ -25,6 +25,7 @@ import type {
   VoltageUnit,
 } from "./units";
 import { calculateVacuum } from "./vacuum";
+import { useTranslate, type Translate } from "../../../platform/i18n";
 import "./lab-calculator-pack.css";
 
 type CalculatorKind = "scherrer" | "sheet" | "hall" | "vacuum";
@@ -78,6 +79,7 @@ interface MeasurementFieldProps {
 }
 
 function MeasurementField(props: MeasurementFieldProps) {
+  const t = useTranslate();
   const id = useId();
   return (
     <div class="lab-pack__measurement">
@@ -93,7 +95,7 @@ function MeasurementField(props: MeasurementFieldProps) {
           onInput={(event) => props.onValue(event.currentTarget.value)}
         />
         <label class="lab-pack__sr-only" for={`${id}-unit`}>
-          {props.label} unit
+          {t("lab.unitLabel", { name: props.label })}
         </label>
         <select
           id={`${id}-unit`}
@@ -111,22 +113,24 @@ function MeasurementField(props: MeasurementFieldProps) {
   );
 }
 
-function Issues({ errors }: { errors: CalculationIssue[] }) {
+function Issues({ errors, t }: { errors: CalculationIssue[]; t: Translate }) {
   return (
     <div class="lab-pack__errors" role="alert">
       {errors.map((error) => (
-        <p key={`${error.field}:${error.code}`}>{error.message}</p>
+        <p key={`${error.field}:${error.code}`}>
+          {t.optional(`diag.${error.code}`, error.message, { field: error.field })}
+        </p>
       ))}
     </div>
   );
 }
 
-function Warnings({ warnings }: { warnings: CalculationWarning[] }) {
+function Warnings({ warnings, t }: { warnings: CalculationWarning[]; t: Translate }) {
   if (warnings.length === 0) return null;
   return (
-    <ul class="lab-pack__warnings" aria-label="Calculation warnings">
+    <ul class="lab-pack__warnings" aria-label={t("lab.warningsAria")}>
       {warnings.map((warning) => (
-        <li key={warning.code}>{warning.message}</li>
+        <li key={warning.code}>{t.optional(`diag.${warning.code}`, warning.message)}</li>
       ))}
     </ul>
   );
@@ -137,25 +141,26 @@ interface MethodDetailsProps {
   algorithmVersion: string;
   formulaId: string;
   source: CalculatorSource;
+  t: Translate;
 }
 
 function MethodDetails(props: MethodDetailsProps) {
   return (
     <details class="lab-pack__method">
-      <summary>Method and provenance</summary>
+      <summary>{props.t("lab.method")}</summary>
       <dl>
         <div>
-          <dt>Algorithm</dt>
+          <dt>{props.t("lab.algorithm")}</dt>
           <dd>
             {props.algorithmId} v{props.algorithmVersion}
           </dd>
         </div>
         <div>
-          <dt>Formula</dt>
+          <dt>{props.t("lab.formula")}</dt>
           <dd>{props.formulaId}</dd>
         </div>
         <div>
-          <dt>Reference</dt>
+          <dt>{props.t("lab.reference")}</dt>
           <dd>
             <a href={props.source.url} target="_blank" rel="noreferrer">
               {props.source.publisher}: {props.source.title}
@@ -168,6 +173,7 @@ function MethodDetails(props: MethodDetailsProps) {
 }
 
 export function ScherrerCalculator() {
+  const t = useTranslate();
   const [wavelength, setWavelength] = useState("1.5406");
   const [wavelengthUnit, setWavelengthUnit] =
     useState<LengthUnit>("angstrom");
@@ -208,11 +214,11 @@ export function ScherrerCalculator() {
 
   return (
     <section aria-labelledby="lab-scherrer-title">
-      <h3 id="lab-scherrer-title">Scherrer crystallite size</h3>
-      <p class="lab-pack__intro">D = Kλ / (β cos θ); β is the 2θ peak width.</p>
+      <h3 id="lab-scherrer-title">{t("lab.scherrer.title")}</h3>
+      <p class="lab-pack__intro">{t("lab.scherrer.intro")}</p>
       <div class="lab-pack__grid">
         <MeasurementField
-          label="Wavelength"
+          label={t("lab.scherrer.wavelength")}
           value={wavelength}
           onValue={setWavelength}
           unit={wavelengthUnit}
@@ -221,7 +227,7 @@ export function ScherrerCalculator() {
           min="0"
         />
         <MeasurementField
-          label="Observed FWHM"
+          label={t("lab.scherrer.fwhm")}
           value={fwhm}
           onValue={setFwhm}
           unit={fwhmUnit}
@@ -230,7 +236,7 @@ export function ScherrerCalculator() {
           min="0"
         />
         <label>
-          2θ (degrees)
+          {t("lab.scherrer.twoTheta")}
           <input
             type="number"
             min="0"
@@ -241,7 +247,7 @@ export function ScherrerCalculator() {
           />
         </label>
         <label>
-          Shape factor K
+          {t("lab.scherrer.shapeFactor")}
           <input
             type="number"
             min="0"
@@ -257,11 +263,11 @@ export function ScherrerCalculator() {
           checked={correctInstrument}
           onChange={(event) => setCorrectInstrument(event.currentTarget.checked)}
         />
-        Correct instrumental broadening by quadrature
+        {t("lab.scherrer.correct")}
       </label>
       {correctInstrument && (
         <MeasurementField
-          label="Instrument FWHM"
+          label={t("lab.scherrer.instrumentFwhm")}
           value={instrumentFwhm}
           onValue={setInstrumentFwhm}
           unit={fwhmUnit}
@@ -273,22 +279,23 @@ export function ScherrerCalculator() {
       <div class="lab-pack__output" aria-live="polite" aria-atomic="true">
         {outcome.ok ? (
           <output>
-            <span>Crystallite size</span>
+            <span>{t("lab.scherrer.result")}</span>
             <strong>{formatNumber(outcome.result.crystalliteSizeNanometres)} nm</strong>
           </output>
         ) : (
-          <Issues errors={outcome.errors} />
+          <Issues errors={outcome.errors} t={t} />
         )}
       </div>
-      <Warnings warnings={outcome.warnings} />
+      <Warnings warnings={outcome.warnings} t={t} />
       {outcome.ok && (
-        <MethodDetails {...outcome.provenance} source={SCHERRER_SOURCE} />
+        <MethodDetails {...outcome.provenance} source={SCHERRER_SOURCE} t={t} />
       )}
     </section>
   );
 }
 
 export function SheetResistanceCalculator() {
+  const t = useTranslate();
   const [voltage, setVoltage] = useState("1");
   const [voltageUnit, setVoltageUnit] = useState<VoltageUnit>("mV");
   const [current, setCurrent] = useState("1");
@@ -324,11 +331,11 @@ export function SheetResistanceCalculator() {
 
   return (
     <section aria-labelledby="lab-sheet-title">
-      <h3 id="lab-sheet-title">Four-point-probe sheet resistance</h3>
-      <p class="lab-pack__intro">Equal-spacing infinite-sheet approximation, Rs = (π/ln 2)|V/I|.</p>
+      <h3 id="lab-sheet-title">{t("lab.sheet.title")}</h3>
+      <p class="lab-pack__intro">{t("lab.sheet.intro")}</p>
       <div class="lab-pack__grid">
         <MeasurementField
-          label="Probe voltage"
+          label={t("lab.sheet.voltage")}
           value={voltage}
           onValue={setVoltage}
           unit={voltageUnit}
@@ -336,7 +343,7 @@ export function SheetResistanceCalculator() {
           units={VOLTAGE_OPTIONS}
         />
         <MeasurementField
-          label="Source current"
+          label={t("lab.sheet.current")}
           value={current}
           onValue={setCurrent}
           unit={currentUnit}
@@ -350,11 +357,11 @@ export function SheetResistanceCalculator() {
           checked={includeThickness}
           onChange={(event) => setIncludeThickness(event.currentTarget.checked)}
         />
-        Calculate bulk resistivity from film thickness
+        {t("lab.sheet.useThickness")}
       </label>
       {includeThickness && (
         <MeasurementField
-          label="Film thickness"
+          label={t("lab.sheet.thickness")}
           value={thickness}
           onValue={setThickness}
           unit={thicknessUnit}
@@ -367,29 +374,30 @@ export function SheetResistanceCalculator() {
         {outcome.ok ? (
           <div>
             <output>
-              <span>Sheet resistance</span>
+              <span>{t("lab.sheet.result")}</span>
               <strong>{formatNumber(outcome.result.sheetResistanceOhmsPerSquare)} Ω/□</strong>
             </output>
             {outcome.result.resistivityOhmMetres !== undefined && (
               <output>
-                <span>Bulk resistivity</span>
+                <span>{t("lab.sheet.resistivity")}</span>
                 <strong>{formatNumber(outcome.result.resistivityOhmMetres)} Ω·m</strong>
               </output>
             )}
           </div>
         ) : (
-          <Issues errors={outcome.errors} />
+          <Issues errors={outcome.errors} t={t} />
         )}
       </div>
-      <Warnings warnings={outcome.warnings} />
+      <Warnings warnings={outcome.warnings} t={t} />
       {outcome.ok && (
-        <MethodDetails {...outcome.provenance} source={FOUR_POINT_PROBE_SOURCE} />
+        <MethodDetails {...outcome.provenance} source={FOUR_POINT_PROBE_SOURCE} t={t} />
       )}
     </section>
   );
 }
 
 export function HallCalculator() {
+  const t = useTranslate();
   const [current, setCurrent] = useState("10");
   const [currentUnit, setCurrentUnit] = useState<CurrentUnit>("mA");
   const [field, setField] = useState("500");
@@ -424,11 +432,11 @@ export function HallCalculator() {
 
   return (
     <section aria-labelledby="lab-hall-title">
-      <h3 id="lab-hall-title">Single-carrier Hall measurement</h3>
-      <p class="lab-pack__intro">Signed RH, bulk carrier density and Hall mobility.</p>
+      <h3 id="lab-hall-title">{t("lab.hall.title")}</h3>
+      <p class="lab-pack__intro">{t("lab.hall.intro")}</p>
       <div class="lab-pack__grid">
         <MeasurementField
-          label="Source current"
+          label={t("lab.hall.current")}
           value={current}
           onValue={setCurrent}
           unit={currentUnit}
@@ -436,7 +444,7 @@ export function HallCalculator() {
           units={CURRENT_OPTIONS}
         />
         <MeasurementField
-          label="Magnetic field"
+          label={t("lab.hall.field")}
           value={field}
           onValue={setField}
           unit={fieldUnit}
@@ -448,7 +456,7 @@ export function HallCalculator() {
           ]}
         />
         <MeasurementField
-          label="Conducting thickness"
+          label={t("lab.hall.thickness")}
           value={thickness}
           onValue={setThickness}
           unit={thicknessUnit}
@@ -457,7 +465,7 @@ export function HallCalculator() {
           min="0"
         />
         <MeasurementField
-          label="Hall voltage"
+          label={t("lab.hall.voltage")}
           value={hallVoltage}
           onValue={setHallVoltage}
           unit={voltageUnit}
@@ -465,7 +473,7 @@ export function HallCalculator() {
           units={VOLTAGE_OPTIONS}
         />
         <label>
-          Sheet resistance (Ω/□)
+          {t("lab.hall.sheetResistance")}
           <input
             type="number"
             min="0"
@@ -479,33 +487,34 @@ export function HallCalculator() {
         {outcome.ok ? (
           <div class="lab-pack__result-grid">
             <output>
-              <span>Hall coefficient</span>
+              <span>{t("lab.hall.coefficient")}</span>
               <strong>{formatNumber(outcome.result.hallCoefficientCubicCentimetresPerCoulomb)} cm³/C</strong>
             </output>
             <output>
-              <span>Carrier density</span>
+              <span>{t("lab.hall.density")}</span>
               <strong>{formatNumber(outcome.result.carrierDensityPerCubicCentimetre)} cm⁻³</strong>
             </output>
             <output>
-              <span>Hall mobility</span>
+              <span>{t("lab.hall.mobility")}</span>
               <strong>{formatNumber(outcome.result.mobilitySquareCentimetresPerVoltSecond)} cm²/(V·s)</strong>
             </output>
             <output>
-              <span>Conventional polarity</span>
+              <span>{t("lab.hall.polarity")}</span>
               <strong>{outcome.result.conventionalDominantCarrier}</strong>
             </output>
           </div>
         ) : (
-          <Issues errors={outcome.errors} />
+          <Issues errors={outcome.errors} t={t} />
         )}
       </div>
-      <Warnings warnings={outcome.warnings} />
-      {outcome.ok && <MethodDetails {...outcome.provenance} source={HALL_SOURCE} />}
+      <Warnings warnings={outcome.warnings} t={t} />
+      {outcome.ok && <MethodDetails {...outcome.provenance} source={HALL_SOURCE} t={t} />}
     </section>
   );
 }
 
 export function VacuumCalculator() {
+  const t = useTranslate();
   const [pressure, setPressure] = useState("1e-6");
   const [pressureUnit, setPressureUnit] = useState<PressureUnit>("mbar");
   const [temperature, setTemperature] = useState("300");
@@ -543,11 +552,11 @@ export function VacuumCalculator() {
 
   return (
     <section aria-labelledby="lab-vacuum-title">
-      <h3 id="lab-vacuum-title">Vacuum gas kinetics</h3>
-      <p class="lab-pack__intro">Hard-sphere mean free path and monolayer formation estimate.</p>
+      <h3 id="lab-vacuum-title">{t("lab.vacuum.title")}</h3>
+      <p class="lab-pack__intro">{t("lab.vacuum.intro")}</p>
       <div class="lab-pack__grid">
         <MeasurementField
-          label="Pressure"
+          label={t("lab.vacuum.pressure")}
           value={pressure}
           onValue={setPressure}
           unit={pressureUnit}
@@ -560,7 +569,7 @@ export function VacuumCalculator() {
           min="0"
         />
         <MeasurementField
-          label="Gas temperature"
+          label={t("lab.vacuum.temperature")}
           value={temperature}
           onValue={setTemperature}
           unit={temperatureUnit}
@@ -571,7 +580,7 @@ export function VacuumCalculator() {
           ]}
         />
         <MeasurementField
-          label="Molecular diameter"
+          label={t("lab.vacuum.diameter")}
           value={diameter}
           onValue={setDiameter}
           unit={diameterUnit}
@@ -580,7 +589,7 @@ export function VacuumCalculator() {
           min="0"
         />
         <MeasurementField
-          label="Molecular mass"
+          label={t("lab.vacuum.mass")}
           value={mass}
           onValue={setMass}
           unit={massUnit}
@@ -592,7 +601,7 @@ export function VacuumCalculator() {
           min="0"
         />
         <label>
-          Sticking coefficient (0–1)
+          {t("lab.vacuum.sticking")}
           <input
             type="number"
             min="0"
@@ -607,29 +616,30 @@ export function VacuumCalculator() {
         {outcome.ok ? (
           <div class="lab-pack__result-grid">
             <output>
-              <span>Mean free path</span>
+              <span>{t("lab.vacuum.meanFreePath")}</span>
               <strong>{formatNumber(outcome.result.meanFreePathMetres)} m</strong>
             </output>
             <output>
-              <span>Impingement rate</span>
+              <span>{t("lab.vacuum.impingement")}</span>
               <strong>{formatNumber(outcome.result.impingementRatePerSquareMetreSecond)} m⁻²·s⁻¹</strong>
             </output>
             <output>
-              <span>Monolayer time</span>
+              <span>{t("lab.vacuum.monolayer")}</span>
               <strong>{formatNumber(outcome.result.monolayerFormationTimeSeconds)} s</strong>
             </output>
           </div>
         ) : (
-          <Issues errors={outcome.errors} />
+          <Issues errors={outcome.errors} t={t} />
         )}
       </div>
-      <Warnings warnings={outcome.warnings} />
-      {outcome.ok && <MethodDetails {...outcome.provenance} source={VACUUM_SOURCE} />}
+      <Warnings warnings={outcome.warnings} t={t} />
+      {outcome.ok && <MethodDetails {...outcome.provenance} source={VACUUM_SOURCE} t={t} />}
     </section>
   );
 }
 
 export function LabCalculatorPack() {
+  const t = useTranslate();
   const [calculator, setCalculator] = useState<CalculatorKind>("scherrer");
   const selectId = useId();
 
@@ -637,7 +647,7 @@ export function LabCalculatorPack() {
     <article class="lab-pack">
       <header class="lab-pack__header">
         <div>
-          <h2>Lab calculator pack</h2>
+          <h2>{t("module.scherrer-size.kind")}</h2>
           <p>Local, unit-aware models with recorded assumptions and references.</p>
         </div>
         <label for={selectId}>
@@ -649,10 +659,10 @@ export function LabCalculatorPack() {
               setCalculator(event.currentTarget.value as CalculatorKind)
             }
           >
-            <option value="scherrer">Scherrer size</option>
-            <option value="sheet">Sheet resistance</option>
-            <option value="hall">Hall measurement</option>
-            <option value="vacuum">Vacuum kinetics</option>
+            <option value="scherrer">{t("module.scherrer-size.title")}</option>
+            <option value="sheet">{t("module.sheet-resistance.title")}</option>
+            <option value="hall">{t("module.hall-measurement.title")}</option>
+            <option value="vacuum">{t("module.vacuum-kinetics.title")}</option>
           </select>
         </label>
       </header>

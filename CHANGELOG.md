@@ -47,9 +47,18 @@ replacing the flat, uniform card wall.
 - The density preference is now reachable from the board, not just Options, and
   persists.
 - Module grid widens to six columns above 1800 px.
-- Interface language set to Turkish on the shell chrome (top bar, workspace
-  header, toolbar, module manager, card eyebrows, footer); `lang` on the pages
-  corrected from `en` to `tr`.
+- **The interface is now translated.** The `locale` preference (`tr` / `en`)
+  already existed but did nothing; it now drives the whole UI. Every user-facing
+  string moved into `src/platform/locales/{en,tr}.ts` behind a `t()` helper, and
+  the Options language picker switches the interface immediately. English is the
+  type source of truth, so a key missing from Turkish is a build error rather
+  than an English string leaking through.
+- Engine diagnostics are translated by their stable `code`, falling back to the
+  engine's own English text — the calculation modules were not touched.
+- `lang` on the pages follows the chosen locale instead of being hardcoded to
+  `en`, and `Intl` formatters use the matching tag rather than always `tr-TR`.
+- Proper nouns (Bragg, Scherrer, Hall, CODATA, FWHM, arXiv, DOI, RSS), unit
+  symbols, and export format names stay untranslated on purpose.
 
 ### Fixed
 

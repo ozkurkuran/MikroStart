@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 
+import { localeTag, useI18n } from "../platform/i18n";
 import type { NormalizedFeedItem } from "../features/feeds";
 import { IndexedDbNotebookRepository } from "../features/notebook";
 import {
@@ -41,11 +42,11 @@ function sourceTitleFromUrl(url: URL): string {
   return url.hostname.replace(/^www\./, "");
 }
 
-function formatDate(value?: string): string {
-  if (!value) return "Date unavailable";
+function formatDate(value: string | undefined, tag: string, fallback: string): string {
+  if (!value) return fallback;
   const date = new Date(value);
-  if (Number.isNaN(date.valueOf())) return "Date unavailable";
-  return new Intl.DateTimeFormat("tr-TR", {
+  if (Number.isNaN(date.valueOf())) return fallback;
+  return new Intl.DateTimeFormat(tag, {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -53,6 +54,7 @@ function formatDate(value?: string): string {
 }
 
 export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
+  const { locale, t } = useI18n();
   const [feedUrl, setFeedUrl] = useState(DEFAULT_FEED);
   const [subscriptions, setSubscriptions] = useState<FeedSubscription[]>([]);
   const [items, setItems] = useState<NormalizedFeedItem[]>([]);
@@ -72,13 +74,13 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
 
   useEffect(() => {
     void reload().catch((error: unknown) =>
-      setMessage(error instanceof Error ? error.message : "Local feed cache could not be opened."),
+      setMessage(error instanceof Error ? error.message : t("feed.msg.cacheFailed")),
     );
   }, []);
 
   const visibleItems = items
     .filter((item) => {
-      const needle = query.trim().toLocaleLowerCase("tr-TR");
+      const needle = query.trim().toLocaleLowerCase(localeTag(locale));
       if (!needle) return true;
       return [
         item.title,
@@ -88,7 +90,7 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
         ...item.authors.map((author) => author.name),
       ]
         .join(" ")
-        .toLocaleLowerCase("tr-TR")
+        .toLocaleLowerCase(localeTag(locale))
         .includes(needle);
     })
     .slice(0, 20);
@@ -110,7 +112,7 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
       const url = new URL(feedUrl);
       const permission = await requestSourcePermission(url.href);
       if (!permission.granted) {
-        setMessage("Kaynak izni verilmedi; diğer modüller çalışmaya devam eder.");
+        setMessage(t("feed.msg.permissionDenied"));
         return;
       }
 
@@ -124,9 +126,9 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
       });
       if (!response.ok) throw new Error(response.error);
       await reload();
-      setMessage("Kaynak eklendi ve yerel önbellek güncellendi.");
+      setMessage(t("feed.msg.added"));
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Kaynak eklenemedi.");
+      setMessage(error instanceof Error ? error.message : t("feed.msg.addFailed"));
     } finally {
       setBusy(false);
     }
@@ -140,7 +142,7 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
       if (!response.ok) throw new Error(response.error);
       await reload();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Kaynak yenilenemedi.");
+      setMessage(error instanceof Error ? error.message : t("feed.msg.refreshFailed"));
     } finally {
       setBusy(false);
     }
@@ -161,7 +163,7 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
       }
       await reload();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Kaynak kaldırılamadı.");
+      setMessage(error instanceof Error ? error.message : t("feed.msg.removeFailed"));
     } finally {
       setBusy(false);
     }
@@ -189,14 +191,14 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
         },
         newNote: {
           title: item.title,
-          markdown: `[Kaynağı aç](${item.canonicalUrl})`,
+          markdown: `[${t("feed.openSourceMarkdown")}](${item.canonicalUrl})`,
           tags: ["literature"],
         },
       });
       window.dispatchEvent(new Event("benchtab:notebook-changed"));
-      setMessage("Kaynak ve referans notebook’a kaydedildi.");
+      setMessage(t("feed.msg.saved"));
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Notebook’a kaydedilemedi.");
+      setMessage(error instanceof Error ? error.message : t("feed.msg.saveFailed"));
     } finally {
       notebook.close();
       setBusy(false);
@@ -206,12 +208,12 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
   return (
     <article class="widget feed-panel">
       <div class="widget__heading">
-        <span class="widget__eyebrow">Yayın akışı · Kaynaklı</span>
-        <span class="module-count">{subscriptions.length} source</span>
+        <span class="widget__eyebrow">{t("feed.eyebrow")}</span>
+        <span class="module-count">{t("feed.sourceCount", { count: subscriptions.length })}</span>
       </div>
-      <h2>Research feed</h2>
+      <h2>{t("feed.title")}</h2>
 
-      <div class="preset-row" aria-label="Curated source presets">
+      <div class="preset-row" aria-label={t("feed.presetsAria")}>
         {FEED_PRESETS.map((preset) => (
           <button key={preset.url} type="button" onClick={() => setFeedUrl(preset.url)}>
             {preset.label}
@@ -226,7 +228,7 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
           void addSource();
         }}
       >
-        <label for="feed-url">RSS or Atom URL</label>
+        <label for="feed-url">{t("feed.urlLabel")}</label>
         <div>
           <input
             id="feed-url"
@@ -237,24 +239,24 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
             onInput={(event) => setFeedUrl(event.currentTarget.value)}
             aria-describedby="feed-permission-help"
           />
-          <button class="button button--small" type="submit" disabled={busy}>Add</button>
+          <button class="button button--small" type="submit" disabled={busy}>{t("feed.add")}</button>
         </div>
-        <small id="feed-permission-help">Chrome asks for access only to this source’s origin.</small>
+        <small id="feed-permission-help">{t("feed.permissionHelp")}</small>
       </form>
 
       {subscriptions.length > 0 && (
-        <ul class="source-list" aria-label="Enabled feed sources">
+        <ul class="source-list" aria-label={t("feed.sourcesAria")}>
           {subscriptions.map((source) => (
             <li key={source.id}>
               <span>
                 <strong>{source.title}</strong>
                 <small class={source.lastError ? "source-error" : ""}>
-                  {source.lastError ?? (source.lastSuccessAt ? "Cached locally" : "Waiting for first refresh")}
+                  {source.lastError ?? (source.lastSuccessAt ? t("feed.cachedLocally") : t("feed.waitingFirstRefresh"))}
                 </small>
               </span>
               <span class="source-actions">
-                <button type="button" onClick={() => void refreshSource(source.id)} disabled={busy}>↻</button>
-                <button type="button" onClick={() => void removeSource(source.id)} disabled={busy}>×</button>
+                <button type="button" onClick={() => void refreshSource(source.id)} disabled={busy} aria-label={t("feed.refresh")}>↻</button>
+                <button type="button" onClick={() => void removeSource(source.id)} disabled={busy} aria-label={t("feed.remove")}>×</button>
               </span>
             </li>
           ))}
@@ -265,31 +267,31 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
 
       {items.length > 0 && (
         <label class="feed-search">
-          <span>Search local cache</span>
+          <span>{t("feed.searchLabel")}</span>
           <input
             type="search"
             value={query}
             onInput={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Title, author, DOI, arXiv…"
+            placeholder={t("feed.searchPlaceholder")}
           />
         </label>
       )}
 
       <div class="feed-items" aria-live="polite">
         {items.length === 0 ? (
-          <p class="empty-state">Henüz önbelleğe alınmış yayın yok. Bir kaynak ekleyerek başlayın.</p>
+          <p class="empty-state">{t("feed.empty")}</p>
         ) : (
           visibleItems.map((item) => (
             <article class="feed-item" key={item.id}>
               <p>
                 {item.identifiers.arxiv ? "arXiv" : item.identifiers.doi ? "DOI" : "FEED"}
-                <span>·</span>{formatDate(item.publishedAt ?? item.updatedAt)}
+                <span>·</span>{formatDate(item.publishedAt ?? item.updatedAt, localeTag(locale), t("feed.dateUnavailable"))}
               </p>
               <h3>{item.title}</h3>
               {item.authors.length > 0 && <small>{item.authors.slice(0, 3).map((author) => author.name).join(", ")}</small>}
               <div class="feed-item__actions">
-                {item.canonicalUrl && <a href={item.canonicalUrl} target="_blank" rel="noreferrer">Source ↗</a>}
-                <button type="button" onClick={() => void saveToNotebook(item)} disabled={busy || !item.canonicalUrl}>Save to notebook</button>
+                {item.canonicalUrl && <a href={item.canonicalUrl} target="_blank" rel="noreferrer">{t("feed.openSource")}</a>}
+                <button type="button" onClick={() => void saveToNotebook(item)} disabled={busy || !item.canonicalUrl}>{t("feed.saveToNotebook")}</button>
                 <label class="ai-select">
                   <input
                     type="checkbox"
@@ -297,7 +299,7 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
                     onChange={() => toggleAiSelection(item)}
                     disabled={!selectedIds.has(item.id) && selectedIds.size >= 8}
                   />
-                  AI context
+                  {t("feed.aiContext")}
                 </label>
               </div>
             </article>

@@ -1,6 +1,9 @@
 import { useId, useMemo, useState } from "preact/hooks";
 
+import { useTranslate } from "../../platform/i18n";
+
 export function TurengDictionaryCard() {
+  const t = useTranslate();
   const id = useId();
   const [query, setQuery] = useState("");
   const url = useMemo(
@@ -12,16 +15,16 @@ export function TurengDictionaryCard() {
 
   return (
     <article class="widget language-tools" aria-labelledby={`${id}-title`}>
-      <div class="widget__heading"><span class="widget__eyebrow">Dil aracı · Dış bağlantı</span></div>
-      <h2 id={`${id}-title`}>Tureng sözlük</h2>
-      <p class="widget__description">Teknik bir Türkçe veya İngilizce terimi Tureng’de arayın.</p>
+      <div class="widget__heading"><span class="widget__eyebrow">{t("lang.eyebrowExternal")}</span></div>
+      <h2 id={`${id}-title`}>{t("tureng.title")}</h2>
+      <p class="widget__description">{t("tureng.description")}</p>
       <label class="language-tools__input">
-        Terim
+        {t("tureng.termLabel")}
         <input
           type="search"
           maxlength={200}
           value={query}
-          placeholder="Örn. sheet resistance"
+          placeholder={t("tureng.termPlaceholder")}
           onInput={(event) => setQuery(event.currentTarget.value)}
         />
       </label>
@@ -33,9 +36,9 @@ export function TurengDictionaryCard() {
         aria-disabled={url === "#"}
         onClick={(event) => url === "#" && event.preventDefault()}
       >
-        Tureng’de ara ↗
+        {t("lang.openTureng")}
       </a>
-      <small class="language-tools__privacy">Sorgu yalnızca bu bağlantıya bastığınızda Tureng’e gönderilir.</small>
+      <small class="language-tools__privacy">{t("tureng.privacy")}</small>
     </article>
   );
 }

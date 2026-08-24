@@ -37,6 +37,12 @@ import {
   type DashboardLayout,
   type ModuleId,
 } from "../platform/layoutPreferences";
+import {
+  createTranslate,
+  I18nProvider,
+  localeTag,
+  type Translate,
+} from "../platform/i18n";
 import { FeedPanel } from "./FeedPanel";
 import { ModuleManager } from "./ModuleManager";
 import { ModuleSlot } from "./ModuleSlot";
@@ -61,7 +67,7 @@ const ELEMENT_KINDS = ["element"] as const;
 const SERIES_KINDS = ["e-series"] as const;
 
 function formatClock(date: Date, locale: UserPreferences["locale"]): string {
-  return new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : "en-GB", {
+  return new Intl.DateTimeFormat(localeTag(locale), {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
@@ -70,9 +76,10 @@ function formatClock(date: Date, locale: UserPreferences["locale"]): string {
 function formatAiResult(
   result: AiPanelResult,
   sourceLabels: ReadonlyMap<string, string>,
+  t: Translate,
 ): string {
-  const labels = (ids: readonly string[]) =>
-    ids.map((id) => sourceLabels.get(id) ?? "[seçilmiş kaynak]").join(", ");
+  const cited = (id: string) => sourceLabels.get(id) ?? t("ai.citedSource");
+  const labels = (ids: readonly string[]) => ids.map(cited).join(", ");
 
   if (result.mode === "summarize" || result.mode === "translate") {
     return result.value.text;
@@ -85,7 +92,7 @@ function formatAiResult(
   return result.value.items
     .map(
       (item) =>
-        `- ${Math.round(item.score * 100)}% · ${item.reason} — ${sourceLabels.get(item.sourceId) ?? "[seçilmiş kaynak]"}`,
+        `- ${Math.round(item.score * 100)}% · ${item.reason} — ${cited(item.sourceId)}`,
     )
     .join("\n");
 }
@@ -107,9 +114,15 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
     return () => window.clearInterval(timer);
   }, []);
 
+  const t = useMemo(() => createTranslate(preferences.locale), [preferences.locale]);
+
   useEffect(() => {
     document.documentElement.dataset.theme = preferences.theme;
   }, [preferences.theme]);
+
+  useEffect(() => {
+    document.documentElement.lang = preferences.locale;
+  }, [preferences.locale]);
 
   function updateLayout(next: DashboardLayout) {
     setLayout(next);
@@ -147,11 +160,11 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       )
       .join("\n");
     const markdown = [
-      "> AI-generated on this device. Verify every claim against the linked sources.",
+      `> ${t("ai.disclaimer")}`,
       "",
-      formatAiResult(result, sourceLabels),
+      formatAiResult(result, sourceLabels, t),
       "",
-      "## Sources",
+      `## ${t("ai.sourcesHeading")}`,
       "",
       sourceList,
     ].join("\n");
@@ -159,7 +172,10 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
     try {
       const note = await repository.createNote({
         type: "literature",
-        title: `On-device AI ${result.mode} · ${new Date().toLocaleDateString("tr-TR")}`,
+        title: t("ai.noteTitle", {
+          mode: t(`ai.mode.${result.mode}`),
+          date: new Date().toLocaleDateString(localeTag(preferences.locale)),
+        }),
         markdown,
         tags: ["ai-generated", result.mode],
       });
@@ -195,7 +211,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         return (
           <article class="widget widget--calculator">
             <div class="widget__heading">
-              <span class="widget__eyebrow">{moduleEyebrow("bragg-spacing")}</span>
+              <span class="widget__eyebrow">{moduleEyebrow(t, "bragg-spacing")}</span>
             </div>
             <BraggCalculator />
           </article>
@@ -203,28 +219,28 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       case "scherrer-size":
         return (
           <article class="widget lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("scherrer-size")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "scherrer-size")}</span></div>
             <ScherrerCalculator />
           </article>
         );
       case "sheet-resistance":
         return (
           <article class="widget lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("sheet-resistance")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "sheet-resistance")}</span></div>
             <SheetResistanceCalculator />
           </article>
         );
       case "hall-measurement":
         return (
           <article class="widget lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("hall-measurement")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "hall-measurement")}</span></div>
             <HallCalculator />
           </article>
         );
       case "vacuum-kinetics":
         return (
           <article class="widget lab-pack">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("vacuum-kinetics")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "vacuum-kinetics")}</span></div>
             <VacuumCalculator />
           </article>
         );
@@ -247,12 +263,12 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       case "codata-constants":
         return (
           <article class="widget widget--embedded">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("codata-constants")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "codata-constants")}</span></div>
             <ReferenceLibrary
               kinds={CONSTANT_KINDS}
-              title="CODATA sabitleri"
-              description="Temel fizik sabitlerini cihazda arayın."
-              placeholder="Boltzmann, Planck veya c"
+              title={t("ref.constants.title")}
+              description={t("ref.constants.description")}
+              placeholder={t("ref.constants.placeholder")}
               sourceIds={[REFERENCE_SOURCES.codata2022.id]}
             />
           </article>
@@ -260,12 +276,12 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       case "periodic-table":
         return (
           <article class="widget widget--embedded">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("periodic-table")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "periodic-table")}</span></div>
             <ReferenceLibrary
               kinds={ELEMENT_KINDS}
-              title="Periyodik tablo"
-              description="118 elementi ad, sembol veya atom numarasıyla arayın."
-              placeholder="Fe, gold veya 79"
+              title={t("ref.elements.title")}
+              description={t("ref.elements.description")}
+              placeholder={t("ref.elements.placeholder")}
               sourceIds={[REFERENCE_SOURCES.atomicWeights2024.id, REFERENCE_SOURCES.periodicTable2022.id]}
             />
           </article>
@@ -273,12 +289,12 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       case "component-series":
         return (
           <article class="widget widget--embedded">
-            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow("component-series")}</span></div>
+            <div class="widget__heading"><span class="widget__eyebrow">{moduleEyebrow(t, "component-series")}</span></div>
             <ReferenceLibrary
               kinds={SERIES_KINDS}
-              title="Standart bileşen serileri"
-              description="IEC E6, E12 ve E24 tercih edilen değerleri."
-              placeholder="E6, E12 veya E24"
+              title={t("ref.series.title")}
+              description={t("ref.series.description")}
+              placeholder={t("ref.series.placeholder")}
               initialQuery="E12"
               sourceIds={[REFERENCE_SOURCES.eSeries2015.id]}
             />
@@ -299,7 +315,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
   const dateLabel = useMemo(
     () =>
-      new Intl.DateTimeFormat(preferences.locale === "tr" ? "tr-TR" : "en-GB", {
+      new Intl.DateTimeFormat(localeTag(preferences.locale), {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -315,8 +331,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
   /** Search narrows the board; the category chips then narrow it further. */
   const searchMatchedIds = useMemo(
-    () => enabledIds.filter((id) => matchesModuleQuery(MODULE_CATALOG[id], query)),
-    [enabledIds, query],
+    () => enabledIds.filter((id) => matchesModuleQuery(t, id, query)),
+    [enabledIds, query, t],
   );
 
   const visibleIds = useMemo(
@@ -339,21 +355,22 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const isFiltered = query.trim().length > 0 || category !== "all";
 
   return (
+    <I18nProvider locale={preferences.locale}>
     <main class={`workbench workbench--${surface}${preferences.compactCards ? " workbench--compact" : ""}`}>
       <header class="topbar">
-        <a class="brand" href="/pages/dashboard.html" aria-label="BenchTab dashboard">
+        <a class="brand" href="/pages/dashboard.html" aria-label={t("app.dashboardAria")}>
           <span class="brand__mark" aria-hidden="true">B</span>
           <span>
-            <strong>BenchTab</strong>
-            <small>research workbench</small>
+            <strong>{t("app.name")}</strong>
+            <small>{t("app.tagline")}</small>
           </span>
         </a>
         <div class="topbar__center">
           <span class="status-dot" aria-hidden="true" />
-          Yerel çalışma alanı
+          {t("topbar.localWorkspace")}
         </div>
-        <nav class="topbar__actions" aria-label="Çalışma alanı işlemleri">
-          <a class="button button--quiet" href="/pages/options.html">Ayarlar</a>
+        <nav class="topbar__actions" aria-label={t("topbar.actionsAria")}>
+          <a class="button button--quiet" href="/pages/options.html">{t("topbar.settings")}</a>
           <time dateTime={now.toISOString()}>{formatClock(now, preferences.locale)}</time>
         </nav>
       </header>
@@ -361,11 +378,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       <section class="workspace-intro">
         <div>
           <p class="overline">{dateLabel}</p>
-          <h1>Araştırma çalışma alanı</h1>
-          <p class="workspace-intro__lede">
-            Hesaplama, literatür, referans ve akış modülleriniz tek panoda. Tüm veriler
-            bu cihazda kalır.
-          </p>
+          <h1>{t("workspace.title")}</h1>
+          <p class="workspace-intro__lede">{t("workspace.lede")}</p>
         </div>
       </section>
 
@@ -384,7 +398,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
       />
 
       <WorkflowProvider storage={window.localStorage}>
-        <section class="module-grid" aria-label="Araştırma modülleri">
+        <section class="module-grid" aria-label={t("board.aria")}>
           {visibleIds.map((id) => (
             <ModuleSlot id={id} key={id}>
               {moduleContent(id)}
@@ -393,12 +407,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
           {visibleIds.length === 0 && (
             <div class="board-empty">
-              <h2>{isFiltered ? "Eşleşen modül yok" : "Pano boş"}</h2>
-              <p>
-                {isFiltered
-                  ? "Aramanızı değiştirin veya başka bir kategori seçin."
-                  : "Tüm modüller gizlenmiş. Modülleri yönet ile yeniden açabilirsiniz."}
-              </p>
+              <h2>{isFiltered ? t("board.noMatchTitle") : t("board.emptyTitle")}</h2>
+              <p>{isFiltered ? t("board.noMatchBody") : t("board.emptyBody")}</p>
               {isFiltered ? (
                 <button
                   class="button"
@@ -408,11 +418,11 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
                     setCategory("all");
                   }}
                 >
-                  Filtreleri temizle
+                  {t("board.clearFilters")}
                 </button>
               ) : (
                 <button class="button" type="button" onClick={() => setManageModules(true)}>
-                  Modülleri yönet
+                  {t("toolbar.manage")}
                 </button>
               )}
             </div>
@@ -430,8 +440,9 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
       <footer class="privacy-strip">
         <span class="status-dot" aria-hidden="true" />
-        Hesap yok · Telemetri yok · Dış kaynaklar için izniniz gerekir
+        {t("privacy.strip")}
       </footer>
     </main>
+    </I18nProvider>
   );
 }

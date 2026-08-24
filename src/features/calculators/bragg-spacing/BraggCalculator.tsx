@@ -8,6 +8,7 @@ import {
   type BraggSolveFor,
   type LengthUnit,
 } from "./engine";
+import { useTranslate } from "../../../platform/i18n";
 import "./bragg-calculator.css";
 
 function parseNumericInput(value: string): number {
@@ -19,6 +20,7 @@ function formatResult(value: number): string {
 }
 
 export function BraggCalculator() {
+  const t = useTranslate();
   const instanceId = useId();
   const titleId = `${instanceId}-title`;
   const wavelengthHelpId = `${instanceId}-wavelength-help`;
@@ -62,16 +64,16 @@ export function BraggCalculator() {
     <section class="bragg-calculator" aria-labelledby={titleId}>
       <header class="bragg-calculator__header">
         <div>
-          <h2 id={titleId}>Bragg / d-spacing</h2>
-          <p>First-order Bragg law, λ = 2d sin(θ).</p>
+          <h2 id={titleId}>{t("bragg.title")}</h2>
+          <p>{t("bragg.description")}</p>
         </div>
         <button type="button" class="bragg-calculator__preset" onClick={resetToCopper}>
-          Cu Kα preset
+          {t("bragg.preset")}
         </button>
       </header>
 
       <fieldset class="bragg-calculator__mode">
-        <legend>Solve for</legend>
+        <legend>{t("bragg.solveFor")}</legend>
         <label>
           <input
             type="radio"
@@ -80,7 +82,7 @@ export function BraggCalculator() {
             checked={solveFor === "dSpacing"}
             onChange={() => setSolveFor("dSpacing")}
           />
-          d-spacing
+          {t("bragg.dSpacing")}
         </label>
         <label>
           <input
@@ -90,13 +92,13 @@ export function BraggCalculator() {
             checked={solveFor === "twoTheta"}
             onChange={() => setSolveFor("twoTheta")}
           />
-          2θ
+          {t("bragg.twoTheta")}
         </label>
       </fieldset>
 
       <div class="bragg-calculator__grid">
         <label>
-          Wavelength
+          {t("bragg.wavelength")}
           <input
             type="number"
             min="0"
@@ -109,21 +111,21 @@ export function BraggCalculator() {
         </label>
 
         <label>
-          Length unit
+          {t("bragg.lengthUnit")}
           <select
             value={unit}
             onChange={(event) =>
               setUnit(event.currentTarget.value as LengthUnit)
             }
           >
-            <option value="angstrom">Å (angstrom)</option>
+            <option value="angstrom">{t("bragg.angstrom")}</option>
             <option value="nm">nm</option>
           </select>
         </label>
 
         {solveFor === "dSpacing" ? (
           <label>
-            2θ (degrees)
+            {t("bragg.twoThetaDegrees")}
             <input
               type="number"
               min="0"
@@ -136,7 +138,7 @@ export function BraggCalculator() {
           </label>
         ) : (
           <label>
-            d-spacing ({unit === "angstrom" ? "Å" : "nm"})
+            {t("bragg.dSpacingUnit", { unit: unit === "angstrom" ? "Å" : "nm" })}
             <input
               type="number"
               min="0"
@@ -150,7 +152,7 @@ export function BraggCalculator() {
       </div>
 
       <p id={wavelengthHelpId} class="bragg-calculator__help">
-        Cu Kα default: 1.5406 Å. The model assumes diffraction order n = 1.
+        {t("bragg.help")}
       </p>
 
       <div class="bragg-calculator__output" aria-live="polite" aria-atomic="true">
@@ -170,37 +172,39 @@ export function BraggCalculator() {
         ) : (
           <div role="alert">
             {outcome.errors.map((error) => (
-              <p key={`${error.field}:${error.code}`}>{error.message}</p>
+              <p key={`${error.field}:${error.code}`}>
+                {t.optional(`diag.${error.code}`, error.message, { field: error.field })}
+              </p>
             ))}
           </div>
         )}
       </div>
 
       {outcome.warnings.length > 0 && (
-        <ul class="bragg-calculator__warnings" aria-label="Calculation warnings">
+        <ul class="bragg-calculator__warnings" aria-label={t("lab.warningsAria")}>
           {outcome.warnings.map((warning) => (
-            <li key={warning.code}>{warning.message}</li>
+            <li key={warning.code}>{t.optional(`diag.${warning.code}`, warning.message)}</li>
           ))}
         </ul>
       )}
 
       {outcome.ok && (
         <details class="bragg-calculator__details">
-          <summary>Method and provenance</summary>
+          <summary>{t("lab.method")}</summary>
           <dl>
             <div>
-              <dt>Algorithm</dt>
+              <dt>{t("lab.algorithm")}</dt>
               <dd>
                 {outcome.provenance.algorithmId} v
                 {outcome.provenance.algorithmVersion}
               </dd>
             </div>
             <div>
-              <dt>Formula</dt>
+              <dt>{t("lab.formula")}</dt>
               <dd>{outcome.provenance.formulaId}</dd>
             </div>
             <div>
-              <dt>Reference</dt>
+              <dt>{t("lab.reference")}</dt>
               <dd>
                 <a href={BRAGG_SOURCE.url} target="_blank" rel="noreferrer">
                   {BRAGG_SOURCE.publisher}: {BRAGG_SOURCE.title}

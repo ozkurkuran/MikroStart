@@ -1,4 +1,10 @@
-import { CATEGORY_META, MODULE_CATEGORIES, type ModuleCategory } from "./moduleCatalog";
+import { useTranslate } from "../platform/i18n";
+import {
+  CATEGORY_ACCENT,
+  categoryLabel,
+  MODULE_CATEGORIES,
+  type ModuleCategory,
+} from "./moduleCatalog";
 
 export type CategoryFilter = ModuleCategory | "all";
 
@@ -31,17 +37,19 @@ export function WorkbenchToolbar({
   onCompactChange,
   onManage,
 }: WorkbenchToolbarProps) {
+  const t = useTranslate();
+
   return (
     <div class="workbench-toolbar" role="search">
       <div class="workbench-toolbar__search">
         <label class="sr-only" for="module-filter">
-          Modül ara
+          {t("toolbar.searchLabel")}
         </label>
         <input
           id="module-filter"
           type="search"
           value={query}
-          placeholder="Modül ara…"
+          placeholder={t("toolbar.searchPlaceholder")}
           autocomplete="off"
           onInput={(event) => onQueryChange(event.currentTarget.value)}
         />
@@ -50,63 +58,58 @@ export function WorkbenchToolbar({
             class="workbench-toolbar__clear"
             type="button"
             onClick={() => onQueryChange("")}
-            aria-label="Aramayı temizle"
+            aria-label={t("toolbar.clearSearch")}
           >
             ×
           </button>
         )}
       </div>
 
-      <div class="filter-chips" role="group" aria-label="Modül kategorileri">
+      <div class="filter-chips" role="group" aria-label={t("toolbar.categoriesAria")}>
         <button
           class="filter-chip"
           type="button"
           aria-pressed={category === "all"}
           onClick={() => onCategoryChange("all")}
         >
-          Tümü
+          {t("toolbar.all")}
           <span class="filter-chip__count">{matchedCount}</span>
         </button>
-        {MODULE_CATEGORIES.map((id) => {
-          const meta = CATEGORY_META[id];
-          return (
-            <button
-              key={id}
-              class="filter-chip"
-              type="button"
-              style={`--chip-accent: ${meta.accent}`}
-              aria-pressed={category === id}
-              onClick={() => onCategoryChange(category === id ? "all" : id)}
-            >
-              <span class="filter-chip__dot" aria-hidden="true" />
-              {meta.label}
-              <span class="filter-chip__count">{counts[id]}</span>
-            </button>
-          );
-        })}
+        {MODULE_CATEGORIES.map((id) => (
+          <button
+            key={id}
+            class="filter-chip"
+            type="button"
+            style={`--chip-accent: ${CATEGORY_ACCENT[id]}`}
+            aria-pressed={category === id}
+            onClick={() => onCategoryChange(category === id ? "all" : id)}
+          >
+            <span class="filter-chip__dot" aria-hidden="true" />
+            {categoryLabel(t, id)}
+            <span class="filter-chip__count">{counts[id]}</span>
+          </button>
+        ))}
       </div>
 
       <span class="workbench-toolbar__spacer" />
 
       <span class="workbench-toolbar__meta" aria-live="polite">
-        {shownCount === totalCount ? `${totalCount} modül` : `${shownCount} / ${totalCount} modül`}
+        {shownCount === totalCount
+          ? t("toolbar.count", { count: totalCount })
+          : t("toolbar.countFiltered", { shown: shownCount, total: totalCount })}
       </span>
 
-      <div class="segmented" role="group" aria-label="Kart yoğunluğu">
-        <button
-          type="button"
-          aria-pressed={!compact}
-          onClick={() => onCompactChange(false)}
-        >
-          Rahat
+      <div class="segmented" role="group" aria-label={t("toolbar.densityAria")}>
+        <button type="button" aria-pressed={!compact} onClick={() => onCompactChange(false)}>
+          {t("toolbar.comfortable")}
         </button>
         <button type="button" aria-pressed={compact} onClick={() => onCompactChange(true)}>
-          Sık
+          {t("toolbar.compact")}
         </button>
       </div>
 
       <button class="button button--primary" type="button" onClick={onManage}>
-        Modülleri yönet
+        {t("toolbar.manage")}
       </button>
     </div>
   );

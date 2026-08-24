@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 
+import { useTranslate, type Translate } from "../../platform/i18n";
 import "./ai-research-panel.css";
 import { createDefaultAiProvider } from "./providers";
 import type {
@@ -41,16 +42,10 @@ const MODE_CAPABILITY: Record<AiPanelMode, AiCapabilityId> = {
   rerank: "language-model",
 };
 
-const AVAILABILITY_LABEL: Record<AiAvailability, string> = {
-  unsupported: "Desteklenmiyor",
-  unavailable: "Kullanılamıyor",
-  downloadable: "İndirilmeye hazır",
-  downloading: "İndiriliyor",
-  available: "Hazır",
-};
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "Yerel AI görevi tamamlanamadı.";
+
+function errorMessage(error: unknown, t: Translate): string {
+  return error instanceof Error ? error.message : t("ai.msg.failed");
 }
 
 function combinedSourceText(sources: readonly AiResearchSource[]): string {
@@ -84,6 +79,7 @@ export function AiResearchPanel({
   onSaveResult,
   onRequestSourceSelection,
 }: AiResearchPanelProps) {
+  const t = useTranslate();
   const provider = useMemo(
     () => suppliedProvider ?? createDefaultAiProvider(),
     [suppliedProvider],
@@ -112,7 +108,7 @@ export function AiResearchPanel({
         if (active) setCapabilities(report);
       })
       .catch((error: unknown) => {
-        if (active) setMessage(errorMessage(error));
+        if (active) setMessage(errorMessage(error, t));
       });
     return () => {
       active = false;
@@ -198,7 +194,7 @@ export function AiResearchPanel({
       setResult(nextResult);
       onResult?.(nextResult);
     } catch (error) {
-      setMessage(errorMessage(error));
+      setMessage(errorMessage(error, t));
     } finally {
       setBusy(false);
     }
@@ -210,9 +206,9 @@ export function AiResearchPanel({
     setMessage(undefined);
     try {
       await onSaveResult(result);
-      setMessage("AI sonucu, açık etiketi ve kaynak bağlantılarıyla not defterine kaydedildi.");
+      setMessage(t("ai.msg.saved"));
     } catch (error) {
-      setMessage(errorMessage(error));
+      setMessage(errorMessage(error, t));
     } finally {
       setSaving(false);
     }
@@ -221,16 +217,14 @@ export function AiResearchPanel({
   return (
     <article class="widget ai-research-panel" aria-labelledby="ai-panel-title">
       <div class="widget__heading">
-        <span class="widget__eyebrow">Analiz · Cihaz içi</span>
-        <span class="module-count">{selectedSources.length} selected</span>
+        <span class="widget__eyebrow">{t("ai.eyebrow")}</span>
+        <span class="module-count">{t("ai.selectedCount", { count: selectedSources.length })}</span>
       </div>
-      <h2 id="ai-panel-title">Research assistant</h2>
-      <p class="widget__description">
-        Chrome’un yerel modelleri; bulut aktarımı veya otomatik geri dönüş yok.
-      </p>
+      <h2 id="ai-panel-title">{t("ai.title")}</h2>
+      <p class="widget__description">{t("ai.description")}</p>
 
       <fieldset class="ai-mode-picker">
-        <legend>AI görevi</legend>
+        <legend>{t("ai.taskLegend")}</legend>
         {(["summarize", "translate", "digest", "rerank"] as const).map((value) => (
           <label key={value}>
             <input
@@ -240,13 +234,7 @@ export function AiResearchPanel({
               checked={mode === value}
               onChange={() => setMode(value)}
             />
-            {value === "summarize"
-              ? "Özet"
-              : value === "translate"
-                ? "Çeviri"
-                : value === "digest"
-                  ? "Digest"
-                  : "Sırala"}
+            {t(`ai.mode.${value}`)}
           </label>
         ))}
       </fieldset>
@@ -254,7 +242,7 @@ export function AiResearchPanel({
       {mode === "translate" && (
         <div class="ai-language-row">
           <label>
-            Kaynak dili
+            {t("ai.sourceLanguage")}
             <input
               value={sourceLanguage}
               maxlength={35}
@@ -263,7 +251,7 @@ export function AiResearchPanel({
           </label>
           <span aria-hidden="true">→</span>
           <label>
-            Hedef dili
+            {t("ai.targetLanguage")}
             <input
               value={targetLanguage}
               maxlength={35}
@@ -275,11 +263,11 @@ export function AiResearchPanel({
 
       {(mode === "digest" || mode === "rerank") && (
         <label class="ai-focus-field">
-          {mode === "rerank" ? "Araştırma sorusu" : "İsteğe bağlı odak"}
+          {t(mode === "rerank" ? "ai.researchQuestion" : "ai.optionalFocus")}
           <input
             value={focus}
             maxlength={1_000}
-            placeholder={mode === "rerank" ? "Örn. Hangi çalışma ince film büyütmeyle ilgili?" : "Örn. yöntem ve sonuçlar"}
+            placeholder={t(mode === "rerank" ? "ai.rerankPlaceholder" : "ai.focusPlaceholder")}
             onInput={(event) => setFocus(event.currentTarget.value)}
           />
         </label>
@@ -288,10 +276,10 @@ export function AiResearchPanel({
       <div class="ai-source-summary">
         {selectedSources.length === 0 ? (
           <button type="button" class="text-button" onClick={onRequestSourceSelection}>
-            Feed’den yayın seç
+            {t("ai.pickSources")}
           </button>
         ) : (
-          <ul aria-label="AI için seçilmiş yerel kaynaklar">
+          <ul aria-label={t("ai.selectedSourcesAria")}>
             {selectedSources.slice(0, 4).map((source) => (
               <li key={source.sourceId}>{source.title}</li>
             ))}
@@ -306,29 +294,29 @@ export function AiResearchPanel({
           disabled={busy || !canRun}
           onClick={() => void runTask()}
         >
-          {busy ? "Çalışıyor…" : "Yerel AI ile çalıştır"}
+          {t(busy ? "ai.running" : "ai.run")}
         </button>
         <span class={`ai-readiness ai-readiness--${capability?.availability ?? "checking"}`}>
           {capability
-            ? AVAILABILITY_LABEL[capability.availability]
-            : "Kontrol ediliyor"}
+            ? t(`ai.availability.${capability.availability}`)
+            : t("ai.availability.checking")}
         </span>
       </div>
 
       {progress && (
         <div class="ai-progress" role="status" aria-live="polite">
           {progress.loaded !== undefined && (
-            <progress value={progress.loaded} max={1} aria-label="Model indirme ilerlemesi" />
+            <progress value={progress.loaded} max={1} aria-label={t("ai.downloadProgressAria")} />
           )}
           <span>{progress.message}</span>
         </div>
       )}
       {message && <p class="inline-status" role="alert">{message}</p>}
       {result && (
-        <section class="ai-result" aria-live="polite" aria-label="AI sonucu">
-          <h3>Yerel AI sonucu</h3>
+        <section class="ai-result" aria-live="polite" aria-label={t("ai.resultAria")}>
+          <h3>{t("ai.resultTitle")}</h3>
           <pre>{resultText(result)}</pre>
-          <small>Kaynak kimlikleri yalnızca seçilmiş yerel kayıtlardan eklendi.</small>
+          <small>{t("ai.resultNote")}</small>
           {onSaveResult && (
             <button
               type="button"
@@ -336,7 +324,7 @@ export function AiResearchPanel({
               disabled={saving}
               onClick={() => void saveResult()}
             >
-              {saving ? "Kaydediliyor…" : "Etiketli sonucu not defterine kaydet"}
+              {t(saving ? "ai.saving" : "ai.saveResult")}
             </button>
           )}
         </section>
