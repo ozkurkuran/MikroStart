@@ -44,6 +44,10 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full entry.
 - Named local workspaces preserve independent board layouts across new-tab,
   dashboard, and side-panel surfaces. XRD, vacuum, and thesis-writing starter
   packs—and exported user packs—contain allowlisted layout data only.
+- Structured HTTPS JSON monitors track an explicitly selected value with local
+  conditions, a thirty-check before/after history, JSON/CSV export, and optional
+  user-granted Chrome notifications. General webpage scraping is intentionally
+  excluded from this low-permission phase.
 - Thirteen local-only visual themes spanning paper, clinical, glass, vivid,
   dark, and terminal treatments. The header picker previews each palette and
   saves the choice immediately; the same grouped choices remain available in

@@ -5,6 +5,7 @@ export const MODULE_IDS = [
   "hall-measurement",
   "vacuum-kinetics",
   "research-feed",
+  "source-monitor",
   "on-device-ai",
   "translation-tools",
   "tureng-dictionary",

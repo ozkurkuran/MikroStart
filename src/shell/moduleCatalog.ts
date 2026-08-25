@@ -63,6 +63,11 @@ export const MODULE_CATALOG: Readonly<Record<ModuleId, ModuleMeta>> = {
     category: "literature",
     keywords: ["rss", "atom", "arxiv", "makale", "paper", "feed", "akış", "doi"],
   },
+  "source-monitor": {
+    id: "source-monitor",
+    category: "literature",
+    keywords: ["monitor", "izleme", "json", "api", "değişiklik", "change", "alert", "bildirim"],
+  },
   "on-device-ai": {
     id: "on-device-ai",
     category: "literature",

@@ -71,6 +71,13 @@ export function OptionsApp() {
       if (permissions.origins?.length) {
         await chrome.permissions.remove({ origins: permissions.origins });
       }
+      const removablePermissions = (permissions.permissions ?? []).filter(
+        (permission): permission is "clipboardRead" | "geolocation" | "notifications" =>
+          permission === "clipboardRead" || permission === "geolocation" || permission === "notifications",
+      );
+      if (removablePermissions.length) {
+        await chrome.permissions.remove({ permissions: removablePermissions });
+      }
       window.localStorage.clear();
       await chrome.storage.local.clear();
       if (chrome.storage.sync) await chrome.storage.sync.clear();

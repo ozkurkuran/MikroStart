@@ -66,6 +66,7 @@ import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
 import { ThemePicker } from "./ThemePicker";
 import { CommandPalette } from "./CommandPalette";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { MonitorPanel } from "./MonitorPanel";
 import { ResearchOverview } from "../features/overview/ResearchOverview";
 import {
   useModuleReorder,
@@ -307,6 +308,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         );
       case "research-feed":
         return <FeedPanel onSelectionChange={selectAiSources} />;
+      case "source-monitor":
+        return <MonitorPanel />;
       case "on-device-ai":
         return (
           <AiResearchPanel

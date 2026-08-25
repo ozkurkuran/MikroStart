@@ -33,6 +33,15 @@ export async function requestSourcePermissions(urls: readonly string[]): Promise
   return origins.map((origin) => ({ origin, granted }));
 }
 
+/** Request a monitor's exact host and optional notification capability in one user gesture. */
+export async function requestMonitorPermissions(url: string, notifications: boolean): Promise<boolean> {
+  const origins = [normalizeHttpsOrigin(url)];
+  return chrome.permissions.request({
+    origins,
+    ...(notifications ? { permissions: ["notifications"] } : {}),
+  });
+}
+
 export async function revokeSourcePermission(url: string): Promise<boolean> {
   const origin = normalizeHttpsOrigin(url);
   return chrome.permissions.remove({ origins: [origin] });

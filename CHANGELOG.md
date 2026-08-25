@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-08-25
+
+### Added
+
+- A structured source-monitor module tracks one allowlisted value from an HTTPS
+  JSON API using a dotted path or JSON Pointer, with 30-minute to daily checks.
+- Monitor conditions support changed, contains, does-not-contain, number-above,
+  and number-below rules. The first successful check establishes a silent
+  baseline; later matching changes can create a local Chrome notification.
+- Each monitor retains the latest thirty bounded checks with before/after
+  views, trigger state, manual refresh, and JSON or CSV history export.
+- Monitor URL, path, numeric-condition, interval, runtime-message, extraction,
+  due-time, and prototype-key boundaries have automated regression coverage.
+
+### Changed
+
+- The durable source queue now schedules enabled JSON monitors alongside the
+  existing RSS/Atom and literature connectors while retaining one predictable
+  worker path and bounded fetch broker.
+- Deleting all local data also revokes removable clipboard, geolocation, and
+  notification capabilities in addition to optional host origins.
+
+### Security
+
+- JSON responses are capped at 1 MB, selected values at 8,000 characters,
+  monitors at thirty, and history at thirty records per monitor. General HTML,
+  selectors, XPath, content scripts, and executable extraction are excluded.
+- Host and optional notification access are requested together only from the
+  visible save action. A monitor without notifications adds no notification
+  permission.
+
 ## [0.11.0] - 2026-08-25
 
 ### Added
@@ -286,7 +317,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.8.0...v0.9.0

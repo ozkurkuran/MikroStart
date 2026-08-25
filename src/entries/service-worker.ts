@@ -36,6 +36,19 @@ import {
   enqueueSourceRefresh,
   retryRefreshJob,
 } from "../platform/jobQueue";
+import {
+  addWatchHistory,
+  evaluateWatchCondition,
+  extractJsonWatchValue,
+  getJsonWatch,
+  isWatchDue,
+  listJsonWatches,
+  monitorValueHash,
+  normalizeJsonWatch,
+  removeJsonWatch,
+  upsertJsonWatch,
+  type JsonWatch,
+} from "../platform/watchStore";
 
 const REFRESH_ALARM = "benchtab.refresh-sources";
 const COUNTDOWN_ALARM_PREFIX = "benchtab.countdown.";
@@ -216,25 +229,72 @@ async function refreshLiteratureStream(stream: LiteratureStream): Promise<void> 
   });
 }
 
+async function notifyWatchChange(watch: JsonWatch, current: string): Promise<void> {
+  if (!watch.notify || !(await chrome.permissions.contains({ permissions: ["notifications"] }))) return;
+  await chrome.notifications.create(`watch:${watch.id}`, {
+    type: "basic",
+    iconUrl: chrome.runtime.getURL("icon-128.svg"),
+    title: `BenchTab · ${watch.title}`,
+    message: current.slice(0, 240) || "The selected JSON value changed.",
+    contextMessage: "Local source monitor",
+  });
+}
+
+async function refreshJsonWatch(watch: JsonWatch): Promise<void> {
+  const url = new URL(watch.url);
+  const granted = await chrome.permissions.contains({ origins: [`${url.origin}/*`] });
+  if (!granted) throw new Error("Monitor source permission is missing.");
+  const response = await fetchPublicSource(watch.url, {
+    allowedOrigins: [url.origin],
+    acceptedContentTypes: ["application/json", "application/ld+json", "text/json", "text/plain"],
+    maxBytes: 1024 * 1024,
+  });
+  if ("notModified" in response) return;
+  let document: unknown;
+  try { document = JSON.parse(response.body); } catch { throw new Error("The monitor response is not valid JSON."); }
+  const current = extractJsonWatchValue(document, watch.path);
+  const currentHash = monitorValueHash(current);
+  const hasBaseline = Boolean(watch.lastValueHash);
+  const changed = hasBaseline && currentHash !== watch.lastValueHash;
+  const triggered = changed && evaluateWatchCondition(watch.condition, watch.conditionValue, current, changed);
+  const checkedAt = new Date().toISOString();
+  await addWatchHistory({
+    id: crypto.randomUUID(), watchId: watch.id, checkedAt, changed, triggered,
+    ...(watch.lastValue !== undefined ? { previous: watch.lastValue } : {}), current,
+  });
+  await upsertJsonWatch({
+    ...watch,
+    lastCheckedAt: checkedAt,
+    ...(changed ? { lastChangedAt: checkedAt } : {}),
+    lastValue: current,
+    lastValueHash: currentHash,
+    lastError: undefined,
+  });
+  if (triggered) await notifyWatchChange(watch, current).catch(() => undefined);
+}
+
 async function processRefreshQueue(maxJobs = 4): Promise<void> {
   for (let processed = 0; processed < maxJobs; processed += 1) {
     const job = await claimNextRefreshJob();
     if (!job) return;
     const subscription = await getFeedSubscription(job.sourceId);
     const literatureStream = subscription ? undefined : await getLiteratureStream(job.sourceId);
-    if ((!subscription || !subscription.enabled) && (!literatureStream || !literatureStream.enabled)) {
+    const jsonWatch = subscription || literatureStream ? undefined : await getJsonWatch(job.sourceId);
+    if ((!subscription || !subscription.enabled) && (!literatureStream || !literatureStream.enabled) && (!jsonWatch || !jsonWatch.enabled)) {
       await completeRefreshJob(job.id);
       continue;
     }
 
     try {
       if (subscription) await refreshSource(subscription);
-      else await refreshLiteratureStream(literatureStream!);
+      else if (literatureStream) await refreshLiteratureStream(literatureStream);
+      else await refreshJsonWatch(jsonWatch!);
       await completeRefreshJob(job.id);
     } catch (error) {
       const lastError = error instanceof Error ? error.message : "Source refresh failed.";
       if (subscription) await upsertFeedSubscription({ ...subscription, lastError });
       else if (literatureStream) await upsertLiteratureStream({ ...literatureStream, lastError });
+      else if (jsonWatch) await upsertJsonWatch({ ...jsonWatch, lastError });
       await retryRefreshJob(job);
     }
   }
@@ -250,6 +310,10 @@ async function scheduleAllSources(): Promise<void> {
     if (stream.enabled && isLiteratureStreamStale(stream)) {
       await enqueueSourceRefresh(stream.id);
     }
+  }
+  const watches = await listJsonWatches();
+  for (const watch of watches) {
+    if (watch.enabled && isWatchDue(watch)) await enqueueSourceRefresh(watch.id);
   }
   await processRefreshQueue();
 }
@@ -271,6 +335,13 @@ chrome.action.onClicked.addListener(() => {
   if (IS_DASHBOARD_EDITION) {
     void chrome.tabs.create({ url: chrome.runtime.getURL("pages/dashboard.html") });
   }
+});
+
+chrome.notifications.onClicked.addListener((notificationId) => {
+  if (!notificationId.startsWith("watch:")) return;
+  void getJsonWatch(notificationId.slice(6)).then((watch) => {
+    if (watch) return chrome.tabs.create({ url: watch.url });
+  });
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -449,6 +520,31 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         ok: false,
         error: error instanceof Error ? error.message : "Unable to remove literature stream.",
       } satisfies ExtensionResponse));
+    return true;
+  }
+
+  if (message.type === "SAVE_JSON_WATCH") {
+    void (async () => {
+      const normalized = normalizeJsonWatch({ ...message.watch, enabled: true, addedAt: new Date().toISOString() });
+      const url = new URL(normalized.url);
+      const granted = await chrome.permissions.contains({ origins: [`${url.origin}/*`] });
+      if (!granted) throw new Error("Monitor source permission was not granted.");
+      const duplicate = (await listJsonWatches()).find((watch) => watch.id !== normalized.id && watch.url === normalized.url && watch.path === normalized.path);
+      if (duplicate) throw new Error("This JSON value is already monitored.");
+      await upsertJsonWatch(normalized);
+      await enqueueSourceRefresh(normalized.id, { force: true });
+      await processRefreshQueue(1);
+    })().then(() => sendResponse({ ok: true } satisfies ExtensionResponse)).catch((error: unknown) => sendResponse({ ok: false, error: error instanceof Error ? error.message : "Unable to save monitor." } satisfies ExtensionResponse));
+    return true;
+  }
+
+  if (message.type === "RUN_JSON_WATCH") {
+    void enqueueSourceRefresh(message.watchId, { force: true }).then(() => processRefreshQueue(1)).then(() => sendResponse({ ok: true } satisfies ExtensionResponse)).catch((error: unknown) => sendResponse({ ok: false, error: error instanceof Error ? error.message : "Unable to run monitor." } satisfies ExtensionResponse));
+    return true;
+  }
+
+  if (message.type === "REMOVE_JSON_WATCH") {
+    void removeJsonWatch(message.watchId).then(() => sendResponse({ ok: true } satisfies ExtensionResponse)).catch((error: unknown) => sendResponse({ ok: false, error: error instanceof Error ? error.message : "Unable to remove monitor." } satisfies ExtensionResponse));
     return true;
   }
 

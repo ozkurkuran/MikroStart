@@ -39,6 +39,20 @@ describe("isExtensionCommand", () => {
       },
     })).toBe(true);
     expect(isExtensionCommand({ type: "RUN_LITERATURE_STREAM", streamId: "thin-film" })).toBe(true);
+    expect(isExtensionCommand({
+      type: "SAVE_JSON_WATCH",
+      watch: {
+        id: "watch-1",
+        title: "Release",
+        url: "https://example.org/releases.json",
+        path: "latest.version",
+        intervalMinutes: 60,
+        condition: "changed",
+        conditionValue: "",
+        notify: false,
+      },
+    })).toBe(true);
+    expect(isExtensionCommand({ type: "RUN_JSON_WATCH", watchId: "watch-1" })).toBe(true);
   });
 
   it("rejects unknown, incomplete, and oversized messages", () => {
@@ -70,6 +84,19 @@ describe("isExtensionCommand", () => {
         blockedTerms: [],
         sort: "newest",
         pageSize: 999,
+      },
+    })).toBe(false);
+    expect(isExtensionCommand({
+      type: "SAVE_JSON_WATCH",
+      watch: {
+        id: "watch-1",
+        title: "Release",
+        url: "https://example.org/releases.json",
+        path: "x".repeat(241),
+        intervalMinutes: 60,
+        condition: "changed",
+        conditionValue: "",
+        notify: false,
       },
     })).toBe(false);
   });
