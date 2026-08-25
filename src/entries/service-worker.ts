@@ -2,16 +2,34 @@ import {
   isExtensionCommand,
   type ExtensionResponse,
 } from "../platform/messages";
-import { parseFeed } from "../features/feeds";
+import {
+  buildLiteratureProviderUrl,
+  filterAndRankLiteratureItems,
+  normalizeLiteratureStream,
+  parseCrossrefWorks,
+  parseFeed,
+  type LiteratureProvider,
+  type NormalizedFeedItem,
+} from "../features/feeds";
 import { fetchPublicSource } from "../platform/fetchBroker";
 import {
   getFeedSubscription,
   listFeedSubscriptions,
   putFeedItems,
+  removeFeedItemsBySource,
   removeFeedSubscription,
+  replaceFeedItemsForSource,
   upsertFeedSubscription,
   type FeedSubscription,
 } from "../platform/feedStore";
+import {
+  getLiteratureStream,
+  isLiteratureStreamStale,
+  listLiteratureStreams,
+  removeLiteratureStream,
+  upsertLiteratureStream,
+  type LiteratureStream,
+} from "../platform/literatureStore";
 import {
   claimNextRefreshJob,
   completeRefreshJob,
@@ -138,24 +156,85 @@ async function refreshSource(subscription: FeedSubscription): Promise<void> {
   });
 }
 
+function literatureProviderOrigin(provider: LiteratureProvider): string {
+  return provider === "arxiv" ? "https://export.arxiv.org" : "https://api.crossref.org";
+}
+
+async function refreshLiteratureStream(stream: LiteratureStream): Promise<void> {
+  const retrievedAt = new Date().toISOString();
+  const collected: NormalizedFeedItem[] = [];
+  const errors: string[] = [];
+
+  // Crossref's public pool permits one concurrent request; keeping every
+  // provider sequential also makes service-worker network load predictable.
+  for (const provider of stream.providers) {
+    const origin = literatureProviderOrigin(provider);
+    const hasPermission = await chrome.permissions.contains({ origins: [`${origin}/*`] });
+    if (!hasPermission) {
+      errors.push(`${provider}: permission is missing`);
+      continue;
+    }
+    const url = buildLiteratureProviderUrl(provider, stream);
+    try {
+      const response = await fetchPublicSource(url, {
+        allowedOrigins: [origin],
+        acceptedContentTypes: provider === "arxiv"
+          ? ["application/atom+xml", "application/xml", "text/xml", "text/plain"]
+          : ["application/json"],
+        maxBytes: 2 * 1024 * 1024,
+      });
+      if ("notModified" in response) continue;
+      if (provider === "arxiv") {
+        collected.push(...parseFeed(response.body, {
+          sourceId: stream.id,
+          connectorId: "arxiv-api",
+          feedUrl: url,
+          retrievedAt,
+          maxItems: stream.pageSize,
+        }).items);
+      } else {
+        collected.push(...parseCrossrefWorks(response.body, {
+          sourceId: stream.id,
+          retrievedAt,
+          requestUrl: url,
+          maxItems: stream.pageSize,
+        }));
+      }
+    } catch (error) {
+      errors.push(`${provider}: ${error instanceof Error ? error.message : "request failed"}`);
+    }
+  }
+
+  if (collected.length === 0 && errors.length > 0) throw new Error(errors.join(" · "));
+  const items = filterAndRankLiteratureItems(collected, stream);
+  await replaceFeedItemsForSource(stream.id, items);
+  await upsertLiteratureStream({
+    ...stream,
+    lastSuccessAt: retrievedAt,
+    lastResultCount: items.length,
+    lastError: errors.length ? errors.join(" · ") : undefined,
+  });
+}
+
 async function processRefreshQueue(maxJobs = 4): Promise<void> {
   for (let processed = 0; processed < maxJobs; processed += 1) {
     const job = await claimNextRefreshJob();
     if (!job) return;
     const subscription = await getFeedSubscription(job.sourceId);
-    if (!subscription || !subscription.enabled) {
+    const literatureStream = subscription ? undefined : await getLiteratureStream(job.sourceId);
+    if ((!subscription || !subscription.enabled) && (!literatureStream || !literatureStream.enabled)) {
       await completeRefreshJob(job.id);
       continue;
     }
 
     try {
-      await refreshSource(subscription);
+      if (subscription) await refreshSource(subscription);
+      else await refreshLiteratureStream(literatureStream!);
       await completeRefreshJob(job.id);
     } catch (error) {
-      await upsertFeedSubscription({
-        ...subscription,
-        lastError: error instanceof Error ? error.message : "Feed refresh failed.",
-      });
+      const lastError = error instanceof Error ? error.message : "Source refresh failed.";
+      if (subscription) await upsertFeedSubscription({ ...subscription, lastError });
+      else if (literatureStream) await upsertLiteratureStream({ ...literatureStream, lastError });
       await retryRefreshJob(job);
     }
   }
@@ -165,6 +244,12 @@ async function scheduleAllSources(): Promise<void> {
   const subscriptions = await listFeedSubscriptions();
   for (const subscription of subscriptions) {
     if (subscription.enabled) await enqueueSourceRefresh(subscription.id);
+  }
+  const streams = await listLiteratureStreams();
+  for (const stream of streams) {
+    if (stream.enabled && isLiteratureStreamStale(stream)) {
+      await enqueueSourceRefresh(stream.id);
+    }
   }
   await processRefreshQueue();
 }
@@ -310,6 +395,60 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           error: error instanceof Error ? error.message : "Unable to refresh source.",
         } satisfies ExtensionResponse),
       );
+    return true;
+  }
+
+  if (message.type === "SAVE_LITERATURE_STREAM") {
+    void (async () => {
+      const config = normalizeLiteratureStream(message.stream);
+      const existing = await getLiteratureStream(config.id);
+      const duplicate = (await listLiteratureStreams()).find(
+        (stream) => stream.id !== config.id && stream.query === config.query &&
+          stream.providers.join(",") === config.providers.join(","),
+      );
+      if (duplicate) throw new Error("An equivalent literature stream already exists.");
+      for (const provider of config.providers) {
+        const origin = literatureProviderOrigin(provider);
+        const granted = await chrome.permissions.contains({ origins: [`${origin}/*`] });
+        if (!granted) throw new Error(`Permission for ${provider} was not granted.`);
+      }
+      await upsertLiteratureStream({
+        ...config,
+        enabled: true,
+        addedAt: existing?.addedAt ?? new Date().toISOString(),
+      });
+      await enqueueSourceRefresh(config.id, { force: true });
+      await processRefreshQueue(1);
+    })()
+      .then(() => sendResponse({ ok: true } satisfies ExtensionResponse))
+      .catch((error: unknown) => sendResponse({
+        ok: false,
+        error: error instanceof Error ? error.message : "Unable to save literature stream.",
+      } satisfies ExtensionResponse));
+    return true;
+  }
+
+  if (message.type === "RUN_LITERATURE_STREAM") {
+    void enqueueSourceRefresh(message.streamId, { force: true })
+      .then(() => processRefreshQueue(1))
+      .then(() => sendResponse({ ok: true } satisfies ExtensionResponse))
+      .catch((error: unknown) => sendResponse({
+        ok: false,
+        error: error instanceof Error ? error.message : "Unable to run literature stream.",
+      } satisfies ExtensionResponse));
+    return true;
+  }
+
+  if (message.type === "REMOVE_LITERATURE_STREAM") {
+    void Promise.all([
+      removeLiteratureStream(message.streamId),
+      removeFeedItemsBySource(message.streamId),
+    ])
+      .then(() => sendResponse({ ok: true } satisfies ExtensionResponse))
+      .catch((error: unknown) => sendResponse({
+        ok: false,
+        error: error instanceof Error ? error.message : "Unable to remove literature stream.",
+      } satisfies ExtensionResponse));
     return true;
   }
 

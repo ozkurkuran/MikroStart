@@ -2,6 +2,82 @@
  * the options page. */
 
 /* ---- Shared card internals ---------------------------------------------- */
+.feed-config {
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--line-subtle);
+}
+
+.feed-config > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.feed-config > summary::-webkit-details-marker { display: none; }
+.feed-config > summary::before { content: "▸"; margin-inline-end: var(--space-2); color: var(--text-faint); }
+.feed-config[open] > summary::before { content: "▾"; }
+.feed-config > summary span { margin-inline-start: auto; color: var(--text-faint); font-family: var(--font-mono); }
+
+.literature-form {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.literature-form > label,
+.literature-form__options label {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  font-weight: 500;
+}
+
+.literature-form__options {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(5rem, 0.55fr);
+  gap: var(--space-2);
+}
+
+.provider-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.provider-picker legend {
+  margin-bottom: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-eyebrow);
+  font-weight: 500;
+}
+
+.provider-picker label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--text-2xs);
+}
+
+.literature-form > small {
+  color: var(--text-faint);
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-snug);
+}
+
 .preset-row {
   display: flex;
   gap: var(--space-2);
@@ -106,7 +182,21 @@
   border-color: var(--line);
 }
 
-.source-list li > span:first-child { min-width: 0; }
+.source-list li > span:first-child,
+.source-list__select { min-width: 0; }
+
+.source-list__select {
+  flex: 1 1 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  color: var(--text-secondary);
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+
+.source-list__select[aria-pressed="true"] strong { color: var(--accent); }
 
 .source-list strong,
 .source-list small {
@@ -146,6 +236,32 @@
 .source-actions button:hover {
   color: var(--text);
   background: var(--line-subtle);
+}
+
+.feed-scope {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  padding-bottom: 2px;
+  overflow-x: auto;
+}
+
+.feed-scope button {
+  flex: 0 0 auto;
+  min-height: 1.5rem;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-faint);
+  background: transparent;
+  font-size: var(--text-eyebrow);
+  cursor: pointer;
+}
+
+.feed-scope button[aria-pressed="true"] {
+  border-color: var(--line);
+  color: var(--text);
+  background: var(--surface-raised);
 }
 
 /* ---- Status and empty states -------------------------------------------- */

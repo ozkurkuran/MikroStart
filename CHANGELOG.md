@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-08-25
+
+### Added
+
+- Saved literature searches can query arXiv, Crossref, or both from one local
+  stream, with an optional display name, excluded terms, newest or relevance
+  ordering, and bounded 10/20/30/50-result choices.
+- A packaged Crossref JSON normalizer validates response size and item count,
+  strips markup, canonicalizes DOI links, bounds authors and abstracts, and
+  preserves retrieval provenance without rendering remote content.
+- The research feed can scope cached results by saved stream, display merged
+  provider provenance, manually refresh or remove a stream, and pass the same
+  normalized records to the notebook and on-device AI context selector.
+- Regression coverage now includes literature-stream validation and legacy
+  storage recovery, provider URL construction, malformed Crossref payloads,
+  excluded-term filtering, unified relevance ranking, versioned runtime message
+  validation, one-hour freshness, and provenance-safe cache replacement.
+
+### Changed
+
+- Public literature calls run sequentially through the existing bounded fetch
+  broker, respecting Crossref's public concurrency limit and the service
+  worker's durable retry queue.
+- Saved searches refresh in the background only when their one-hour local cache
+  is stale; the shared public-metadata cache remains capped at 500 records.
+- arXiv and Crossref origin permissions are requested together only from the
+  visible save action and are revoked when their last saved stream is removed.
+- Feed privacy copy now states the precise boundary: BenchTab has no receiving
+  user-data server, while an enabled external provider can observe the direct
+  browser request, including its query and standard request metadata.
+
+### Security
+
+- Literature stream commands are deny-by-default, length bounded, provider
+  allowlisted, and limited to packaged arXiv and Crossref connector behavior;
+  no arbitrary URL or executable selector crosses the runtime message boundary.
+
 ## [0.8.0] - 2026-08-25
 
 ### Added
@@ -194,7 +231,9 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.5.0-baseline...v0.6.0
 [0.5.0]: https://github.com/ozkurkuran/MikroStart/releases/tag/v0.5.0-baseline

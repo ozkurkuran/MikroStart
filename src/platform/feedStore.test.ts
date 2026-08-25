@@ -3,7 +3,7 @@ import "fake-indexeddb/auto";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { NormalizedFeedItem } from "../features/feeds";
-import { listLatestFeedItems, putFeedItems } from "./feedStore";
+import { listLatestFeedItems, putFeedItems, replaceFeedItemsForSource } from "./feedStore";
 
 function deleteDatabase(name: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -54,5 +54,15 @@ describe("feedStore", () => {
       "source-b",
     ]);
     expect(records[0].retrievedAt).toBe("2026-08-22T10:00:00.000Z");
+  });
+
+  it("atomically replaces one saved stream without removing shared provenance", async () => {
+    await putFeedItems([item("stream-a", "2026-08-21T10:00:00.000Z")]);
+    await putFeedItems([item("stream-b", "2026-08-22T10:00:00.000Z")]);
+    await replaceFeedItemsForSource("stream-a", []);
+
+    const records = await listLatestFeedItems();
+    expect(records).toHaveLength(1);
+    expect(records[0].provenance.sources.map((source) => source.sourceId)).toEqual(["stream-b"]);
   });
 });

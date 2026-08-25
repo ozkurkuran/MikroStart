@@ -18,6 +18,18 @@ export {
   stableHash,
 } from "./identifiers";
 export { mergeDuplicateFeedItems } from "./merge";
+export {
+  LITERATURE_PROVIDERS,
+  LITERATURE_PROVIDER_ENDPOINTS,
+  buildLiteratureProviderUrl,
+  filterAndRankLiteratureItems,
+  normalizeLiteratureStream,
+  parseCrossrefWorks,
+  type LiteraturePageSize,
+  type LiteratureProvider,
+  type LiteratureSort,
+  type LiteratureStreamConfig,
+} from "./literatureSearch";
 export { canonicalizeHttpsUrl, normalizeIsoDate, normalizeLanguage, toPlainText } from "./safety";
 export {
   FeedParseError,

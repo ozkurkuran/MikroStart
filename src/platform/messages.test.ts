@@ -26,6 +26,19 @@ describe("isExtensionCommand", () => {
       }),
     ).toBe(true);
     expect(isExtensionCommand({ type: "PLAY_ALARM_PREVIEW" })).toBe(true);
+    expect(isExtensionCommand({
+      type: "SAVE_LITERATURE_STREAM",
+      stream: {
+        id: "thin-film",
+        title: "Thin films",
+        query: "thin film deposition",
+        providers: ["arxiv", "crossref"],
+        blockedTerms: ["conference"],
+        sort: "newest",
+        pageSize: 20,
+      },
+    })).toBe(true);
+    expect(isExtensionCommand({ type: "RUN_LITERATURE_STREAM", streamId: "thin-film" })).toBe(true);
   });
 
   it("rejects unknown, incomplete, and oversized messages", () => {
@@ -47,5 +60,17 @@ describe("isExtensionCommand", () => {
         targetAt: "not-a-date",
       }),
     ).toBe(false);
+    expect(isExtensionCommand({
+      type: "SAVE_LITERATURE_STREAM",
+      stream: {
+        id: "bad",
+        title: "Bad",
+        query: "x",
+        providers: ["unknown"],
+        blockedTerms: [],
+        sort: "newest",
+        pageSize: 999,
+      },
+    })).toBe(false);
   });
 });

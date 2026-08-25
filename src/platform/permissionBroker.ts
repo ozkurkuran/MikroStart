@@ -25,6 +25,14 @@ export async function requestSourcePermission(
   return { origin, granted };
 }
 
+/** Request several exact provider origins in one user-gesture-bound prompt. */
+export async function requestSourcePermissions(urls: readonly string[]): Promise<PermissionDecision[]> {
+  const origins = [...new Set(urls.map(normalizeHttpsOrigin))];
+  if (origins.length === 0) return [];
+  const granted = await chrome.permissions.request({ origins });
+  return origins.map((origin) => ({ origin, granted }));
+}
+
 export async function revokeSourcePermission(url: string): Promise<boolean> {
   const origin = normalizeHttpsOrigin(url);
   return chrome.permissions.remove({ origins: [origin] });

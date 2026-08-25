@@ -90,6 +90,10 @@ export async function removeFeedSubscription(sourceId: string): Promise<void> {
   );
   await chrome.storage.local.set({ [SUBSCRIPTION_KEY]: subscriptions });
 
+  await removeFeedItemsBySource(sourceId);
+}
+
+export async function removeFeedItemsBySource(sourceId: string): Promise<void> {
   const database = await openDatabase();
   const transaction = database.transaction(ITEM_STORE, "readwrite");
   const store = transaction.objectStore(ITEM_STORE);
@@ -120,6 +124,32 @@ export async function putFeedItems(items: NormalizedFeedItem[]): Promise<void> {
   const store = transaction.objectStore(ITEM_STORE);
   const existing = await requestResult<NormalizedFeedItem[]>(store.getAll());
   const merged = mergeDuplicateFeedItems([...existing, ...items]).slice(0, 500);
+  store.clear();
+  for (const item of merged) store.put(item);
+  await transactionDone(transaction);
+  database.close();
+}
+
+export async function replaceFeedItemsForSource(
+  sourceId: string,
+  items: NormalizedFeedItem[],
+): Promise<void> {
+  const database = await openDatabase();
+  const transaction = database.transaction(ITEM_STORE, "readwrite");
+  const store = transaction.objectStore(ITEM_STORE);
+  const existing = await requestResult<NormalizedFeedItem[]>(store.getAll());
+  const retained = existing.flatMap((record) => {
+    const sources = record.provenance.sources.filter((source) => source.sourceId !== sourceId);
+    if (sources.length === 0) return [];
+    if (sources.length === record.provenance.sources.length) return [record];
+    return [{
+      ...record,
+      sourceId: sources[0].sourceId,
+      connectorId: sources[0].connectorId,
+      provenance: { sources },
+    }];
+  });
+  const merged = mergeDuplicateFeedItems([...retained, ...items]).slice(0, 500);
   store.clear();
   for (const item of merged) store.put(item);
   await transactionDone(transaction);
