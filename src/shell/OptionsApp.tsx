@@ -13,12 +13,33 @@ import { clearFeedCache } from "../platform/feedStore";
 import { clearJobQueue } from "../platform/jobQueue";
 import { cancelAllCountdownAlarms } from "../features/workflows";
 import { applyThemePreference, THEMES, themeName } from "../platform/themes";
+import {
+  createFullBackup,
+  downloadBackupEnvelope,
+  loadBackupMeta,
+  previewFullBackup,
+  restoreFullBackup,
+  type BenchTabBackupEnvelope,
+  type BackupMeta,
+  type FullBackupPreview,
+} from "../platform/backup";
+import {
+  clearBackupSnapshots,
+  listBackupSnapshots,
+  type BackupSnapshot,
+} from "../platform/backupSnapshots";
 
 export function OptionsApp() {
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   const [saved, setSaved] = useState(false);
   const [hostOrigins, setHostOrigins] = useState<string[]>([]);
   const [dataStatus, setDataStatus] = useState<string>();
+  const [backupStatus, setBackupStatus] = useState<string>();
+  const [backupMeta, setBackupMeta] = useState<BackupMeta>({});
+  const [snapshots, setSnapshots] = useState<BackupSnapshot[]>([]);
+  const [backupPreview, setBackupPreview] = useState<FullBackupPreview>();
+  const [pendingBackup, setPendingBackup] = useState<BenchTabBackupEnvelope>();
+  const [backupBusy, setBackupBusy] = useState(false);
 
   // Live preview: the page re-renders in the picked language before saving.
   const t = useMemo(() => createTranslate(preferences.locale), [preferences.locale]);
@@ -28,6 +49,7 @@ export function OptionsApp() {
     void chrome.permissions.getAll().then((permissions) =>
       setHostOrigins(permissions.origins ?? []),
     );
+    void reloadBackupState();
   }, []);
 
   // The options page follows the same theme and language as the workbench.
@@ -52,6 +74,46 @@ export function OptionsApp() {
     setSaved(true);
   }
 
+  async function reloadBackupState() {
+    const [meta, nextSnapshots] = await Promise.all([loadBackupMeta(), listBackupSnapshots()]);
+    setBackupMeta(meta);
+    setSnapshots(nextSnapshots);
+  }
+
+  async function exportFullBackup() {
+    setBackupBusy(true); setBackupStatus(undefined);
+    try {
+      const envelope = await createFullBackup();
+      downloadBackupEnvelope(envelope);
+      await reloadBackupState();
+      setBackupStatus(t("backup.downloaded"));
+    } catch (error) { setBackupStatus(error instanceof Error ? error.message : t("backup.failed")); }
+    finally { setBackupBusy(false); }
+  }
+
+  async function inspectBackup(input: string | BenchTabBackupEnvelope) {
+    setBackupBusy(true); setBackupStatus(undefined);
+    const preview = await previewFullBackup(input);
+    setBackupPreview(preview);
+    setPendingBackup(preview.envelope);
+    if (!preview.valid) setBackupStatus(preview.issues[0] ?? t("backup.invalid"));
+    setBackupBusy(false);
+  }
+
+  async function applyBackup(mode: "merge" | "replace") {
+    if (!pendingBackup) return;
+    if (mode === "replace" && !window.confirm(t("backup.replaceConfirm"))) return;
+    setBackupBusy(true); setBackupStatus(undefined);
+    try {
+      await restoreFullBackup(pendingBackup, mode);
+      setBackupStatus(t("backup.restored"));
+      setBackupPreview(undefined); setPendingBackup(undefined);
+      await reloadBackupState();
+      window.setTimeout(() => window.location.reload(), 400);
+    } catch (error) { setBackupStatus(error instanceof Error ? error.message : t("backup.failed")); }
+    finally { setBackupBusy(false); }
+  }
+
   async function deleteAllLocalData() {
     if (
       !window.confirm(t("options.deleteConfirm"))
@@ -66,6 +128,7 @@ export function OptionsApp() {
         clearFeedCache(),
         clearJobQueue(),
         cancelAllCountdownAlarms(),
+        clearBackupSnapshots(),
       ]);
       const permissions = await chrome.permissions.getAll();
       if (permissions.origins?.length) {
@@ -150,6 +213,44 @@ export function OptionsApp() {
           </button>
           {saved && <span role="status">{t("options.saved")}</span>}
         </div>
+      </section>
+
+      <section class="settings-card backup-center">
+        <p class="overline">{t("backup.eyebrow")}</p>
+        <h2>{t("backup.title")}</h2>
+        <p>{t("backup.description")}</p>
+        <div class={`backup-reminder${!backupMeta.lastBackupAt || Date.now() - Date.parse(backupMeta.lastBackupAt) > 7 * 86_400_000 ? " is-due" : ""}`}>
+          <span>{backupMeta.lastBackupAt ? t("backup.last", { date: new Date(backupMeta.lastBackupAt).toLocaleString(preferences.locale) }) : t("backup.never")}</span>
+          <button class="button button--primary" type="button" disabled={backupBusy} onClick={() => void exportFullBackup()}>{t("backup.download")}</button>
+        </div>
+        <p class="backup-boundary">{t("backup.boundary")}</p>
+
+        <div class="backup-import">
+          <label class="button button--quiet import-label">{t("backup.chooseFile")}<input type="file" accept="application/json,.json" onChange={(event) => {
+            const file = event.currentTarget.files?.[0];
+            if (file) void file.text().then(inspectBackup);
+            event.currentTarget.value = "";
+          }} /></label>
+          <span>{t("backup.previewFirst")}</span>
+        </div>
+
+        {backupPreview?.valid && <section class="backup-preview">
+          <header><div><p class="overline">{t("backup.preview")}</p><h3>{t("backup.previewReady")}</h3></div><button type="button" onClick={() => { setBackupPreview(undefined); setPendingBackup(undefined); }}>×</button></header>
+          <dl>
+            <div><dt>{t("backup.settingsCount")}</dt><dd>{backupPreview.counts.localKeys + backupPreview.counts.syncKeys + backupPreview.counts.browserValues}</dd></div>
+            <div><dt>{t("backup.notesCount")}</dt><dd>{backupPreview.counts.notes}</dd></div>
+            <div><dt>{t("backup.referencesCount")}</dt><dd>{backupPreview.counts.references}</dd></div>
+            <div><dt>{t("backup.conflictsCount")}</dt><dd>{backupPreview.conflicts.length}</dd></div>
+          </dl>
+          {backupPreview.conflicts.length > 0 && <details><summary>{t("backup.showConflicts")}</summary><ul>{backupPreview.conflicts.slice(0, 50).map((conflict) => <li key={conflict}>{conflict}</li>)}</ul></details>}
+          <div class="settings-actions"><button class="button" type="button" disabled={backupBusy || backupPreview.conflicts.length > 0} onClick={() => void applyBackup("merge")}>{t("backup.merge")}</button><button class="button button--danger" type="button" disabled={backupBusy} onClick={() => void applyBackup("replace")}>{t("backup.replace")}</button></div>
+        </section>}
+
+        <div class="backup-snapshots">
+          <p class="overline">{t("backup.snapshots")}</p>
+          {snapshots.length === 0 ? <p>{t("backup.noSnapshots")}</p> : <ul>{snapshots.map((snapshot) => <li key={snapshot.id}><span><strong>{new Date(snapshot.createdAt).toLocaleString(preferences.locale)}</strong><small>{t(`backup.reason.${snapshot.reason}`)} · {(snapshot.sizeBytes / 1024).toFixed(1)} KB</small></span><span><button type="button" onClick={() => downloadBackupEnvelope(snapshot.envelope)}>{t("backup.downloadSnapshot")}</button><button type="button" onClick={() => void inspectBackup(snapshot.envelope)}>{t("backup.previewSnapshot")}</button></span></li>)}</ul>}
+        </div>
+        {backupStatus && <p class="inline-status" role="status">{backupStatus}</p>}
       </section>
 
       <section class="settings-card settings-card--privacy">

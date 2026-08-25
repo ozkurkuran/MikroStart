@@ -1,6 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 
 import { useTranslate } from "../../platform/i18n";
+import { createFullBackup, downloadBackupEnvelope } from "../../platform/backup";
 import { OverviewStatusStrip } from "./OverviewStatusStrip";
 import { QuickTools } from "./QuickTools";
 import { ResearchCalendar } from "./ResearchCalendar";
@@ -44,16 +45,15 @@ export function ResearchOverview() {
     document.querySelector(".workbench-toolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function backupOverview() {
-    const lastBackupAt = new Date().toISOString();
-    const body = JSON.stringify({ ...state, lastBackupAt, exportedAt: lastBackupAt }, null, 2);
-    const url = URL.createObjectURL(new Blob([body], { type: "application/json" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `benchtab-overview-${lastBackupAt.slice(0, 10)}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    patch({ lastBackupAt });
+  async function backupOverview() {
+    try {
+      const envelope = await createFullBackup();
+      downloadBackupEnvelope(envelope);
+      patch({ lastBackupAt: envelope.exportedAt });
+      setModuleTransferMessage(t("overview.status.fullBackupDone"));
+    } catch {
+      setModuleTransferMessage(t("overview.status.backupFailed"));
+    }
   }
 
   return (
@@ -70,7 +70,7 @@ export function ResearchOverview() {
             <ResearchCalendar events={state.events} onEventsChange={(events) => patch({ events })} />
             <QuickTools quickNote={state.quickNote} history={state.calculatorHistory} memory={state.calculatorMemory} onQuickNoteChange={(quickNote) => patch({ quickNote })} onHistoryChange={(calculatorHistory) => patch({ calculatorHistory })} onMemoryChange={(calculatorMemory) => patch({ calculatorMemory })} onSendToModule={sendToModule} />
           </div>
-          <OverviewStatusStrip pomodoro={state.pomodoro} weeklyGoal={state.weeklyGoal} weeklyProgress={state.weeklyProgress} savedAt={lastSavedAt} lastBackupAt={state.lastBackupAt} onPomodoroChange={(pomodoro) => patch({ pomodoro })} onWeeklyGoalChange={(weeklyGoal) => patch({ weeklyGoal })} onWeeklyProgressChange={(weeklyProgress) => patch({ weeklyProgress })} onBackup={backupOverview} />
+          <OverviewStatusStrip pomodoro={state.pomodoro} weeklyGoal={state.weeklyGoal} weeklyProgress={state.weeklyProgress} savedAt={lastSavedAt} lastBackupAt={state.lastBackupAt} onPomodoroChange={(pomodoro) => patch({ pomodoro })} onWeeklyGoalChange={(weeklyGoal) => patch({ weeklyGoal })} onWeeklyProgressChange={(weeklyProgress) => patch({ weeklyProgress })} onBackup={() => void backupOverview()} />
         </>
       )}
     </section>

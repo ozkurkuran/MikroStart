@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-08-25
+
+### Added
+
+- A full versioned backup combines preferences, workspaces, source and monitor
+  configuration, monitor history, reading state, local workflow values, and
+  the complete notebook into one portable JSON file.
+- Settings now show the last full-backup time and a weekly due state, validate
+  imports before mutation, report key and notebook-record conflicts, and offer
+  conflict-free merge or explicitly confirmed replacement.
+- The latest three full backups are retained as local IndexedDB recovery
+  snapshots. A replacement restore creates an additional pre-restore snapshot
+  before current data is cleared.
+- The dashboard backup indicator now downloads the same full backup rather than
+  exporting only the overview card state.
+- Full-backup schema, size, unknown-field, unsafe-key, notebook-envelope, and
+  recovery-retention boundaries have automated regression coverage.
+
+### Changed
+
+- Full restore reloads the extension after successful application so every
+  surface observes imported settings and local data consistently.
+- Rebuildable public publication metadata, durable retry jobs, recovery
+  snapshots, and Chrome permission grants are excluded from portable backups.
+  Restored online sources therefore require fresh user permission.
+
+### Security
+
+- Imports are capped at 20 MiB, limited to JSON-safe values and a known schema,
+  reject prototype keys and excessive nesting, and run the existing strict
+  notebook validator before displaying an actionable preview.
+- Merge never overwrites a conflicting key or notebook record. Replacement is
+  unavailable without a separate confirmation and recoverable pre-restore
+  snapshot.
+
 ## [0.12.0] - 2026-08-25
 
 ### Added
@@ -317,7 +352,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.9.0...v0.10.0

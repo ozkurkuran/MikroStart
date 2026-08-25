@@ -48,6 +48,10 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full entry.
   conditions, a thirty-check before/after history, JSON/CSV export, and optional
   user-granted Chrome notifications. General webpage scraping is intentionally
   excluded from this low-permission phase.
+- Full versioned backups combine user-owned settings and IndexedDB notebook
+  records, validate and preview imports, report conflicts before mutation, and
+  keep three local recovery snapshots. Rebuildable caches and Chrome permission
+  grants are intentionally excluded.
 - Thirteen local-only visual themes spanning paper, clinical, glass, vivid,
   dark, and terminal treatments. The header picker previews each palette and
   saves the choice immediately; the same grouped choices remain available in
