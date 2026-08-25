@@ -33,9 +33,18 @@ export const tr: Messages = {
   "toolbar.densityAria": "Kart yoğunluğu",
   "toolbar.comfortable": "Rahat",
   "toolbar.compact": "Sık",
+  "toolbar.editLayout": "Düzenle",
+  "toolbar.finishLayout": "Düzenlemeyi bitir",
   "toolbar.manage": "Modülleri yönet",
 
   "board.aria": "Araştırma modülleri",
+  "board.dragHandle": "{name} modülünü taşı",
+  "board.dragInstructions":
+    "Modülü yakalamak için Boşluk veya Enter tuşuna basın, konumu ok tuşlarıyla seçin ve bırakmak için yeniden Boşluk veya Enter tuşuna basın. İptal etmek için Escape tuşuna basın.",
+  "board.dragPicked": "{name}, {total} konum içinde {position}. konumda yakalandı.",
+  "board.dragPreview": "{name}, {total} konum içinde {position}. konuma taşınacak.",
+  "board.dragMoved": "{name}, {total} konum içinde {position}. konuma taşındı.",
+  "board.dragCancelled": "{name} taşıma işlemi iptal edildi; {total} konum içinde {position}. konumda kaldı.",
   "board.noMatchTitle": "Eşleşen modül yok",
   "board.noMatchBody": "Aramanızı değiştirin veya başka bir kategori seçin.",
   "board.clearFilters": "Filtreleri temizle",

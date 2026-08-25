@@ -3,6 +3,8 @@ import { useEffect, useState } from "preact/hooks";
 import { useTranslate } from "../platform/i18n";
 import {
   DEFAULT_DASHBOARD_LAYOUT,
+  moveModule,
+  moveModuleToIndex,
   type DashboardLayout,
   type ModuleId,
 } from "../platform/layoutPreferences";
@@ -47,16 +49,12 @@ export function ModuleManager({ layout, onChange, onClose }: ModuleManagerProps)
     const index = layout.order.indexOf(id);
     const nextIndex = index + direction;
     if (index < 0 || nextIndex < 0 || nextIndex >= layout.order.length) return;
-    const order = [...layout.order];
-    [order[index], order[nextIndex]] = [order[nextIndex], order[index]];
-    onChange({ ...layout, order });
+    onChange(moveModuleToIndex(layout, id, nextIndex));
   }
 
   function dropBefore(targetId: ModuleId) {
     if (!draggedId || draggedId === targetId) return;
-    const order = layout.order.filter((id) => id !== draggedId);
-    order.splice(order.indexOf(targetId), 0, draggedId);
-    onChange({ ...layout, order });
+    onChange(moveModule(layout, draggedId, targetId, "before"));
     setDraggedId(undefined);
   }
 

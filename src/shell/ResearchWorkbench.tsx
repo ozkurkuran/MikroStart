@@ -51,11 +51,16 @@ import {
   MODULE_CATEGORIES,
   matchesModuleQuery,
   moduleEyebrow,
+  moduleTitle,
   type ModuleCategory,
 } from "./moduleCatalog";
 import { NotebookPanel } from "./NotebookPanel";
 import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
 import { ResearchOverview } from "../features/overview/ResearchOverview";
+import {
+  useModuleReorder,
+  type ReorderAnnouncement,
+} from "./useModuleReorder";
 
 export type Surface = "newtab" | "dashboard" | "sidepanel";
 
@@ -103,6 +108,8 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   const [layout, setLayout] = useState(DEFAULT_DASHBOARD_LAYOUT);
   const [manageModules, setManageModules] = useState(false);
+  const [editLayout, setEditLayout] = useState(false);
+  const [reorderAnnouncement, setReorderAnnouncement] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [aiSources, setAiSources] = useState<AiResearchSource[]>([]);
@@ -354,6 +361,43 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   }, [searchMatchedIds]);
 
   const isFiltered = query.trim().length > 0 || category !== "all";
+  const canReorder = surface !== "sidepanel";
+  const dragInstructionsId = "module-drag-instructions";
+
+  function announceReorder({ kind, id, position, total }: ReorderAnnouncement) {
+    const params = { name: moduleTitle(t, id), position, total };
+    switch (kind) {
+      case "picked":
+        setReorderAnnouncement(t("board.dragPicked", params));
+        break;
+      case "preview":
+        setReorderAnnouncement(t("board.dragPreview", params));
+        break;
+      case "moved":
+        setReorderAnnouncement(t("board.dragMoved", params));
+        break;
+      case "cancelled":
+        setReorderAnnouncement(t("board.dragCancelled", params));
+        break;
+    }
+  }
+
+  const moduleReorder = useModuleReorder({
+    enabled: canReorder && editLayout,
+    layout,
+    visibleIds,
+    onCommit: updateLayout,
+    onAnnounce: announceReorder,
+  });
+
+  function setLayoutEditMode(enabled: boolean) {
+    if (enabled) {
+      setQuery("");
+      setCategory("all");
+      setManageModules(false);
+    }
+    setEditLayout(enabled);
+  }
 
   return (
     <I18nProvider locale={preferences.locale}>
@@ -396,13 +440,46 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
         shownCount={visibleIds.length}
         compact={preferences.compactCards}
         onCompactChange={setCompactCards}
-        onManage={() => setManageModules(true)}
+        canReorder={canReorder}
+        editMode={editLayout}
+        onEditModeChange={setLayoutEditMode}
+        onManage={() => {
+          setLayoutEditMode(false);
+          setManageModules(true);
+        }}
       />
 
       <WorkflowProvider storage={window.localStorage}>
-        <section class="module-grid" aria-label={t("board.aria")}>
+        <p id={dragInstructionsId} class="sr-only">
+          {t("board.dragInstructions")}
+        </p>
+        <p class="sr-only" aria-live="assertive" aria-atomic="true">
+          {reorderAnnouncement}
+        </p>
+        <section
+          class="module-grid"
+          aria-label={t("board.aria")}
+          data-editing={editLayout || undefined}
+          data-reordering={moduleReorder.state.activeId ? true : undefined}
+        >
           {visibleIds.map((id) => (
-            <ModuleSlot id={id} key={id}>
+            <ModuleSlot
+              id={id}
+              key={id}
+              editMode={editLayout}
+              dragging={moduleReorder.state.activeId === id}
+              dropEdge={
+                moduleReorder.state.dropTarget?.targetId === id
+                  ? moduleReorder.state.dropTarget.edge
+                  : undefined
+              }
+              dragLabel={t("board.dragHandle", { name: moduleTitle(t, id) })}
+              dragInstructionsId={dragInstructionsId}
+              onElement={moduleReorder.registerSlot}
+              onHandlePointerDown={moduleReorder.onHandlePointerDown}
+              onHandleKeyDown={moduleReorder.onHandleKeyDown}
+              onHandleBlur={moduleReorder.onHandleBlur}
+            >
               {moduleContent(id)}
             </ModuleSlot>
           ))}

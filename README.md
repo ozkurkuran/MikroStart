@@ -30,6 +30,9 @@ BenchTab is a local-first Chrome research workbench for following, calculating, 
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the full entry.
 
+- A dedicated board-arrangement mode with pointer, touch, pen, and keyboard
+  reordering, visible drop positions, edge auto-scroll, persistent order, and
+  reduced-motion-aware layout animation.
 - A flat, neutral visual direction: surfaces are separated by hairlines and space rather than gradients, tints, or drop shadows. Dark is a near-black field of stepped greys; light is white sheets on soft grey.
 - A design token layer (`src/shell/tokens.css`) covering type, spacing, radius, elevation, and motion, with complete dark and light palettes. Fonts are system stacks only, so no remote asset is ever requested.
 - Semantic module families — measure, literature, reference, workflow, record — each with its own accent, replacing per-card colours that had been assigned arbitrarily. The accent shows as a marker rather than as a fill, and filled buttons are monochrome throughout.

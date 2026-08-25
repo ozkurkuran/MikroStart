@@ -30,9 +30,18 @@ export const en = {
   "toolbar.densityAria": "Card density",
   "toolbar.comfortable": "Comfortable",
   "toolbar.compact": "Compact",
+  "toolbar.editLayout": "Arrange",
+  "toolbar.finishLayout": "Done arranging",
   "toolbar.manage": "Manage modules",
 
   "board.aria": "Research modules",
+  "board.dragHandle": "Move {name}",
+  "board.dragInstructions":
+    "Press Space or Enter to pick up a module, use the arrow keys to choose a position, then press Space or Enter to drop it. Press Escape to cancel.",
+  "board.dragPicked": "{name} picked up at position {position} of {total}.",
+  "board.dragPreview": "{name} will move to position {position} of {total}.",
+  "board.dragMoved": "{name} moved to position {position} of {total}.",
+  "board.dragCancelled": "Moving {name} was cancelled. It remains at position {position} of {total}.",
   "board.noMatchTitle": "No matching module",
   "board.noMatchBody": "Adjust your search or pick a different category.",
   "board.clearFilters": "Clear filters",

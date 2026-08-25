@@ -26,6 +26,8 @@ export interface DashboardLayout {
   hidden: ModuleId[];
 }
 
+export type ModulePlacement = "before" | "after";
+
 export const DEFAULT_DASHBOARD_LAYOUT: DashboardLayout = {
   version: 2,
   order: [...MODULE_IDS],
@@ -77,4 +79,41 @@ export async function loadDashboardLayout(): Promise<DashboardLayout> {
 
 export async function saveDashboardLayout(layout: DashboardLayout): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEY]: normalizeDashboardLayout(layout) });
+}
+
+function withModuleOrder(layout: DashboardLayout, order: ModuleId[]): DashboardLayout {
+  if (order.every((id, index) => layout.order[index] === id)) return layout;
+  return { ...layout, order };
+}
+
+/** Moves one module relative to another without disturbing hidden modules. */
+export function moveModule(
+  layout: DashboardLayout,
+  draggedId: ModuleId,
+  targetId: ModuleId,
+  placement: ModulePlacement,
+): DashboardLayout {
+  if (draggedId === targetId) return layout;
+  if (!layout.order.includes(draggedId) || !layout.order.includes(targetId)) return layout;
+
+  const order = layout.order.filter((id) => id !== draggedId);
+  const targetIndex = order.indexOf(targetId);
+  order.splice(targetIndex + (placement === "after" ? 1 : 0), 0, draggedId);
+  return withModuleOrder(layout, order);
+}
+
+/** Moves a module to an absolute position, clamping out-of-range input. */
+export function moveModuleToIndex(
+  layout: DashboardLayout,
+  draggedId: ModuleId,
+  requestedIndex: number,
+): DashboardLayout {
+  const sourceIndex = layout.order.indexOf(draggedId);
+  if (sourceIndex < 0) return layout;
+
+  const order = layout.order.filter((id) => id !== draggedId);
+  const finiteIndex = Number.isFinite(requestedIndex) ? Math.trunc(requestedIndex) : sourceIndex;
+  const targetIndex = Math.max(0, Math.min(finiteIndex, order.length));
+  order.splice(targetIndex, 0, draggedId);
+  return withModuleOrder(layout, order);
 }

@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-25
+
+### Added
+
+- A dedicated Arrange mode now exposes a drag handle on every dashboard card
+  without making calculator inputs, text selection, or scrolling draggable.
+- Pointer Events-based module reordering works through one input path for mouse,
+  touch, and pen, with pointer capture, cancellation cleanup, and viewport-edge
+  auto-scroll for long boards.
+- Two-dimensional masonry hit testing uses the cards' measured visual bounds and
+  shows an explicit insertion edge while preserving the complete stored order
+  when the visible board is filtered.
+- Keyboard reordering supports Space/Enter to pick up and drop, arrow keys to
+  choose a position, Home/End jumps, Escape cancellation, and translated
+  assertive announcements of every state change.
+- Pure module-order and drop-target geometry services include regression tests
+  for hidden modules, no-op and clamped moves, multiple columns, uneven card
+  heights, grid gaps, and single-column layouts.
+
+### Changed
+
+- A dragged card now moves on a compositor-friendly inner surface while its
+  masonry slot remains in place as a stable placeholder; completed moves use a
+  short FLIP animation that is skipped under `prefers-reduced-motion`.
+- Search, category, density, and module-management controls are intentionally
+  locked while Arrange mode is active, and card contents become inert so layout
+  editing cannot accidentally trigger a scientific tool.
+- The Module Manager now delegates mouse and button reordering to the same pure
+  order functions as the board instead of maintaining a second implementation.
+- Side-panel ordering remains a compact read-only projection of the shared
+  dashboard order; no new Chrome permission is required by this release.
+
 ## [0.6.0] - 2026-08-25
 
 Visual and UX overhaul of the workbench. The design direction is
@@ -135,6 +167,7 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.5.0-baseline...v0.6.0
 [0.5.0]: https://github.com/ozkurkuran/MikroStart/releases/tag/v0.5.0-baseline

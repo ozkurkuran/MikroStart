@@ -236,6 +236,12 @@
   background: var(--surface);
 }
 
+.filter-chip:disabled,
+.segmented button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .filter-chip[aria-pressed="true"] {
   color: var(--text);
   border-color: var(--line);
@@ -315,11 +321,107 @@
   gap: var(--grid-gap);
 }
 
+.module-grid[data-reordering="true"] {
+  user-select: none;
+}
+
 .module-slot {
+  position: relative;
   grid-column: span 3;
   grid-row-end: span var(--module-row-span, 14);
   align-self: start;
   min-width: 0;
+  border-radius: var(--radius-lg);
+}
+
+.module-slot__drag-surface {
+  position: relative;
+  min-width: 0;
+  transform: translate3d(var(--drag-x, 0), var(--drag-y, 0), 0);
+}
+
+.module-slot[data-dragging="true"] {
+  outline: 1px dashed var(--line);
+  outline-offset: -1px;
+  background: var(--surface-sunken);
+}
+
+.module-slot[data-dragging="true"] .module-slot__drag-surface {
+  z-index: 30;
+  opacity: 0.92;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.module-slot[data-drop-edge]::before {
+  content: "";
+  position: absolute;
+  z-index: 40;
+  border-radius: 2px;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+.module-slot[data-drop-edge="top"]::before,
+.module-slot[data-drop-edge="bottom"]::before {
+  inset-inline: 0;
+  height: 3px;
+}
+
+.module-slot[data-drop-edge="top"]::before { inset-block-start: -5px; }
+.module-slot[data-drop-edge="bottom"]::before { inset-block-end: -5px; }
+
+.module-slot[data-drop-edge="left"]::before,
+.module-slot[data-drop-edge="right"]::before {
+  inset-block: 0;
+  width: 3px;
+}
+
+.module-slot[data-drop-edge="left"]::before { inset-inline-start: -5px; }
+.module-slot[data-drop-edge="right"]::before { inset-inline-end: -5px; }
+
+.module-drag-handle {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-end: var(--space-2);
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  font-size: var(--text-sm);
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    scale var(--duration-fast) var(--ease-standard);
+}
+
+.module-drag-handle:hover,
+.module-drag-handle:focus-visible {
+  color: var(--text);
+  border-color: var(--text-faint);
+  background: var(--surface);
+}
+
+.module-drag-handle:active,
+.module-drag-handle[aria-pressed="true"] {
+  cursor: grabbing;
+  scale: 0.94;
+}
+
+.module-grid[data-editing="true"] .widget {
+  pointer-events: none;
+  user-select: none;
 }
 
 /* ---- Card --------------------------------------------------------------
@@ -341,7 +443,7 @@
     background var(--duration-normal) var(--ease-standard);
 }
 
-.module-slot > .widget {
+.module-slot__drag-surface > .widget {
   height: auto;
 }
 
@@ -518,6 +620,10 @@
   .module-slot { margin-bottom: var(--grid-gap); }
   .widget { max-height: none; }
   .widget__heading { position: static; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .module-drag-handle { transition: none; }
 }
 
 /* ---- Side panel ---------------------------------------------------------

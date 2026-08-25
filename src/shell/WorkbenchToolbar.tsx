@@ -21,6 +21,9 @@ interface WorkbenchToolbarProps {
   shownCount: number;
   compact: boolean;
   onCompactChange: (value: boolean) => void;
+  canReorder: boolean;
+  editMode: boolean;
+  onEditModeChange: (value: boolean) => void;
   onManage: () => void;
 }
 
@@ -35,6 +38,9 @@ export function WorkbenchToolbar({
   shownCount,
   compact,
   onCompactChange,
+  canReorder,
+  editMode,
+  onEditModeChange,
   onManage,
 }: WorkbenchToolbarProps) {
   const t = useTranslate();
@@ -51,6 +57,7 @@ export function WorkbenchToolbar({
           value={query}
           placeholder={t("toolbar.searchPlaceholder")}
           autocomplete="off"
+          disabled={editMode}
           onInput={(event) => onQueryChange(event.currentTarget.value)}
         />
         {query && (
@@ -70,6 +77,7 @@ export function WorkbenchToolbar({
           class="filter-chip"
           type="button"
           aria-pressed={category === "all"}
+          disabled={editMode}
           onClick={() => onCategoryChange("all")}
         >
           {t("toolbar.all")}
@@ -82,6 +90,7 @@ export function WorkbenchToolbar({
             type="button"
             style={`--chip-accent: ${CATEGORY_ACCENT[id]}`}
             aria-pressed={category === id}
+            disabled={editMode}
             onClick={() => onCategoryChange(category === id ? "all" : id)}
           >
             <span class="filter-chip__dot" aria-hidden="true" />
@@ -100,15 +109,41 @@ export function WorkbenchToolbar({
       </span>
 
       <div class="segmented" role="group" aria-label={t("toolbar.densityAria")}>
-        <button type="button" aria-pressed={!compact} onClick={() => onCompactChange(false)}>
+        <button
+          type="button"
+          aria-pressed={!compact}
+          disabled={editMode}
+          onClick={() => onCompactChange(false)}
+        >
           {t("toolbar.comfortable")}
         </button>
-        <button type="button" aria-pressed={compact} onClick={() => onCompactChange(true)}>
+        <button
+          type="button"
+          aria-pressed={compact}
+          disabled={editMode}
+          onClick={() => onCompactChange(true)}
+        >
           {t("toolbar.compact")}
         </button>
       </div>
 
-      <button class="button button--primary" type="button" onClick={onManage}>
+      {canReorder && (
+        <button
+          class={`button ${editMode ? "button--primary" : "button--quiet"}`}
+          type="button"
+          aria-pressed={editMode}
+          onClick={() => onEditModeChange(!editMode)}
+        >
+          {editMode ? t("toolbar.finishLayout") : t("toolbar.editLayout")}
+        </button>
+      )}
+
+      <button
+        class="button button--primary"
+        type="button"
+        disabled={editMode}
+        onClick={onManage}
+      >
         {t("toolbar.manage")}
       </button>
     </div>
