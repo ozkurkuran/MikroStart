@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-08-25
+
+### Added
+
+- Up to twelve named local workspaces can keep independent module order and
+  visibility while sharing the user's underlying notebook and research data.
+- A workspace manager creates, renames, switches, removes, exports, and imports
+  data-only workspace packs from the main board.
+- Packaged XRD, vacuum, and thesis-writing starter packs provide focused module
+  arrangements without adding code, remote URLs, or source permissions.
+- Versioned workspace and pack normalizers recover malformed legacy state,
+  preserve the existing single-board layout during migration, bound imported
+  JSON to 256 KB, and reject unsupported schemas.
+
+### Changed
+
+- Dashboard, new-tab, and side-panel surfaces now observe the same active
+  workspace through local storage changes.
+- Module reordering and visibility changes are persisted into the active
+  workspace instead of overwriting one global layout.
+
+### Security
+
+- Workspace packs are an allowlisted data format containing only packaged
+  module identifiers, order, and visibility. Import cannot execute code, add a
+  network source, or grant a Chrome permission.
+
 ## [0.10.0] - 2026-08-25
 
 ### Added
@@ -259,7 +286,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.7.0...v0.8.0

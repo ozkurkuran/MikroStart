@@ -41,6 +41,9 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full entry.
 - A local reading inbox separates new, read-later, and read source records. A
   Ctrl/Cmd+K command palette searches modules, notebook notes, and cached
   publications from one keyboard-first surface without a cloud index.
+- Named local workspaces preserve independent board layouts across new-tab,
+  dashboard, and side-panel surfaces. XRD, vacuum, and thesis-writing starter
+  packs—and exported user packs—contain allowlisted layout data only.
 - Thirteen local-only visual themes spanning paper, clinical, glass, vivid,
   dark, and terminal treatments. The header picker previews each palette and
   saves the choice immediately; the same grouped choices remain available in

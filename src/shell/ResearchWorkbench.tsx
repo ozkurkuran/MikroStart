@@ -32,11 +32,17 @@ import {
 } from "../features/workflows";
 import {
   DEFAULT_DASHBOARD_LAYOUT,
-  loadDashboardLayout,
-  saveDashboardLayout,
   type DashboardLayout,
   type ModuleId,
 } from "../platform/layoutPreferences";
+import {
+  activeWorkspace,
+  loadWorkspaceState,
+  normalizeWorkspaceState,
+  saveWorkspaceState,
+  updateActiveWorkspaceLayout,
+  type WorkspaceState,
+} from "../platform/workspaceStore";
 import {
   createTranslate,
   I18nProvider,
@@ -59,6 +65,7 @@ import { NotebookPanel } from "./NotebookPanel";
 import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
 import { ThemePicker } from "./ThemePicker";
 import { CommandPalette } from "./CommandPalette";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { ResearchOverview } from "../features/overview/ResearchOverview";
 import {
   useModuleReorder,
@@ -110,6 +117,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const [now, setNow] = useState(() => new Date());
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   const [layout, setLayout] = useState(DEFAULT_DASHBOARD_LAYOUT);
+  const [workspaceState, setWorkspaceState] = useState<WorkspaceState>(() => normalizeWorkspaceState(undefined));
   const [manageModules, setManageModules] = useState(false);
   const [editLayout, setEditLayout] = useState(false);
   const [reorderAnnouncement, setReorderAnnouncement] = useState("");
@@ -120,10 +128,21 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   useEffect(() => {
+    const applyStoredWorkspaces = (next: WorkspaceState) => {
+      setWorkspaceState(next);
+      setLayout(activeWorkspace(next).layout);
+    };
     void loadPreferences().then(setPreferences);
-    void loadDashboardLayout().then(setLayout);
+    void loadWorkspaceState().then(applyStoredWorkspaces);
+    const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
+      if (areaName === "local" && changes["workspaces.v1"]) void loadWorkspaceState().then(applyStoredWorkspaces);
+    };
+    chrome.storage.onChanged.addListener(onStorageChanged);
     const timer = window.setInterval(() => setNow(new Date()), 30_000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      chrome.storage.onChanged.removeListener(onStorageChanged);
+    };
   }, []);
 
   useEffect(() => {
@@ -149,7 +168,20 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
   function updateLayout(next: DashboardLayout) {
     setLayout(next);
-    void saveDashboardLayout(next);
+    setWorkspaceState((current) => {
+      const updated = updateActiveWorkspaceLayout(current, next);
+      void saveWorkspaceState(updated);
+      return updated;
+    });
+  }
+
+  function updateWorkspaces(next: WorkspaceState) {
+    setWorkspaceState(next);
+    setLayout(activeWorkspace(next).layout);
+    setQuery("");
+    setCategory("all");
+    setEditLayout(false);
+    void saveWorkspaceState(next);
   }
 
   function setCompactCards(compactCards: boolean) {
@@ -464,6 +496,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
           <p class="overline">{dateLabel}</p>
           <h1>{t("workspace.title")}</h1>
           <p class="workspace-intro__lede">{t("workspace.lede")}</p>
+          <WorkspaceSwitcher state={workspaceState} onChange={updateWorkspaces} />
         </div>
         {surface !== "sidepanel" && <ResearchOverview />}
       </section>
