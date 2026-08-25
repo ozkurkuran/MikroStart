@@ -47,7 +47,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   color: var(--text-muted);
-  background: var(--surface-raised);
+  background: transparent;
   font: inherit;
   font-weight: 650;
   white-space: nowrap;
@@ -60,8 +60,8 @@
 
 .bragg-calculator__preset:hover {
   color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface-raised));
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
 }
 
 .bragg-calculator input,
@@ -81,10 +81,8 @@
   float: inline-start;
   margin-inline-end: var(--space-3);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
 .bragg-calculator__mode label {
@@ -110,9 +108,8 @@
   min-width: 0;
   gap: var(--space-1);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 650;
-  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
 .bragg-calculator__grid input,
@@ -121,13 +118,13 @@
   letter-spacing: normal;
 }
 
-/* Result panel: accent-tinted, mono numerals, the card's focal point. */
+/* Result panel: a recessed plane. Mono numerals and weight do the emphasis. */
 .bragg-calculator__output {
   min-block-size: 2.5rem;
-  padding: var(--space-3);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: var(--space-4);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
 }
 
 .bragg-calculator__output output {
@@ -140,9 +137,10 @@
 .bragg-calculator__output strong {
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-variant-numeric: tabular-nums;
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
 }
 
 .bragg-calculator__output [role="alert"] {

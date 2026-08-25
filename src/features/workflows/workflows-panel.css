@@ -35,8 +35,8 @@
   gap: var(--space-3);
   padding: var(--space-4);
   border: 1px solid var(--line-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
 }
 
 .workflows-panel label {
@@ -44,9 +44,8 @@
   min-width: 0;
   gap: var(--space-1);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 650;
-  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
 .workflows-panel textarea {
@@ -54,8 +53,9 @@
   resize: vertical;
 }
 
-/* Only the card's primary verb carries the accent fill. Everything else stays
- * an outline, so a board of timers does not read as a wall of buttons. */
+/* Only the card's primary verb is filled, and the fill is monochrome.
+ * Everything else stays an outline, so a board of timers does not read as a
+ * wall of buttons. */
 .workflows-panel button {
   display: inline-flex;
   align-items: center;
@@ -65,10 +65,10 @@
   padding: var(--space-1) var(--space-3);
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  color: var(--on-accent);
-  background: var(--accent);
-  font-size: var(--text-eyebrow);
-  font-weight: 700;
+  color: var(--on-solid);
+  background: var(--solid);
+  font-size: var(--text-2xs);
+  font-weight: 600;
   cursor: pointer;
   transition:
     color var(--duration-fast) var(--ease-standard),
@@ -77,7 +77,7 @@
 }
 
 .workflows-panel button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 86%, var(--text));
+  background: color-mix(in srgb, var(--solid) 84%, var(--bg));
 }
 
 .workflows-panel button:disabled {
@@ -91,15 +91,15 @@
   border-color: var(--line);
   color: var(--text-muted);
   background: transparent;
-  font-weight: 650;
+  font-weight: 500;
 }
 
 .workflows-panel button.workflows-panel__secondary:hover:not(:disabled),
 .workflows-panel__actions button:hover:not(:disabled),
 .workflows-panel__presets button:hover:not(:disabled) {
   color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
 }
 
 .workflows-panel__form-grid {
@@ -162,7 +162,7 @@
 .workflows-panel__presets button {
   min-height: 1.65rem;
   padding: 0 var(--space-2);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
 }
 
 .workflows-panel__countdowns article {
@@ -233,8 +233,8 @@
   font-family: var(--font-mono);
   font-size: clamp(1.6rem, 3vw, 2.25rem);
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  letter-spacing: -0.05em;
+  font-weight: 500;
+  letter-spacing: -0.04em;
   text-align: center;
 }
 

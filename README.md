@@ -22,13 +22,17 @@ BenchTab is a local-first Chrome research workbench for following, calculating, 
 - Automatic migration from the earlier composite dashboard cards without deleting workflow data.
 - High-density four-column desktop layout sized to keep roughly 8–12 modules in a typical viewport.
 - Compact typography, controls, spacing, result panels, and bounded in-card scrolling for long tools and histories.
+- A collapsible daily overview with permission-gated weather, a local monthly
+  research calendar, quick calculation and conversion tools, scratch notes,
+  focus timing, workspace status, daily constants, backups, and weekly goals.
 
 ## Added since v0.5
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the full entry.
 
+- A flat, neutral visual direction: surfaces are separated by hairlines and space rather than gradients, tints, or drop shadows. Dark is a near-black field of stepped greys; light is white sheets on soft grey.
 - A design token layer (`src/shell/tokens.css`) covering type, spacing, radius, elevation, and motion, with complete dark and light palettes. Fonts are system stacks only, so no remote asset is ever requested.
-- Semantic module families — measure, literature, reference, workflow, record — each with its own accent, replacing per-card colours that had been assigned arbitrarily.
+- Semantic module families — measure, literature, reference, workflow, record — each with its own accent, replacing per-card colours that had been assigned arbitrarily. The accent shows as a marker rather than as a fill, and filled buttons are monochrome throughout.
 - A sticky command bar over the board: live module search, category filter chips with counts, a density toggle, and the visible-module count.
 - A module manager dialog grouped by family, with a backdrop, Escape to close, and per-group show/hide.
 - A working interface language. The `tr`/`en` preference now drives every string through `src/platform/locales/`; the Options language picker switches the UI immediately. English is the type source of truth, so a missing Turkish key fails the build.

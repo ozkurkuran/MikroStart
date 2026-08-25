@@ -6,7 +6,7 @@ import { MODULE_CATALOG, moduleAccent } from "./moduleCatalog";
 
 /** Fallbacks only. Real values are read from the grid so CSS stays the source. */
 const FALLBACK_ROW_PX = 6;
-const FALLBACK_GAP_PX = 10;
+const FALLBACK_GAP_PX = 12;
 
 interface ModuleSlotProps {
   id: ModuleId;

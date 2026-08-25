@@ -55,6 +55,7 @@ import {
 } from "./moduleCatalog";
 import { NotebookPanel } from "./NotebookPanel";
 import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
+import { ResearchOverview } from "../features/overview/ResearchOverview";
 
 export type Surface = "newtab" | "dashboard" | "sidepanel";
 
@@ -381,6 +382,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
           <h1>{t("workspace.title")}</h1>
           <p class="workspace-intro__lede">{t("workspace.lede")}</p>
         </div>
+        {surface !== "sidepanel" && <ResearchOverview />}
       </section>
 
       <WorkbenchToolbar

@@ -1,27 +1,28 @@
 /*
  * BenchTab design tokens.
  *
- * Direction: "precision instrument" — a laboratory panel crossed with technical
- * editorial. Numerics are monospaced and tabular, headings are serif, chrome is
- * a disciplined sans. Colour is semantic: every module family owns an accent so
- * a dense board stays scannable.
+ * Direction: "quiet instrument" — a neutral surface built from flat planes and
+ * hairlines. No gradients, no decorative frames, one typeface. Colour is spent
+ * only where it means something: each module family owns an accent that shows
+ * up as a small marker, never as a tint painted across a whole card.
  *
  * Fonts are system stacks only. The extension privacy baseline forbids remote
  * assets, so no webfont may be linked or bundled from a network origin.
  */
 
 :root {
-  /* ---- Typeface stacks ------------------------------------------------- */
+  /* ---- Typeface stacks -------------------------------------------------
+   * One sans carries the whole interface; mono is reserved for numerals so a
+   * measured value never sits on a proportional grid.
+   */
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
-    "Times New Roman", serif;
+  --font-display: var(--font-sans);
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono",
     "Roboto Mono", Consolas, "Liberation Mono", monospace;
 
   /* ---- Type scale ------------------------------------------------------
    * Floor is 10.5px for eyebrows only; body copy never drops below 12.5px.
-   * The previous 8-9px labels were below comfortable reading size.
    */
   --text-eyebrow: 0.656rem;  /* 10.5px */
   --text-2xs: 0.719rem;      /* 11.5px */
@@ -39,10 +40,11 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.62;
 
-  --tracking-eyebrow: 0.13em;
-  --tracking-wide: 0.05em;
-  --tracking-tight: -0.015em;
-  --tracking-display: -0.028em;
+  /* Letter-spacing stays restrained: wide tracking reads as decoration. */
+  --tracking-eyebrow: 0.08em;
+  --tracking-wide: 0.02em;
+  --tracking-tight: -0.011em;
+  --tracking-display: -0.022em;
 
   /* ---- Spacing scale (4px base) ---------------------------------------- */
   --space-0: 0;
@@ -61,8 +63,8 @@
   --radius-xs: 0.25rem;
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1.125rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
   --radius-pill: 999px;
 
   /* ---- Motion ----------------------------------------------------------- */
@@ -74,132 +76,135 @@
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
 
   /* ---- Layout ----------------------------------------------------------- */
-  --grid-gap: 0.625rem;    /* keep in sync with GRID_GAP_PX in ModuleSlot.tsx */
-  --grid-row: 0.375rem;    /* keep in sync with GRID_ROW_PX in ModuleSlot.tsx */
+  --grid-gap: 0.75rem;     /* keep in sync with FALLBACK_GAP_PX in ModuleSlot.tsx */
+  --grid-row: 0.375rem;    /* keep in sync with FALLBACK_ROW_PX in ModuleSlot.tsx */
   --widget-max-block: 22.5rem;
-  --shell-inline-pad: clamp(0.875rem, 2vw, 2rem);
+  --shell-inline-pad: clamp(1rem, 2.2vw, 2.5rem);
 }
 
 /* =======================================================================
- * Dark theme — the default surface for a workbench that sits behind a
- * new tab. Backgrounds step darker as they recede, not lighter.
+ * Dark theme — a neutral near-black. Surfaces step lighter as they come
+ * forward, and every separation is carried by a hairline rather than a
+ * shadow or a fill.
  * ======================================================================= */
 :root,
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #060f11;
-  --surface-sunken: #050c0e;
-  --surface: #0b1517;
-  --surface-raised: #101d20;
-  --surface-overlay: #142226;
+  --bg: #0a0a0b;
+  --surface-sunken: #0e0e10;
+  --surface: #121214;
+  --surface-raised: #171719;
+  --surface-overlay: #1b1b1e;
 
-  --line-subtle: #16262a;
-  --line: #203237;
-  --line-strong: #334c52;
+  --line-subtle: #1e1e22;
+  --line: #292930;
+  --line-strong: #3e3e46;
 
-  --text: #dce6e9;
-  --text-secondary: #a7b8bc;
-  --text-muted: #7d9297;
-  --text-faint: #5d7176;
+  --text: #f0f0f3;
+  --text-secondary: #c3c3ca;
+  --text-muted: #9a9aa3;
+  --text-faint: #7b7b85;
 
   /* Module family accents */
-  --accent-measure: #63dbc6;
-  --accent-literature: #a98fff;
-  --accent-reference: #f2bc63;
-  --accent-workflow: #7ed37c;
-  --accent-record: #ff92ab;
+  --accent-measure: #5cc9b4;
+  --accent-literature: #a695f5;
+  --accent-reference: #e0b566;
+  --accent-workflow: #7fca8a;
+  --accent-record: #f090a6;
 
-  --danger: #ff8f85;
-  --danger-text: #ffb3ac;
-  --warning: #f2bc63;
-  --success: #7ed37c;
+  --danger: #f08a80;
+  --danger-text: #f4a49b;
+  --warning: #e0b566;
+  --success: #7fca8a;
 
-  --on-accent: #04100f;
+  --on-accent: #0a0a0b;
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
-  --shadow-md: 0 4px 14px -4px rgb(0 0 0 / 55%);
-  --shadow-lg: 0 20px 56px -16px rgb(0 0 0 / 70%);
-  --scrim: rgb(2 8 9 / 62%);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-md: 0 8px 24px -12px rgb(0 0 0 / 60%);
+  --shadow-lg: 0 24px 60px -24px rgb(0 0 0 / 72%);
+  --scrim: rgb(6 6 8 / 60%);
 }
 
 /* =======================================================================
- * Light theme — a paper-lab reading surface. Warm-neutral rather than
- * pure white so long sessions stay comfortable.
+ * Light theme — plain paper. Cards are white on a soft grey field, so the
+ * board reads as sheets on a desk instead of tinted panels.
  * ======================================================================= */
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --bg: #eaefec;
-  --surface-sunken: #f1f5f2;
-  --surface: #fbfcfb;
+  --bg: #f6f6f7;
+  --surface-sunken: #f0f0f2;
+  --surface: #ffffff;
   --surface-raised: #ffffff;
   --surface-overlay: #ffffff;
 
-  --line-subtle: #e0e7e3;
-  --line: #cfdad5;
-  --line-strong: #9aada8;
+  --line-subtle: #ececef;
+  --line: #e0e0e4;
+  --line-strong: #b9b9c1;
 
-  --text: #101d1e;
-  --text-secondary: #3c4f51;
-  --text-muted: #5d7073;
-  --text-faint: #7b8d90;
+  --text: #131316;
+  --text-secondary: #3a3a42;
+  --text-muted: #55555e;
+  --text-faint: #6e6e77;
 
-  --accent-measure: #04756a;
-  --accent-literature: #5b3fc4;
-  --accent-reference: #8a5100;
-  --accent-workflow: #24702c;
-  --accent-record: #ab2c4c;
+  --accent-measure: #0f766e;
+  --accent-literature: #5b46c4;
+  --accent-reference: #8a5a12;
+  --accent-workflow: #2c7a3d;
+  --accent-record: #a8365a;
 
-  --danger: #a3251f;
-  --danger-text: #8f1f19;
-  --warning: #8a5100;
-  --success: #24702c;
+  --danger: #b3261e;
+  --danger-text: #99201a;
+  --warning: #8a5a12;
+  --success: #2c7a3d;
 
   --on-accent: #ffffff;
 
-  --shadow-sm: 0 1px 2px rgb(16 29 30 / 8%);
-  --shadow-md: 0 4px 14px -4px rgb(16 29 30 / 14%);
-  --shadow-lg: 0 20px 56px -16px rgb(16 29 30 / 24%);
-  --scrim: rgb(16 29 30 / 32%);
+  --shadow-sm: 0 1px 2px rgb(16 16 20 / 5%);
+  --shadow-md: 0 8px 24px -12px rgb(16 16 20 / 12%);
+  --shadow-lg: 0 24px 60px -24px rgb(16 16 20 / 20%);
+  --scrim: rgb(16 16 20 / 28%);
 }
 
+/* The same light palette for users who never set an explicit preference.
+ * A media query cannot join a selector list, so the values are repeated. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     color-scheme: light;
 
-    --bg: #eaefec;
-    --surface-sunken: #f1f5f2;
-    --surface: #fbfcfb;
+    --bg: #f6f6f7;
+    --surface-sunken: #f0f0f2;
+    --surface: #ffffff;
     --surface-raised: #ffffff;
     --surface-overlay: #ffffff;
 
-    --line-subtle: #e0e7e3;
-    --line: #cfdad5;
-    --line-strong: #9aada8;
+    --line-subtle: #ececef;
+    --line: #e0e0e4;
+    --line-strong: #b9b9c1;
 
-    --text: #101d1e;
-    --text-secondary: #3c4f51;
-    --text-muted: #5d7073;
-    --text-faint: #7b8d90;
+    --text: #131316;
+    --text-secondary: #3a3a42;
+    --text-muted: #55555e;
+    --text-faint: #6e6e77;
 
-    --accent-measure: #04756a;
-    --accent-literature: #5b3fc4;
-    --accent-reference: #8a5100;
-    --accent-workflow: #24702c;
-    --accent-record: #ab2c4c;
+    --accent-measure: #0f766e;
+    --accent-literature: #5b46c4;
+    --accent-reference: #8a5a12;
+    --accent-workflow: #2c7a3d;
+    --accent-record: #a8365a;
 
-    --danger: #a3251f;
-    --danger-text: #8f1f19;
-    --warning: #8a5100;
-    --success: #24702c;
+    --danger: #b3261e;
+    --danger-text: #99201a;
+    --warning: #8a5a12;
+    --success: #2c7a3d;
 
     --on-accent: #ffffff;
 
-    --shadow-sm: 0 1px 2px rgb(16 29 30 / 8%);
-    --shadow-md: 0 4px 14px -4px rgb(16 29 30 / 14%);
-    --shadow-lg: 0 20px 56px -16px rgb(16 29 30 / 24%);
-    --scrim: rgb(16 29 30 / 32%);
+    --shadow-sm: 0 1px 2px rgb(16 16 20 / 5%);
+    --shadow-md: 0 8px 24px -12px rgb(16 16 20 / 12%);
+    --shadow-lg: 0 24px 60px -24px rgb(16 16 20 / 20%);
+    --scrim: rgb(16 16 20 / 28%);
   }
 }
 
@@ -213,6 +218,10 @@
  * ======================================================================= */
 :root {
   --accent: var(--accent-measure);
+
+  /* Solid controls are ink on paper, never a family colour. */
+  --solid: var(--text);
+  --on-solid: var(--bg);
 
   --cyan: var(--accent-measure);
   --violet: var(--accent-literature);

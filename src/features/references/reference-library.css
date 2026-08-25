@@ -14,7 +14,7 @@
 
 .reference-library > header h2 {
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 550;
   letter-spacing: var(--tracking-tight);
 }
 
@@ -29,9 +29,8 @@
   display: grid;
   gap: var(--space-1);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 650;
-  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
 .reference-library__search input {
@@ -57,14 +56,14 @@
   display: grid;
   gap: var(--space-1);
   padding: var(--space-3);
-  border: 1px solid var(--line-subtle);
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   background: var(--surface-sunken);
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
 .reference-library__result:hover {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-color: var(--line);
 }
 
 .reference-library__result header {

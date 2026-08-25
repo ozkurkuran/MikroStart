@@ -7,13 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-25
+
 Visual and UX overhaul of the workbench. The design direction is
-"precision instrument" — a laboratory panel crossed with technical editorial —
-replacing the flat, uniform card wall.
+"quiet instrument": a neutral surface built from flat planes and hairlines,
+replacing both the original uniform card wall and the decorated laboratory-panel
+treatment that first replaced it. Structure carries the design; colour is spent
+only where it means something.
 
 ### Added
 
+- A repository-wide release policy in `AGENTS.md` now requires every AI agent
+  to version, document, verify, tag, and push each completed logical change.
 - Changelog started at `v0.5.0`.
+- **Daily research overview** in the previously unused workspace header: an
+  explicit-permission Open-Meteo forecast, a device-local month calendar with
+  colour-coded events, drag-to-reschedule, upcoming items, and iCalendar
+  import/export.
+- Weather location entry now offers immediate offline Turkish province matches,
+  richer Open-Meteo suggestions after access is granted, and an explicit
+  browser-geolocation action. Forecast requests no longer depend on a matching
+  service-worker message version.
+- **Quick tools drawer** with safe parsed arithmetic/scientific expressions,
+  degree/radian modes, factorials, memory and history, unit conversion, an
+  auto-saved scratch note, clipboard copy, and one-shot transfer into a chosen
+  numeric calculator field.
+- **Focus and status strip** with a reload-safe Pomodoro timer, clipboard-number
+  capture, online/on-device-AI/local-save indicators, daily CODATA constant,
+  overview backup, and editable weekly progress goal.
 - Git history initialised. Tag `v0.5.0-baseline` marks the pre-redesign snapshot.
 - **Design token layer** (`src/shell/tokens.css`): type scale, 4 px spacing scale,
   radius, elevation, and motion tokens, plus fully specified dark and light
@@ -36,12 +57,12 @@ replacing the flat, uniform card wall.
   `--color-text-muted`, `--line` / `--border` / `--color-border`, …) collapse
   onto one scale through compatibility aliases, removing the drift between cards.
 - Type floor raised: card eyebrows go from 8–9 px to 10.5 px and body copy sits
-  at 12.5 px or above. Headings are serif; readouts are monospace and tabular.
+  at 12.5 px or above. One sans carries the interface; readouts are monospace
+  and tabular.
 - Card accents are now semantic. Each module family — measure, literature,
   reference, workflow, record — owns a colour, replacing per-card accent classes
-  that had been assigned arbitrarily.
-- Cards carry a corner-bracket marker painted as a background, so it stays
-  pinned to the frame while the body scrolls.
+  that had been assigned arbitrarily. The accent appears as a marker — an
+  eyebrow dot, a filter-chip dot — rather than as a tint across the card.
 - Module manager is a real dialog: backdrop, Escape to close, grouped by family
   with per-group show/hide.
 - The density preference is now reachable from the board, not just Options, and
@@ -59,6 +80,34 @@ replacing the flat, uniform card wall.
   `en`, and `Intl` formatters use the matching tag rather than always `tr-TR`.
 - Proper nouns (Bragg, Scherrer, Hall, CODATA, FWHM, arXiv, DOI, RSS), unit
   symbols, and export format names stay untranslated on purpose.
+
+### Changed — minimalist pass
+
+- **Decoration removed.** The two radial accent washes behind the page, the
+  corner brackets painted on every card, the gradient card fills, the gradient
+  brand mark, and the gradient options sheet are gone. Surfaces are flat and
+  separations are hairlines.
+- **Palette is neutral.** Both themes moved off the teal-tinted greys onto a
+  neutral scale — near-black surfaces in dark, white sheets on a soft grey
+  field in light. Family accents were desaturated to match, and muted/faint text
+  was darkened enough to hold 4.5:1 against its background.
+- **One filled button style.** Filled controls are monochrome (`--solid` /
+  `--on-solid`, ink on paper) instead of taking the module family accent, so a
+  board of seventeen cards no longer shows a grid of coloured blocks.
+- **Labels stopped shouting.** Field labels across the feed, notebook, AI,
+  language, calculator, reference, and workflow panels drop the uppercase,
+  letter-spaced treatment for 11.5 px regular text. Uppercase survives only on
+  eyebrows, and its tracking dropped from 0.13em to 0.08em.
+- **Result panels are neutral.** Calculator and translation outputs sit on a
+  recessed plane; the mono face and weight carry the emphasis that an accent
+  tint used to.
+- **Selection reads the same everywhere.** Filter chips, AI mode pills, and
+  preset buttons all mark the active choice as a plane that steps forward, on
+  one 8 px radius; the pill shapes are gone.
+- Shadows are reserved for the module manager, the only surface that floats.
+  Cards, buttons, and the options sheet carry none.
+- Card padding, the grid gap, and the shell inset each grew one step; the radius
+  scale tightened (`lg` 12 – 10 px, `xl` 18 – 14 px).
 
 ### Fixed
 
@@ -86,5 +135,6 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkur/benchtab/compare/v0.5.0...HEAD
-[0.5.0]: https://github.com/ozkur/benchtab/releases/tag/v0.5.0
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.5.0-baseline...v0.6.0
+[0.5.0]: https://github.com/ozkurkuran/MikroStart/releases/tag/v0.5.0-baseline

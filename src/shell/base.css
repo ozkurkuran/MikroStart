@@ -25,18 +25,12 @@ body {
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
   color: var(--text);
-  /* Two offset washes give the flat background depth without a decorative blob. */
-  background:
-    radial-gradient(80rem 40rem at 78% -18%,
-      color-mix(in srgb, var(--accent-measure) 9%, transparent), transparent 60%),
-    radial-gradient(60rem 34rem at 6% 8%,
-      color-mix(in srgb, var(--accent-literature) 6%, transparent), transparent 58%),
-    var(--bg);
-  background-attachment: fixed;
+  /* Deliberately flat. Depth comes from surface steps and hairlines, not washes. */
+  background: var(--bg);
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
   color: var(--text);
 }
 
@@ -71,7 +65,7 @@ p {
  * remembering to style it.
  */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 2px solid var(--accent-measure);
+  outline: 1.5px solid var(--accent-measure);
   outline-offset: 2px;
   border-radius: var(--radius-xs);
 }
@@ -79,23 +73,23 @@ p {
 /* ---- Scrollbars --------------------------------------------------------- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--line-strong) transparent;
+  scrollbar-color: var(--line) transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: var(--radius-pill);
-  background: var(--line-strong);
+  background: var(--line);
   background-clip: content-box;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: var(--text-faint);
+  background: var(--line-strong);
   background-clip: content-box;
 }
 
@@ -107,9 +101,9 @@ p {
 /* ---- Typographic utilities ---------------------------------------------- */
 .overline {
   margin: 0;
-  color: var(--accent);
+  color: var(--text-faint);
   font-size: var(--text-eyebrow);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
 }
@@ -140,10 +134,10 @@ p {
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  color: var(--text);
-  background: var(--surface-raised);
+  color: var(--text-secondary);
+  background: transparent;
   font-size: var(--text-2xs);
-  font-weight: 600;
+  font-weight: 550;
   cursor: pointer;
   transition:
     background var(--duration-fast) var(--ease-standard),
@@ -153,12 +147,13 @@ p {
 }
 
 .button:hover:not(:disabled) {
+  color: var(--text);
   border-color: var(--line-strong);
-  background: var(--surface-overlay);
+  background: var(--surface-raised);
 }
 
 .button:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(0.5px);
 }
 
 .button:disabled {
@@ -166,17 +161,17 @@ p {
   opacity: 0.5;
 }
 
+/* One filled button per surface. It marks the primary verb, nothing else. */
 .button--primary {
   border-color: transparent;
-  color: var(--on-accent);
-  background: var(--accent);
-  font-weight: 700;
-  box-shadow: var(--shadow-sm);
+  color: var(--on-solid);
+  background: var(--solid);
+  font-weight: 600;
 }
 
 .button--primary:hover:not(:disabled) {
   border-color: transparent;
-  background: color-mix(in srgb, var(--accent) 88%, var(--text));
+  background: color-mix(in srgb, var(--solid) 84%, var(--bg));
 }
 
 .button--quiet {
@@ -187,19 +182,19 @@ p {
 
 .button--quiet:hover:not(:disabled) {
   color: var(--text);
-  border-color: var(--line);
-  background: var(--surface);
+  border-color: transparent;
+  background: var(--surface-raised);
 }
 
 .button--danger {
-  border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
+  border-color: color-mix(in srgb, var(--danger) 32%, var(--line));
   color: var(--danger-text);
-  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+  background: transparent;
 }
 
 .button--danger:hover:not(:disabled) {
-  border-color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 20%, var(--surface));
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--line));
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
 }
 
 .button--small {
@@ -248,7 +243,7 @@ p {
 
 .icon-button:hover {
   color: var(--text);
-  border-color: var(--line);
+  border-color: transparent;
   background: var(--surface-raised);
 }
 
@@ -264,7 +259,7 @@ select {
   padding: var(--space-2) var(--space-3);
   color: var(--text);
   background: var(--surface-sunken);
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   font-weight: 400;
   /* Labels are uppercase and letter-spaced; controls must not inherit that. */
   letter-spacing: normal;
@@ -283,8 +278,8 @@ select:hover:not(:disabled) {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line-strong));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 14%, transparent);
   outline: none;
 }
 
@@ -325,7 +320,7 @@ input[type="radio"] {
 progress {
   appearance: none;
   width: 100%;
-  height: 0.4rem;
+  height: 0.3rem;
   border: 0;
   border-radius: var(--radius-pill);
   overflow: hidden;
@@ -339,8 +334,7 @@ progress::-webkit-progress-bar {
 
 progress::-webkit-progress-value {
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--accent) 70%, transparent), var(--accent));
+  background: var(--accent);
   transition: width var(--duration-normal) linear;
 }
 

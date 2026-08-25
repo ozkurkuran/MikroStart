@@ -24,6 +24,7 @@ const manifest = {
     type: "module",
   },
   permissions: ["storage", "alarms", "sidePanel", "offscreen"],
+  optional_permissions: ["clipboardRead", "geolocation"],
   optional_host_permissions: ["https://*/*"],
   action: {
     default_title: "Open BenchTab",

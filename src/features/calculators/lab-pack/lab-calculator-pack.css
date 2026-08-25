@@ -43,9 +43,8 @@
   min-width: 0;
   gap: var(--space-1);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 650;
-  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
 .lab-pack input,
@@ -95,13 +94,14 @@
   min-height: auto;
 }
 
-/* The result panel is the card's focal point: accent tint, mono numerals. */
+/* The result panel is the card's focal point. Weight and the mono face carry
+ * that, so the panel itself stays a plain recessed plane. */
 .lab-pack__output {
   margin-block-start: var(--space-2);
-  padding: var(--space-3);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: var(--space-4);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
 }
 
 .lab-pack output {
@@ -112,15 +112,15 @@
 .lab-pack output span {
   color: var(--text-muted);
   font-size: var(--text-eyebrow);
-  letter-spacing: var(--tracking-wide);
 }
 
 .lab-pack output strong {
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-variant-numeric: tabular-nums;
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
 }
 
 .lab-pack__result-grid {

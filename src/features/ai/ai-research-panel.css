@@ -13,20 +13,20 @@
   inline-size: 100%;
   margin-block-end: var(--space-2);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
+/* Selection reads the same here as it does on the board filters: a plane
+ * that steps forward, not a colour wash. */
 .ai-mode-picker label {
   position: relative;
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 650;
+  font-size: var(--text-2xs);
+  font-weight: 500;
   cursor: pointer;
   transition:
     color var(--duration-fast) var(--ease-standard),
@@ -36,7 +36,7 @@
 
 .ai-mode-picker label:hover {
   color: var(--text);
-  border-color: var(--line-strong);
+  background: var(--surface-sunken);
 }
 
 .ai-mode-picker input {
@@ -47,8 +47,8 @@
 
 .ai-mode-picker label:has(input:checked) {
   color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: var(--line);
+  background: var(--surface-raised);
 }
 
 .ai-mode-picker label:has(input:focus-visible) {
@@ -70,10 +70,8 @@
   min-width: 0;
   gap: var(--space-1);
   color: var(--text-muted);
-  font-size: var(--text-eyebrow);
-  font-weight: 650;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-size: var(--text-2xs);
+  font-weight: 500;
 }
 
 .ai-language-row input,
@@ -110,7 +108,7 @@
 .ai-source-summary li::before {
   content: "•";
   margin-inline-end: var(--space-2);
-  color: var(--accent);
+  color: var(--text-faint);
 }
 
 .ai-action-row {
