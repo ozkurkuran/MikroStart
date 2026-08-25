@@ -1,4 +1,6 @@
-export type ThemePreference = "system" | "light" | "dark";
+import { normalizeThemePreference, type ThemePreference } from "./themes";
+
+export type { ThemePreference } from "./themes";
 
 export interface UserPreferences {
   version: 1;
@@ -28,6 +30,7 @@ export async function loadPreferences(): Promise<UserPreferences> {
   return {
     ...DEFAULT_PREFERENCES,
     ...value,
+    theme: normalizeThemePreference(value.theme),
     version: 1,
   };
 }

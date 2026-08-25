@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-25
+
+### Added
+
+- Thirteen bundled, local-only visual themes: Cobalt, Citrus, Glass, Clinical,
+  Paper, Plain, Circuit, Magnetic, Aurora, Night Glass, Ink, Graphite, and
+  Phosphor.
+- An accessible header theme picker groups light and dark choices, shows a
+  compact palette preview and description for each theme, closes on outside
+  pointer input or Escape, and persists a selection immediately on device.
+- The Options page exposes the same theme catalog through grouped native
+  controls, with complete Turkish and English labels and descriptions.
+- Theme preference normalization includes regression tests for every bundled
+  identifier, malformed stored data, and migration from the original light and
+  dark values.
+
+### Changed
+
+- Theme packages can now control semantic colours, module-family accents,
+  surface depth, card treatments, corner geometry, display typography, and
+  optional background atmosphere through one extensible registry.
+- Existing light and dark preferences migrate to Plain and Graphite
+  respectively, while the system-following mode remains available.
+- Glass effects and decorative backgrounds use packaged CSS only; every font
+  remains a local system stack and no permission, account, telemetry, or remote
+  asset was added.
+
 ## [0.7.0] - 2026-08-25
 
 ### Added

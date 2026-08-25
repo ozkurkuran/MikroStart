@@ -12,6 +12,7 @@ import { IndexedDbNotebookRepository } from "../features/notebook";
 import { clearFeedCache } from "../platform/feedStore";
 import { clearJobQueue } from "../platform/jobQueue";
 import { cancelAllCountdownAlarms } from "../features/workflows";
+import { applyThemePreference, THEMES, themeName } from "../platform/themes";
 
 export function OptionsApp() {
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
@@ -31,7 +32,7 @@ export function OptionsApp() {
 
   // The options page follows the same theme and language as the workbench.
   useEffect(() => {
-    document.documentElement.dataset.theme = preferences.theme;
+    applyThemePreference(preferences.theme);
   }, [preferences.theme]);
 
   useEffect(() => {
@@ -114,8 +115,16 @@ export function OptionsApp() {
             onChange={(event) => update("theme", event.currentTarget.value as UserPreferences["theme"])}
           >
             <option value="system">{t("options.themeSystem")}</option>
-            <option value="dark">{t("options.themeDark")}</option>
-            <option value="light">{t("options.themeLight")}</option>
+            <optgroup label={t("theme.light")}>
+              {THEMES.filter((theme) => theme.group === "light").map((theme) => (
+                <option value={theme.id} key={theme.id}>{themeName(t, theme.id)}</option>
+              ))}
+            </optgroup>
+            <optgroup label={t("theme.dark")}>
+              {THEMES.filter((theme) => theme.group === "dark").map((theme) => (
+                <option value={theme.id} key={theme.id}>{themeName(t, theme.id)}</option>
+              ))}
+            </optgroup>
           </select>
         </label>
 

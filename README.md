@@ -33,8 +33,14 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full entry.
 - A dedicated board-arrangement mode with pointer, touch, pen, and keyboard
   reordering, visible drop positions, edge auto-scroll, persistent order, and
   reduced-motion-aware layout animation.
-- A flat, neutral visual direction: surfaces are separated by hairlines and space rather than gradients, tints, or drop shadows. Dark is a near-black field of stepped greys; light is white sheets on soft grey.
-- A design token layer (`src/shell/tokens.css`) covering type, spacing, radius, elevation, and motion, with complete dark and light palettes. Fonts are system stacks only, so no remote asset is ever requested.
+- Thirteen local-only visual themes spanning paper, clinical, glass, vivid,
+  dark, and terminal treatments. The header picker previews each palette and
+  saves the choice immediately; the same grouped choices remain available in
+  Settings. Themes use only system fonts and packaged code.
+- A semantic design-token layer (`src/shell/tokens.css`) covering type,
+  spacing, radius, elevation, motion, and theme-controlled surfaces. The theme
+  registry lives in `src/platform/themes.ts`, keeping visual presets separate
+  from feature components and making future additions data-driven.
 - Semantic module families — measure, literature, reference, workflow, record — each with its own accent, replacing per-card colours that had been assigned arbitrarily. The accent shows as a marker rather than as a fill, and filled buttons are monochrome throughout.
 - A sticky command bar over the board: live module search, category filter chips with counts, a density toggle, and the visible-module count.
 - A module manager dialog grouped by family, with a backdrop, Escape to close, and per-group show/hide.

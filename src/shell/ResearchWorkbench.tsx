@@ -43,6 +43,7 @@ import {
   localeTag,
   type Translate,
 } from "../platform/i18n";
+import { applyThemePreference, type ThemePreference } from "../platform/themes";
 import { FeedPanel } from "./FeedPanel";
 import { ModuleManager } from "./ModuleManager";
 import { ModuleSlot } from "./ModuleSlot";
@@ -56,6 +57,7 @@ import {
 } from "./moduleCatalog";
 import { NotebookPanel } from "./NotebookPanel";
 import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
+import { ThemePicker } from "./ThemePicker";
 import { ResearchOverview } from "../features/overview/ResearchOverview";
 import {
   useModuleReorder,
@@ -125,7 +127,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const t = useMemo(() => createTranslate(preferences.locale), [preferences.locale]);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = preferences.theme;
+    applyThemePreference(preferences.theme);
   }, [preferences.theme]);
 
   useEffect(() => {
@@ -139,6 +141,12 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
 
   function setCompactCards(compactCards: boolean) {
     const next = { ...preferences, compactCards };
+    setPreferences(next);
+    void savePreferences(next);
+  }
+
+  function setTheme(theme: ThemePreference) {
+    const next = { ...preferences, theme };
     setPreferences(next);
     void savePreferences(next);
   }
@@ -415,6 +423,7 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
           {t("topbar.localWorkspace")}
         </div>
         <nav class="topbar__actions" aria-label={t("topbar.actionsAria")}>
+          <ThemePicker value={preferences.theme} onChange={setTheme} />
           <a class="button button--quiet" href="/pages/options.html">{t("topbar.settings")}</a>
           <time dateTime={now.toISOString()}>{formatClock(now, preferences.locale)}</time>
         </nav>

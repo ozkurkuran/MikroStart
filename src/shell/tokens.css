@@ -80,6 +80,15 @@
   --grid-row: 0.375rem;    /* keep in sync with FALLBACK_ROW_PX in ModuleSlot.tsx */
   --widget-max-block: 22.5rem;
   --shell-inline-pad: clamp(1rem, 2.2vw, 2.5rem);
+
+  /* Theme packs override these without coupling components to a palette. */
+  --background-image: none;
+  --card-background-image: none;
+  --surface-backdrop-filter: none;
+  --display-weight: 550;
+  --title-weight: 550;
+  --theme-radius-small: var(--radius-md);
+  --theme-radius-large: var(--radius-lg);
 }
 
 /* =======================================================================
