@@ -18,6 +18,12 @@ import { localeTag, useI18n } from "../platform/i18n";
 import { listLiteratureStreams, type LiteratureStream } from "../platform/literatureStore";
 import type { ExtensionCommand, ExtensionResponse } from "../platform/messages";
 import {
+  listReadingEntries,
+  setReadingStatus,
+  type ReadingEntry,
+  type ReadingStatus,
+} from "../platform/readingStore";
+import {
   requestSourcePermission,
   requestSourcePermissions,
   revokeSourcePermission,
@@ -81,16 +87,20 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
   const [streamBlocked, setStreamBlocked] = useState("");
   const [streamSort, setStreamSort] = useState<LiteratureSort>("newest");
   const [streamPageSize, setStreamPageSize] = useState<LiteraturePageSize>(20);
+  const [readingEntries, setReadingEntries] = useState<ReadingEntry[]>([]);
+  const [inboxView, setInboxView] = useState<"inbox" | ReadingStatus | "all">("inbox");
 
   async function reload() {
-    const [nextSubscriptions, nextStreams, nextItems] = await Promise.all([
+    const [nextSubscriptions, nextStreams, nextItems, nextReadingEntries] = await Promise.all([
       listFeedSubscriptions(),
       listLiteratureStreams(),
       listLatestFeedItems(160),
+      listReadingEntries(),
     ]);
     setSubscriptions(nextSubscriptions);
     setStreams(nextStreams);
     setItems(nextItems);
+    setReadingEntries(nextReadingEntries);
     if (
       activeSourceId !== "all" &&
       !nextSubscriptions.some((source) => source.id === activeSourceId) &&
@@ -106,6 +116,12 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
 
   const visibleItems = items
     .filter((item) => activeSourceId === "all" || item.provenance.sources.some((source) => source.sourceId === activeSourceId))
+    .filter((item) => {
+      const status = readingEntries.find((entry) => entry.itemId === item.id)?.status;
+      if (inboxView === "all") return true;
+      if (inboxView === "inbox") return status === undefined;
+      return status === inboxView;
+    })
     .filter((item) => {
       const needle = query.trim().toLocaleLowerCase(localeTag(locale));
       if (!needle) return true;
@@ -131,6 +147,17 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
       onSelectionChange?.(items.filter((candidate) => next.has(candidate.id)));
       return next;
     });
+  }
+
+  async function updateReadingState(itemId: string, status?: ReadingStatus) {
+    await setReadingStatus(itemId, status);
+    setReadingEntries(await listReadingEntries());
+  }
+
+  function openSource(item: NormalizedFeedItem) {
+    if (!item.canonicalUrl) return;
+    void updateReadingState(item.id, "read");
+    window.open(item.canonicalUrl, "_blank", "noopener,noreferrer");
   }
 
   async function saveLiteratureStream() {
@@ -342,6 +369,15 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
 
       {message && <p class="inline-status" role="status">{message}</p>}
       {items.length > 0 && <>
+        <div class="feed-inbox" role="group" aria-label={t("feed.inboxAria")}>
+          {(["inbox", "later", "read", "all"] as const).map((view) => {
+            const count = items.filter((item) => {
+              const status = readingEntries.find((entry) => entry.itemId === item.id)?.status;
+              return view === "all" || (view === "inbox" ? !status : status === view);
+            }).length;
+            return <button type="button" key={view} aria-pressed={inboxView === view} onClick={() => setInboxView(view)}>{t(`feed.view.${view}`)} <span>{count}</span></button>;
+          })}
+        </div>
         <div class="feed-scope" role="group" aria-label={t("feed.scopeAria")}><button type="button" aria-pressed={activeSourceId === "all"} onClick={() => setActiveSourceId("all")}>{t("feed.allResults")}</button>{streams.map((stream) => <button type="button" key={stream.id} aria-pressed={activeSourceId === stream.id} onClick={() => setActiveSourceId(stream.id)}>{stream.title}</button>)}</div>
         <label class="feed-search"><span>{t("feed.searchLabel")}</span><input type="search" value={query} onInput={(event) => setQuery(event.currentTarget.value)} placeholder={t("feed.searchPlaceholder")} /></label>
       </>}
@@ -350,7 +386,13 @@ export function FeedPanel({ onSelectionChange }: FeedPanelProps) {
           <p>{itemProviderLabel(item)} <span>·</span>{formatDate(item.publishedAt ?? item.updatedAt, localeTag(locale), t("feed.dateUnavailable"))}</p>
           <h3>{item.title}</h3>
           {item.authors.length > 0 && <small>{item.authors.slice(0, 3).map((author) => author.name).join(", ")}</small>}
-          <div class="feed-item__actions">{item.canonicalUrl && <a href={item.canonicalUrl} target="_blank" rel="noreferrer">{t("feed.openSource")}</a>}<button type="button" onClick={() => void saveToNotebook(item)} disabled={busy || !item.canonicalUrl}>{t("feed.saveToNotebook")}</button><label class="ai-select"><input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleAiSelection(item)} disabled={!selectedIds.has(item.id) && selectedIds.size >= 8} />{t("feed.aiContext")}</label></div>
+          <div class="feed-item__actions">
+            {item.canonicalUrl && <button type="button" onClick={() => openSource(item)}>{t("feed.openSource")}</button>}
+            <button type="button" aria-pressed={readingEntries.some((entry) => entry.itemId === item.id && entry.status === "later")} onClick={() => void updateReadingState(item.id, readingEntries.some((entry) => entry.itemId === item.id && entry.status === "later") ? undefined : "later")}>{t("feed.readLater")}</button>
+            <button type="button" onClick={() => void updateReadingState(item.id, "read")}>{t("feed.markRead")}</button>
+            <button type="button" onClick={() => void saveToNotebook(item)} disabled={busy || !item.canonicalUrl}>{t("feed.saveToNotebook")}</button>
+            <label class="ai-select"><input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleAiSelection(item)} disabled={!selectedIds.has(item.id) && selectedIds.size >= 8} />{t("feed.aiContext")}</label>
+          </div>
         </article>)}
       </div>
     </article>

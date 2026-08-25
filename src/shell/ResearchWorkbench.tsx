@@ -58,6 +58,7 @@ import {
 import { NotebookPanel } from "./NotebookPanel";
 import { WorkbenchToolbar, type CategoryFilter } from "./WorkbenchToolbar";
 import { ThemePicker } from "./ThemePicker";
+import { CommandPalette } from "./CommandPalette";
 import { ResearchOverview } from "../features/overview/ResearchOverview";
 import {
   useModuleReorder,
@@ -116,12 +117,24 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [aiSources, setAiSources] = useState<AiResearchSource[]>([]);
   const [selectedFeedItems, setSelectedFeedItems] = useState<NormalizedFeedItem[]>([]);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   useEffect(() => {
     void loadPreferences().then(setPreferences);
     void loadDashboardLayout().then(setLayout);
     const timer = window.setInterval(() => setNow(new Date()), 30_000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const openPalette = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLocaleLowerCase("en-US") === "k") {
+        event.preventDefault();
+        setCommandPaletteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", openPalette);
+    return () => window.removeEventListener("keydown", openPalette);
   }, []);
 
   const t = useMemo(() => createTranslate(preferences.locale), [preferences.locale]);
@@ -407,6 +420,20 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
     setEditLayout(enabled);
   }
 
+  function openModule(id: ModuleId) {
+    setQuery("");
+    setCategory("all");
+    setManageModules(false);
+    setEditLayout(false);
+    if (layout.hidden.includes(id)) {
+      updateLayout({ ...layout, hidden: layout.hidden.filter((candidate) => candidate !== id) });
+    }
+    window.setTimeout(() => document.getElementById(`module-${id}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    }), 60);
+  }
+
   return (
     <I18nProvider locale={preferences.locale}>
     <main class={`workbench workbench--${surface}${preferences.compactCards ? " workbench--compact" : ""}`}>
@@ -423,6 +450,9 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
           {t("topbar.localWorkspace")}
         </div>
         <nav class="topbar__actions" aria-label={t("topbar.actionsAria")}>
+          <button class="button button--quiet topbar__command" type="button" onClick={() => setCommandPaletteOpen(true)}>
+            {t("palette.open")} <kbd>Ctrl K</kbd>
+          </button>
           <ThemePicker value={preferences.theme} onChange={setTheme} />
           <a class="button button--quiet" href="/pages/options.html">{t("topbar.settings")}</a>
           <time dateTime={now.toISOString()}>{formatClock(now, preferences.locale)}</time>
@@ -525,6 +555,12 @@ export function ResearchWorkbench({ surface }: ResearchWorkbenchProps) {
           onClose={() => setManageModules(false)}
         />
       )}
+
+      <CommandPalette
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onOpenModule={openModule}
+      />
 
       <footer class="privacy-strip">
         <span class="status-dot" aria-hidden="true" />

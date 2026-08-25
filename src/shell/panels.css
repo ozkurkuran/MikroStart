@@ -246,6 +246,32 @@
   overflow-x: auto;
 }
 
+.feed-inbox {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  padding: var(--space-1);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.feed-inbox button {
+  min-width: 0;
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-faint);
+  background: transparent;
+  font-size: var(--text-eyebrow);
+  cursor: pointer;
+}
+
+.feed-inbox button[aria-pressed="true"] { color: var(--text); background: var(--surface-raised); }
+.feed-inbox button span { margin-inline-start: var(--space-1); font-family: var(--font-mono); }
+.feed-item__actions button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+
 .feed-scope button {
   flex: 0 0 auto;
   min-height: 1.5rem;

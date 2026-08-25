@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-08-25
+
+### Added
+
+- The research feed now has a local reading inbox with unread, read-later,
+  read, and all views, per-view counts, and explicit state controls.
+- A keyboard-first command palette opens with Ctrl/Cmd+K and searches packaged
+  modules, local notebook notes, and cached source records without a remote
+  index or additional Chrome permission.
+- Command-palette results can reveal hidden modules, focus a selected notebook
+  note, open a cached publication, or navigate to privacy settings.
+- Reading-state and command-ranking normalizers have regression coverage for
+  malformed storage, Turkish diacritic folding, multi-term matching, and result
+  ordering.
+
+### Changed
+
+- Opening a source marks it read, while read-later remains independent from
+  notebook references and can be reversed without deleting cached metadata.
+- Feed source links now use controlled buttons so reading state is recorded
+  before the external page opens.
+
+### Security
+
+- Reading state is bounded to 1,000 validated local records. The command
+  palette reads only packaged metadata, IndexedDB notes, and the existing
+  bounded public-source cache; it adds no host or sensitive browser permission.
+
 ## [0.9.0] - 2026-08-25
 
 ### Added
@@ -231,7 +259,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.6.0...v0.7.0

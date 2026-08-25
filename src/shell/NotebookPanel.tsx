@@ -40,9 +40,21 @@ export function NotebookPanel() {
 
   useEffect(() => {
     const onNotebookChanged = () => void reload();
+    const onOpenNote = (event: Event) => {
+      const noteId = (event as CustomEvent<{ noteId?: string }>).detail?.noteId;
+      if (!noteId) return;
+      const repository = new IndexedDbNotebookRepository();
+      void repository.getNote(noteId).then((note) => {
+        if (note) editNote(note);
+      }).finally(() => repository.close());
+    };
     window.addEventListener("benchtab:notebook-changed", onNotebookChanged);
+    window.addEventListener("benchtab:open-note", onOpenNote);
     void reload();
-    return () => window.removeEventListener("benchtab:notebook-changed", onNotebookChanged);
+    return () => {
+      window.removeEventListener("benchtab:notebook-changed", onNotebookChanged);
+      window.removeEventListener("benchtab:open-note", onOpenNote);
+    };
   }, []);
 
   function startNewNote() {

@@ -95,6 +95,12 @@
   gap: var(--space-3);
 }
 
+.topbar__command { gap: var(--space-2); }
+.topbar__command kbd {
+  color: var(--text-faint);
+  font: 500 var(--text-eyebrow)/1 var(--font-mono);
+}
+
 /* ---- Theme picker ------------------------------------------------------ */
 .theme-picker { position: relative; }
 
