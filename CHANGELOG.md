@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-08-28
+
+### Fixed
+
+- Weather location suggestions now include all 973 Turkish districts offline,
+  show each district with its province, and match queries typed without Turkish
+  diacritics or in province-first form.
+- Packaged district selections are qualified by province and constrained to
+  Turkey during geocoding, preventing same-named settlements from resolving to
+  the wrong location while retaining additional online suggestions.
+
 ## [0.13.0] - 2026-08-25
 
 ### Added
@@ -352,7 +363,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.1...HEAD
+[0.13.1]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.10.0...v0.11.0

@@ -1,3 +1,5 @@
+import { TURKISH_DISTRICTS } from "./turkishDistricts";
+
 export const WEATHER_ORIGINS = [
   "https://geocoding-api.open-meteo.com/*",
   "https://api.open-meteo.com/*",
@@ -102,15 +104,25 @@ export function suitableOutdoorHours(snapshot: WeatherSnapshot, now = new Date()
 }
 
 function normalizeSearch(value: string): string {
-  return value.toLocaleLowerCase("tr-TR").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return value.toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i");
 }
 
 export function localLocationSuggestions(query: string): WeatherLocationSuggestion[] {
   const needle = normalizeSearch(query.trim());
   if (needle.length < 1) return [];
-  return TURKISH_PROVINCES.filter((name) => normalizeSearch(name).startsWith(needle))
-    .slice(0, 6)
+  const provinces = TURKISH_PROVINCES
+    .filter((name) => normalizeSearch(name).startsWith(needle))
     .map((label) => ({ id: `local:${label}`, label, local: true }));
+  const districts = TURKISH_DISTRICTS.flatMap(({ district, province }) => {
+    const label = `${district}, ${province}`;
+    const provinceFirst = `${province} ${district}`;
+    if (!normalizeSearch(label).startsWith(needle) && !normalizeSearch(provinceFirst).startsWith(needle)) return [];
+    return [{ id: `local:${province}:${district}`, label, local: true }];
+  });
+  return [...provinces, ...districts].slice(0, 8);
 }
 
 export async function hasWeatherAccess(): Promise<boolean> {
@@ -144,8 +156,9 @@ function textArray(value: unknown): string[] {
 
 export async function searchWeatherLocations(query: string, locale: "tr" | "en"): Promise<WeatherLocationSuggestion[]> {
   const clean = query.trim();
-  if (clean.length < 2 || !(await hasWeatherAccess())) return localLocationSuggestions(clean);
-  const params = new URLSearchParams({ name: clean, count: "6", language: locale, format: "json" });
+  const local = localLocationSuggestions(clean);
+  if (clean.length < 2 || !(await hasWeatherAccess())) return local;
+  const params = new URLSearchParams({ name: clean, count: "8", language: locale, format: "json" });
   const data = await getJson(`https://geocoding-api.open-meteo.com/v1/search?${params}`) as {
     results?: Array<{ id?: unknown; name?: unknown; admin1?: unknown; country?: unknown; latitude?: unknown; longitude?: unknown; timezone?: unknown }>;
   };
@@ -155,11 +168,15 @@ export async function searchWeatherLocations(query: string, locale: "tr" | "en")
       .filter(Boolean).filter((value, index, all) => all.indexOf(value) === index).join(", ");
     return [{ id: `remote:${String(place.id ?? `${place.latitude}:${place.longitude}`)}`, label, latitude: place.latitude, longitude: place.longitude, timezone: typeof place.timezone === "string" ? place.timezone : undefined }];
   });
-  return remote.length ? remote : localLocationSuggestions(clean);
+  const distinctRemote = remote.filter((remotePlace) => !local.some((localPlace) =>
+    normalizeSearch(remotePlace.label).startsWith(`${normalizeSearch(localPlace.label)},`),
+  ));
+  return [...local, ...distinctRemote].slice(0, 8);
 }
 
-async function geocodeFirst(query: string, locale: "tr" | "en"): Promise<WeatherLocationSuggestion> {
+async function geocodeFirst(query: string, locale: "tr" | "en", countryCode?: string): Promise<WeatherLocationSuggestion> {
   const params = new URLSearchParams({ name: query, count: "1", language: locale, format: "json" });
+  if (countryCode) params.set("countryCode", countryCode);
   const data = await getJson(`https://geocoding-api.open-meteo.com/v1/search?${params}`) as {
     results?: Array<{ id?: unknown; name?: unknown; admin1?: unknown; country?: unknown; latitude?: unknown; longitude?: unknown; timezone?: unknown }>;
   };
@@ -180,7 +197,7 @@ async function geocodeFirst(query: string, locale: "tr" | "en"): Promise<Weather
 export async function fetchWeatherForLocation(location: WeatherLocationSuggestion, locale: "tr" | "en"): Promise<WeatherSnapshot> {
   const resolved = typeof location.latitude === "number" && typeof location.longitude === "number"
     ? location
-    : await geocodeFirst(location.label, locale);
+    : await geocodeFirst(location.label, locale, location.local ? "TR" : undefined);
   const params = new URLSearchParams({
     latitude: String(resolved.latitude), longitude: String(resolved.longitude), timezone: "auto", forecast_days: "5",
     current: "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m",

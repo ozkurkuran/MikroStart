@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { evaluateExpression, formatCalculation } from "./calculator";
 import { exportIcs, monthGrid, parseIcs, type CalendarEvent } from "./calendar";
 import { convertUnit } from "./units";
+import { TURKISH_DISTRICTS } from "./turkishDistricts";
 import { localLocationSuggestions, suitableOutdoorHours, type WeatherSnapshot } from "./weather";
 
 describe("quick calculator", () => {
@@ -54,9 +55,13 @@ describe("research calendar", () => {
 });
 
 describe("weather summary", () => {
-  it("offers Turkish province matches from the first typed character without network access", () => {
+  it("offers Turkish province and district matches without network access", () => {
+    expect(TURKISH_DISTRICTS).toHaveLength(973);
     expect(localLocationSuggestions("d").map((item) => item.label)).toContain("Denizli");
     expect(localLocationSuggestions("is").map((item) => item.label)).toContain("İstanbul");
+    expect(localLocationSuggestions("kadikoy").map((item) => item.label)).toContain("Kadıköy, İstanbul");
+    expect(localLocationSuggestions("cankaya").map((item) => item.label)).toContain("Çankaya, Ankara");
+    expect(localLocationSuggestions("istanbul kad").map((item) => item.label)).toContain("Kadıköy, İstanbul");
   });
 
   it("groups comfortable low-rain hours", () => {
