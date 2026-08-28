@@ -12,7 +12,7 @@ export interface WorkspacePack {
 
 function layoutWithVisible(visible: readonly ModuleId[], order: readonly ModuleId[]): DashboardLayout {
   const completeOrder = [...order, ...DEFAULT_DASHBOARD_LAYOUT.order.filter((id) => !order.includes(id))];
-  return { version: 2, order: completeOrder, hidden: DEFAULT_DASHBOARD_LAYOUT.order.filter((id) => !visible.includes(id)) };
+  return { version: DEFAULT_DASHBOARD_LAYOUT.version, order: completeOrder, hidden: DEFAULT_DASHBOARD_LAYOUT.order.filter((id) => !visible.includes(id)) };
 }
 
 export const BUILT_IN_WORKSPACE_PACKS: readonly WorkspacePack[] = [

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DEFAULT_DASHBOARD_LAYOUT,
+  DEFAULT_MODULE_ORDER,
   MODULE_IDS,
   moveModule,
   moveModuleToIndex,
@@ -8,6 +10,31 @@ import {
 } from "./layoutPreferences";
 
 describe("dashboard layout normalization", () => {
+  it("starts with the research feed and keeps every calculation at the bottom", () => {
+    expect(DEFAULT_DASHBOARD_LAYOUT.order).toEqual(DEFAULT_MODULE_ORDER);
+    expect(DEFAULT_DASHBOARD_LAYOUT.order[0]).toBe("research-feed");
+    expect(DEFAULT_DASHBOARD_LAYOUT.order.slice(-5)).toEqual([
+      "bragg-spacing",
+      "scherrer-size",
+      "sheet-resistance",
+      "hall-measurement",
+      "vacuum-kinetics",
+    ]);
+    expect(new Set(DEFAULT_DASHBOARD_LAYOUT.order)).toEqual(new Set(MODULE_IDS));
+  });
+
+  it("migrates the untouched previous default without changing custom orders", () => {
+    const migrated = normalizeDashboardLayout({ version: 2, order: [...MODULE_IDS], hidden: [] });
+    expect(migrated.order).toEqual(DEFAULT_MODULE_ORDER);
+
+    const custom = normalizeDashboardLayout({
+      version: 2,
+      order: ["lab-notebook", ...MODULE_IDS.filter((id) => id !== "lab-notebook")],
+      hidden: [],
+    });
+    expect(custom.order[0]).toBe("lab-notebook");
+  });
+
   it("preserves known order and appends newly introduced modules", () => {
     const layout = normalizeDashboardLayout({
       order: ["lab-notebook", "research-feed", "unknown", "research-feed"],
@@ -41,7 +68,7 @@ describe("dashboard layout normalization", () => {
       "sample-id",
       "quick-note",
     ]);
-    expect(layout.version).toBe(2);
+    expect(layout.version).toBe(3);
   });
 });
 

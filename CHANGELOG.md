@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.2] - 2026-08-28
+
+### Changed
+
+- Default workspaces now place the RSS research feed first and all five
+  calculation modules at the bottom of the board.
+- The dashboard layout schema is now version 3. Workspaces still using the
+  untouched previous default migrate to the new order, while every custom
+  module order remains unchanged.
+
 ## [0.13.1] - 2026-08-28
 
 ### Fixed
@@ -363,7 +373,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.1...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.2...HEAD
+[0.13.2]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.1...v0.13.2
 [0.13.1]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.11.0...v0.12.0
