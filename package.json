@@ -1,6 +1,6 @@
 {
   "name": "benchtab",
-  "version": "0.13.2",
+  "version": "0.14.0",
   "private": true,
   "type": "module",
   "description": "A local-first Chrome research workbench for following, calculating, and recording experiments.",
@@ -10,8 +10,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "npm run build:newtab",
-    "build:newtab": "vite build && node scripts/generate-manifest.mjs newtab",
-    "build:dashboard": "vite build && node scripts/generate-manifest.mjs dashboard"
+    "assets:generate": "node scripts/generate-icons.mjs",
+    "build:newtab": "npm run assets:generate && vite build && node scripts/generate-manifest.mjs newtab && node scripts/validate-extension.mjs newtab",
+    "build:dashboard": "npm run assets:generate && vite build && node scripts/generate-manifest.mjs dashboard && node scripts/validate-extension.mjs dashboard",
+    "package:chrome": "npm run build:newtab && node scripts/package-extension.mjs",
+    "release:verify": "npm test && npm run typecheck && npm run package:chrome"
   },
   "dependencies": {
     "fast-xml-parser": "5.11.0",
@@ -20,7 +23,9 @@
   "devDependencies": {
     "@preact/preset-vite": "2.10.6",
     "@types/chrome": "0.2.7",
+    "archiver": "^8.0.0",
     "fake-indexeddb": "^6.2.5",
+    "sharp": "^0.35.4",
     "typescript": "7.0.2",
     "vite": "8.2.2",
     "vitest": "4.1.11"

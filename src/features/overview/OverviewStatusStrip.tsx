@@ -5,6 +5,8 @@ import { createDefaultAiProvider } from "../ai/providers";
 import { useI18n } from "../../platform/i18n";
 import type { PomodoroState } from "./storage";
 
+const CLIPBOARD_DISCLOSURE_KEY = "benchtab.clipboard-disclosure.v1";
+
 interface OverviewStatusStripProps {
   pomodoro: PomodoroState;
   weeklyGoal: number;
@@ -65,6 +67,10 @@ export function OverviewStatusStrip({ pomodoro, weeklyGoal, weeklyProgress, save
   async function pasteNumber() {
     setClipboardMessage("");
     try {
+      if (window.localStorage.getItem(CLIPBOARD_DISCLOSURE_KEY) !== "accepted") {
+        if (!window.confirm(t("overview.status.clipboardDisclosure"))) return;
+        window.localStorage.setItem(CLIPBOARD_DISCLOSURE_KEY, "accepted");
+      }
       if (typeof chrome !== "undefined" && chrome.permissions && !(await chrome.permissions.request({ permissions: ["clipboardRead"] }))) {
         throw new Error(t("overview.status.clipboardDenied"));
       }

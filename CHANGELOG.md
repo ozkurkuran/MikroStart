@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-09-01
+
+### Added
+
+- A reproducible Chrome Web Store release command now builds, validates, and
+  packages the new-tab edition as a versioned root-manifest ZIP with a SHA-256
+  checksum.
+- Chrome-ready 16, 32, 48, and 128 px PNG icons and the required 440x280 store
+  promo tile are generated from the tracked BenchTab brand source.
+- Store listing copy, permission justifications, reviewer notes, screenshot
+  guidance, submission checklist, and a public privacy policy now accompany the
+  release package.
+
+### Changed
+
+- Production builds exclude source maps and automatically validate Manifest V3,
+  packaged-only script policy, CSP, version consistency, icon dimensions,
+  optional HTTPS-only host access, and the selected new-tab or dashboard target.
+- The manifest now includes Chrome extension and toolbar icons plus the project
+  homepage, and the in-product Privacy Center links to the public policy.
+- Local monitor notifications now use the packaged PNG icon.
+
+### Security
+
+- Clipboard reading now shows a one-time, in-product disclosure and requires
+  affirmative consent before requesting the optional Chrome permission.
+- The privacy policy documents local storage, optional external requests,
+  retention, deletion, and Chrome Web Store Limited Use compliance.
+
 ## [0.13.2] - 2026-08-28
 
 ### Changed
@@ -373,7 +402,8 @@ is documented in [`README.md`](README.md).
 - Countdowns, stopwatch, sample-ID generation, quick notes, and a local lab notebook.
 - Reorderable and hideable dashboard modules with a measured masonry grid.
 
-[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.2...HEAD
+[Unreleased]: https://github.com/ozkurkuran/MikroStart/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.2...v0.14.0
 [0.13.2]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.1...v0.13.2
 [0.13.1]: https://github.com/ozkurkuran/MikroStart/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/ozkurkuran/MikroStart/compare/v0.12.0...v0.13.0

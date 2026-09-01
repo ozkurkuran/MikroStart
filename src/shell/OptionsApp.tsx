@@ -263,6 +263,15 @@ export function OptionsApp() {
           <div><dt>{t("options.cloudAi")}</dt><dd>{t("options.disabled")}</dd></div>
           <div><dt>{t("options.grantedOrigins")}</dt><dd>{hostOrigins.length ? hostOrigins.join(", ") : t("options.none")}</dd></div>
         </dl>
+        <p>
+          <a
+            href="https://github.com/ozkurkuran/MikroStart/blob/main/docs/PRIVACY.md"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t("options.privacyPolicy")}
+          </a>
+        </p>
         <div class="danger-zone">
           <div>
             <strong>{t("options.deleteTitle")}</strong>

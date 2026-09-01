@@ -84,6 +84,15 @@ Load the generated `dist` directory from `chrome://extensions` using **Load unpa
 npm run build:dashboard
 ```
 
+For a Chrome Web Store-ready ZIP, release assets, listing copy, privacy
+declarations, and the submission checklist, see
+[`docs/CHROME_WEB_STORE.md`](docs/CHROME_WEB_STORE.md). The package is produced
+with:
+
+```sh
+npm run release:verify
+```
+
 ## Privacy baseline
 
 - No account, OAuth, BenchTab backend, or telemetry.

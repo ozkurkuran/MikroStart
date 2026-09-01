@@ -607,6 +607,7 @@ export const en = {
   "options.cloudAi": "Cloud AI fallback",
   "options.disabled": "Disabled",
   "options.grantedOrigins": "Granted source origins",
+  "options.privacyPolicy": "Read the BenchTab privacy policy ↗",
   "options.deleteTitle": "Delete all BenchTab data",
   "options.deleteBody":
     "This cannot be undone. JSON export is available from the notebook module.",
@@ -738,6 +739,8 @@ export const en = {
   "overview.status.clipboard": "Clipboard number",
   "overview.status.paste": "Paste",
   "overview.status.clipboardDenied": "Clipboard permission was not granted.",
+  "overview.status.clipboardDisclosure":
+    "BenchTab will read the clipboard once, extract the first number for the local calculator, and will not transmit the text. Continue?",
   "overview.status.noNumber": "No number was found in the clipboard.",
   "overview.status.sentToCalculator": "Sent to the quick calculator.",
   "overview.status.online": "Online",

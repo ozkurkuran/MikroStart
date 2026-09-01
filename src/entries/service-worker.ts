@@ -233,7 +233,7 @@ async function notifyWatchChange(watch: JsonWatch, current: string): Promise<voi
   if (!watch.notify || !(await chrome.permissions.contains({ permissions: ["notifications"] }))) return;
   await chrome.notifications.create(`watch:${watch.id}`, {
     type: "basic",
-    iconUrl: chrome.runtime.getURL("icon-128.svg"),
+    iconUrl: chrome.runtime.getURL("icons/icon-128.png"),
     title: `BenchTab · ${watch.title}`,
     message: current.slice(0, 240) || "The selected JSON value changed.",
     contextMessage: "Local source monitor",

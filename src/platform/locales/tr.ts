@@ -619,6 +619,7 @@ export const tr: Messages = {
   "options.cloudAi": "Bulut AI yedeği",
   "options.disabled": "Devre dışı",
   "options.grantedOrigins": "İzin verilen kaynak kökenleri",
+  "options.privacyPolicy": "BenchTab gizlilik politikasını okuyun ↗",
   "options.deleteTitle": "Tüm BenchTab verilerini sil",
   "options.deleteBody":
     "Bu işlem geri alınamaz. JSON dışa aktarımı defter modülünden yapılabilir.",
@@ -750,6 +751,8 @@ export const tr: Messages = {
   "overview.status.clipboard": "Panodaki sayı",
   "overview.status.paste": "Yapıştır",
   "overview.status.clipboardDenied": "Pano izni verilmedi.",
+  "overview.status.clipboardDisclosure":
+    "BenchTab panoyu bir kez okuyacak, yerel hesap makinesi için ilk sayıyı çıkaracak ve metni iletmeyecektir. Devam edilsin mi?",
   "overview.status.noNumber": "Panoda bir sayı bulunamadı.",
   "overview.status.sentToCalculator": "Hızlı hesap makinesine gönderildi.",
   "overview.status.online": "Çevrimiçi",

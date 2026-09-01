@@ -11,7 +11,9 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    sourcemap: true,
+    // Chrome Web Store packages contain runtime files only. Source maps add
+    // source code and package weight without being used by the extension.
+    sourcemap: false,
     rollupOptions: {
       input: {
         newtab: resolve(rootDir, "pages/newtab.html"),
